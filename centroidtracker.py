@@ -4,13 +4,14 @@ import numpy as np
 
 
 class CentroidTracker():
-    def __init__(self, maxDisappeared=50):
+    def __init__(self, maxDisappeared=10, distance_threshold=20):
         self.nextObjectID = 0
         self.objects = OrderedDict()
         self.originRects = OrderedDict()
         self.disappeared = OrderedDict()
 
         self.maxDisappeared = maxDisappeared
+        self.distance_threshold = distance_threshold
 
     def register(self, centroid, rect):
         self.originRects[self.nextObjectID] = rect

@@ -41,7 +41,7 @@ class MOSSETracker:
 
 
 class CentroidTracker:
-    def __init__(self, max_disappeared_frames=50, distance_threshold=50):
+    def __init__(self, max_disappeared_frames=5, distance_threshold=5):
         self.next_object_id = 0
         self.objects = {}
         self.disappeared = {}
