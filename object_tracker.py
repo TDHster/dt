@@ -26,6 +26,7 @@ class MOSSETracker:
                 self.objects[object_id] = new_bbox
             else:
                 del self.objects[object_id]
+        return None  #TODO need to return object id and centroid coords
 
     def get_object_id(self, bbox):
         """Returns the object ID associated with the given bounding box."""
@@ -33,12 +34,6 @@ class MOSSETracker:
             if np.array_equal(bbox, bbox_ref):
                 return object_id
         return -1
-
-
-
-
-
-
 
 class CentroidTracker:
     def __init__(self, max_disappeared_frames=5, distance_threshold=5):
