@@ -68,7 +68,7 @@ net.setInputScale(1.0 / 127.5)
 net.setInputMean((127.5, 127.5, 127.5))
 net.setInputSwapRB(True)
 
-object_tracker = CentroidTracker(max_disappeared_frames=10, distance_threshold=30)
+object_tracker = CentroidTracker(max_disappeared_frames=40, distance_threshold=50)
 
 while True:
     success, frame = cap.read()
@@ -91,7 +91,10 @@ while True:
                 cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 1)
                 cv2.line(frame, (int(INPUT_VIDEO_WIDTH/2), int(INPUT_VIDEO_HEIGHT/2)), (x, y), (0, 0, 255), thickness=2)
-
+                yaw_pixels = INPUT_VIDEO_WIDTH/2 - x
+                elevation_pixels = INPUT_VIDEO_HEIGHT/2 - y
+                cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
 
             else:
                 cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
