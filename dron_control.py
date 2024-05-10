@@ -210,5 +210,6 @@ class link_RPi_GPIO:
 
 if __name__ == '__main__':
     dron_control = MavlinkControl('/dev/ttyAMA0')
-    dron_control._read_parameters()
+    while True:
+        dron_control._read_parameters()
 
