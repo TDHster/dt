@@ -4,6 +4,7 @@ import math
 import heapq
 
 
+
 video_path = 'test_videos/6387-191695740.mp4'  # Commercial from top
 # video_path = 'test_videos/188778-883818276_small.mp4' # Two womans
 # video_path = 'test_videos/10831-226624994.mp4'  # Square
