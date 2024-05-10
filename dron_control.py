@@ -26,7 +26,7 @@ def normalize_value(value, min_norm=-1000, max_norm=1000):
 class MavlinkControl:
     _pitch, _roll, _yaw, _throttle = 0, 0, 0, 0  # for be defined
     THROTTLE_NEUTRAL = 500
-    def __init__(self, connection_string='udpout:127.0.0.1:14540'):
+    def __init__(self, connection_string='udpout:127.0.0.1:14540', baud=''):
         """
         udpin:0.0.0.0:14550
         Linux computer connected to the vehicle via USB	/dev/ttyUSB0
@@ -40,10 +40,13 @@ class MavlinkControl:
         Windows computer connected to the vehicle using a 3DR Telemetry Radio on COM14	com14 (also set baud=57600)
         """
         # Create the connection
-        if connection_string:
-            self.master = mavutil.mavlink_connection(connection_string)
+        if baud:
+            self.master = mavutil.mavlink_connection(connection_string, f'baud={baud}')
             # Wait a heartbeat before sending commands
-            self.master.wait_heartbeat()
+        else:
+            self.master = mavutil.mavlink_connection(connection_string)
+        self.master.wait_heartbeat()
+
 
     def _make_movement(self, pitch:int, roll:int, throttle:int, yaw:int, buttons=0):
         """
@@ -209,7 +212,7 @@ class link_RPi_GPIO:
 
 
 if __name__ == '__main__':
-    dron_control = MavlinkControl('/dev/ttyAMA0')
+    dron_control = MavlinkControl('/dev/ttyAMA0', baud=57600)
     while True:
         dron_control._read_parameters()
 
