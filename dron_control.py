@@ -220,7 +220,9 @@ if __name__ == '__main__':
     from math import sin
     while True:
         dron_control.yaw = sin(time_ns())
-        print(sin(time_ns()))
+        print(f' {sin(time_ns())}:0.2f')
+        sleep(1/30)
+
 
 
 
