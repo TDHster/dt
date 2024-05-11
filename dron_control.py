@@ -68,6 +68,7 @@ class MavlinkControl:
             The lowest bit corresponds to Button 1. (type:uint16_t)
 
         """
+        print(f'{pitch=}, {roll=}, {yaw=}, {throttle=}')
         self.master.mav.manual_control_send(
             self.master.target_system,
             pitch,
