@@ -1,6 +1,6 @@
 from pymavlink import mavutil
 
-from time import sleep
+from time import sleep, time, time_ns
 from sys import exit
 
 
@@ -26,7 +26,7 @@ def normalize_value(value, min_norm=-1000, max_norm=1000):
 class MavlinkControl:
     _pitch, _roll, _yaw, _throttle = 0, 0, 0, 0  # for be defined
     THROTTLE_NEUTRAL = 500
-    def __init__(self, connection_string='udpout:127.0.0.1:14540', baud=''):
+    def __init__(self, connection_string='udpout:127.0.0.1:14550'):
         """
         udpin:0.0.0.0:14550
         Linux computer connected to the vehicle via USB	/dev/ttyUSB0
@@ -40,12 +40,9 @@ class MavlinkControl:
         Windows computer connected to the vehicle using a 3DR Telemetry Radio on COM14	com14 (also set baud=57600)
         """
         # Create the connection
-        if baud:
-            self.master = mavutil.mavlink_connection(connection_string, f'baud={baud}')
-            # Wait a heartbeat before sending commands
-        else:
-            self.master = mavutil.mavlink_connection(connection_string)
-        self.master.wait_heartbeat()
+        self.master = mavutil.mavlink_connection(connection_string)
+        print(f'Connected to {connection_string} {self.master}')
+        print(f'Heartbeat: {self.master.wait_heartbeat()}')
 
 
     def _make_movement(self, pitch:int, roll:int, throttle:int, yaw:int, buttons=0):
@@ -212,7 +209,17 @@ class link_RPi_GPIO:
 
 
 if __name__ == '__main__':
-    dron_control = MavlinkControl('/dev/ttyAMA0', baud=57600)
+    # for getting data
+    # run: sudo mavproxy.py --master=/dev/ttyACM0 --out=udpout:0.0.0.0:14540
+    # dron_control = MavlinkControl('udpin:127.0.0.1:14540')
+    # while True:
+    #     dron_control._read_parameters()
+
+
+    dron_control = MavlinkControl('udpout:127.0.0.1:14550')
+    from math import sin
     while True:
-        dron_control._read_parameters()
+        dron_control.yaw = sin(time_ns())
+        print(sin(time_ns()))
+
 
