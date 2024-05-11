@@ -10,7 +10,7 @@ camera_index = 0
 cap = cv2.VideoCapture(camera_index)
 
 # Define socket parameters (replace with receiver's IP address)
-server_ip = "192.168.1.100"  # Replace with receiver's IP address
+server_ip = "192.168.1.169"  # Replace with receiver's IP address
 server_port = 5000
 
 # Create socket object
