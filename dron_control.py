@@ -42,7 +42,7 @@ class MavlinkControl:
         # Create the connection
         self.master = mavutil.mavlink_connection(connection_string)
         print(f'Connected to {connection_string} {self.master}')
-        print(f'Heartbeat: {self.master.wait_heartbeat()}')
+        # print(f'Heartbeat: {self.master.wait_heartbeat()}')
 
 
     def _make_movement(self, pitch:int, roll:int, throttle:int, yaw:int, buttons=0):
