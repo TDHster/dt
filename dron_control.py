@@ -223,6 +223,3 @@ if __name__ == '__main__':
         print(f' {sin(time_ns())}:0.2f')
         sleep(1/30)
 
-
-
-
