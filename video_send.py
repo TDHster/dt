@@ -3,6 +3,7 @@ import socket
 import numpy as np
 import time
 
+
 class VideoStreamSender:
     def __init__(self, reciever_ip="192.168.0.169", server_port=5000):
         # Define socket parameters (replace with receiver's IP address)
@@ -28,7 +29,6 @@ class VideoStreamSender:
 
     def close(self):
         self.sock.close()
-
 
 
 if __name__ == '__main__':
