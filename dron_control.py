@@ -4,7 +4,7 @@ from time import sleep, time, time_ns
 from sys import exit
 
 
-def normalize_value(value, min_norm=-1000, max_norm=1000):
+def normalize_value(value: float, min_norm=-1000, max_norm=1000):
     """
     Normalizes a value between -1 and 1 to a specified range.
 
@@ -103,14 +103,25 @@ class MavlinkControl:
 
     @property
     def pitch_yaw(self):
-        return (self._pitch, self._yaw)
+        return self._pitch, self._yaw
+
 
     @pitch_yaw.setter
-    def pitch_yaw(self, pitch:float, yaw:float):
-        self._pitch = pitch
-        self._yaw = yaw
-        self._make_movement(normalize_value(pitch), 0, self.THROTTLE_NEUTRAL, normalize_value(yaw))
+    def pitch_yaw(self, pitch_and_yaw):
+        _pitch, _yaw = pitch_and_yaw
+        self._make_movement(normalize_value(_pitch), 0, self.THROTTLE_NEUTRAL, normalize_value(self._yaw))
 
+    @property
+    def throttle(self):
+        return self._throttle
+
+    @throttle.setter
+    def throttle(self, value:float):
+        """
+        :param value: -1..1 float
+        :return:
+        """
+        self._make_movement(0, 0, normalize_value(value, min_norm=0, max_norm=1000), 0)
 
     def ___control_with_buttons(self):
         # To active button 0 (first button), 3 (fourth button) and 7 (eighth button)
@@ -220,7 +231,8 @@ if __name__ == '__main__':
     dron_control = MavlinkControl('udpout:127.0.0.1:14550')
     from math import sin
     while True:
-        dron_control.yaw = sin(time_ns())
+        dron_control.yaw = sin(time_ns()/10)
+        dron_control.throttle = sin(time_ns()/10)
         print(f' {sin(time_ns())}:0.2f')
         sleep(1/30)
 
