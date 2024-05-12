@@ -88,9 +88,14 @@ while True:
         object_id_near_center = find_nearest_object_id(objects)
         for object_id, (x, y, w, h) in objects.items():
             print(f'{object_id, (x, y, w, h)}')
+            top_left = (int(x - w / 2), int(y - h / 2))
+            bottom_right = (int(x + w / 2), int(y + h / 2))
             if object_id == object_id_near_center:
                 cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 1)
+
+                cv2.rectangle(frame, top_left, bottom_right, (0, 0, 255), 2)  # Blue rectangle
+
                 cv2.line(frame, (int(INPUT_VIDEO_WIDTH/2), int(INPUT_VIDEO_HEIGHT/2)), (x, y), (0, 0, 255), thickness=2)
                 yaw_pixels = INPUT_VIDEO_WIDTH/2 - x
                 elevation_pixels = INPUT_VIDEO_HEIGHT/2 - y
@@ -100,6 +105,8 @@ while True:
             else:
                 cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
+                cv2.rectangle(frame, top_left, bottom_right, (0, 255, 0), 1)  # Blue rectangle
+
             # cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), -1)
 
     cv2.imshow("Output", frame)
