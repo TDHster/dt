@@ -231,7 +231,7 @@ if __name__ == '__main__':
     dron_control = MavlinkControl('udpout:127.0.0.1:14550')
     from math import sin
     while True:
-        dron_control.yaw = sin(time_ns()/10)
+        # dron_control.yaw = sin(time_ns()/10)
         dron_control.throttle = sin(time_ns()/10)
         print(f' {sin(time_ns())}:0.2f')
         sleep(1/30)

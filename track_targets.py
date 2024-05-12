@@ -32,7 +32,8 @@ cap.set(cv2.CAP_PROP_FPS, INPUT_VIDEO_FPS)
 def filter_by_target_class_id(classIds, bbox, target_class_name='person'):
     if len(classIds):
         # Efficient filtering using boolean indexing
-        keep_indices = classIds == classNames.index(target_class_name) + 1  # Indices where specified class ID (1 is person)
+        # keep_indices = classIds == object_class_names.index(target_class_name) + 1  # Indices where specified class ID (1 is person)
+        keep_indices = classIds == 1  # Indices where specified class ID (1 is person)
         classIds = classIds[keep_indices]
         bbox = bbox[keep_indices]
         return classIds, bbox
@@ -52,31 +53,44 @@ def find_nearest_object_id(objects):
 
     return nearest_object_id
 
+class NeuroNetObjectDetector:
+    def __init__(self):
+        self._load_object_class_names()
+        configPath = 'neuronet/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt'
+        weightsPath = 'neuronet/frozen_inference_graph.pb'
 
-classNames = []
-classFile = 'neuronet/coco.names'
-with open(classFile, 'rt') as f:
-    classNames = f.read().rstrip('\n').split('\n')
+        self.net = cv2.dnn_DetectionModel(weightsPath, configPath)
+        self.net.setInputSize(320, 320)
+        self.net.setInputScale(1.0 / 127.5)
+        self.net.setInputMean((127.5, 127.5, 127.5))
+        self.net.setInputSwapRB(True)
 
-# print(f'{classNames=}')
-configPath = 'neuronet/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt'
-weightsPath = 'neuronet/frozen_inference_graph.pb'
+    def _load_object_class_names(self, classFile='neuronet/coco.names'):
+        self._object_class_names = []
+        with open(classFile, 'rt') as f:
+            self._object_class_names = f.read().rstrip('\n').split('\n')
 
+    @property
+    def object_class_names(self):
+        return self._object_class_names
 
-net = cv2.dnn_DetectionModel(weightsPath, configPath)
-net.setInputSize(320, 320)
-net.setInputScale(1.0 / 127.5)
-net.setInputMean((127.5, 127.5, 127.5))
-net.setInputSwapRB(True)
+    def detect(self, frame, confThreshold=detection_threshold):
+        classIds, confs, bbox = self.net.detect(frame, confThreshold=detection_threshold)
+        return classIds, confs, bbox
 
+object_detector = NeuroNetObjectDetector
 object_tracker = CentroidTracker(max_disappeared_frames=40, distance_threshold=50)
+
+from video_send import VideoStreamSender
+video_stream_sender = VideoStreamSender()
+print(f'Video streamer activated.')
 
 while True:
     success, frame = cap.read()
     # Resize the frame to 320x200 while maintaining aspect ratio
     frame = cv2.resize(frame, (320, 200), interpolation=cv2.INTER_AREA)
 
-    classIds, confs, bbox = net.detect(frame, confThreshold=detection_threshold)
+    classIds, confs, bbox = object_detector.detect(frame, confThreshold=detection_threshold)
     print(f'{classIds=}, {bbox=}')
 
     classIds, bbox = filter_by_target_class_id(classIds, bbox, target_class_name='person')
@@ -109,6 +123,9 @@ while True:
 
             # cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), -1)
 
-    cv2.imshow("Output", frame)
+    # cv2.imshow("Output", frame)
+    video_stream_sender.send_frame(frame)
+    # video_stream_sender.make_time_delay(0.05)  # Adjust as needed
+
     if cv2.waitKey(1) == 27:  # Esc key
         break
