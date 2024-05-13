@@ -29,11 +29,12 @@ cap.set(cv2.CAP_PROP_FRAME_HEIGHT, INPUT_VIDEO_HEIGHT)
 cap.set(cv2.CAP_PROP_FPS, INPUT_VIDEO_FPS)
 
 
-def filter_by_target_class_id(classIds, bbox, target_class_name='person'):
+def filter_by_target_class_id(classIds, bbox, names_list, target_class_name='person'):
     if len(classIds):
         # Efficient filtering using boolean indexing
         # keep_indices = classIds == object_class_names.index(target_class_name) + 1  # Indices where specified class ID (1 is person)
-        keep_indices = classIds == 1  # Indices where specified class ID (1 is person)
+        keep_indices = classIds == names_list.index(target_class_name) + 1  # Indices where specified class ID (1 is person)
+        # keep_indices = classIds == 1  # Indices where specified class ID (1 is person)
         classIds = classIds[keep_indices]
         bbox = bbox[keep_indices]
         return classIds, bbox
@@ -93,7 +94,9 @@ while True:
     classIds, confs, bbox = object_detector.detect(frame, confThreshold=detection_threshold)
     print(f'{classIds=}, {bbox=}')
 
-    classIds, bbox = filter_by_target_class_id(classIds, bbox, target_class_name='person')
+    classIds, bbox = filter_by_target_class_id(classIds, bbox,
+                                               names_list=object_detector.object_class_names,
+                                               target_class_name='person')
 
     objects = object_tracker.update(bbox)
 
