@@ -2,7 +2,7 @@ import cv2
 from object_tracker import CentroidTracker
 import math
 import heapq
-import queue
+from video_send import NetworkConnection, get_key_from_byte
 
 
 video_path = 'test_videos/6387-191695740.mp4'  # Commercial from top
@@ -82,7 +82,6 @@ class NeuroNetObjectDetector:
 object_detector = NeuroNetObjectDetector
 object_tracker = CentroidTracker(max_disappeared_frames=40, distance_threshold=50)
 
-from video_send import NetworkConnection
 netconnection = NetworkConnection()
 print(f'Video streamer activated.')
 
@@ -132,7 +131,7 @@ while True:
     # Check for received keys from the queue
     if not netconnection.key_queue.empty():
         received_key = netconnection.key_queue.get()
-        print(f"Received from Queue: {received_key}")
+        print(f"Received from Queue: {get_key_from_byte(received_key)}")
 
     if cv2.waitKey(1) == 27:  # Esc key
         break

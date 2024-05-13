@@ -66,6 +66,7 @@ if __name__ == '__main__':
             if key_byte & 0xFF == ord('q'):
                 break
             elif key_byte:
+                print(f'Key: {key_byte}')
                 video_stream_receiver.send_byte(key_byte)
 
         except Exception as e:

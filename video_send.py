@@ -5,7 +5,38 @@ import time
 import queue
 import threading
 
+def get_key_from_byte(key_code):
+    # Basic mapping dictionary for common special keys
+    key_map = {
+        27: 'Esc',  # Escape key
+        8: 'Backspace',
+        9: 'Tab',
+        13: 'Enter',
+        16: 'Shift',
+        17: 'Ctrl',
+        18: 'Alt',
+        24: 'Home',
+        27: 'End',
+        33: 'PageUp',
+        34: 'PageDown',
+        35: 'End',
+        36: 'Home',
+        37: 'Left',
+        38: 'Up',
+        39: 'Right',
+        40: 'Down',
+        45: 'Insert',
+        46: 'Delete'
+    }
 
+    # Check if ASCII range
+    if 32 <= key_code <= 127:
+        character = chr(key_code)
+    else:
+        # Handle special keys using the mapping dictionary
+        character = key_map.get(key_code, f'Unknown key ({key_code})')
+
+    return character
 class NetworkConnection:
     def __init__(self, reciever_ip="192.168.0.169", server_port=5000):
         #queue for recieving data
