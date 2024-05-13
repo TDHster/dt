@@ -44,6 +44,37 @@ class MavlinkControl:
         print(f'Connected to {connection_string} {self.master}')
         # print(f'Heartbeat: {self.master.wait_heartbeat()}')
 
+    def arm(self):
+        # Arm
+        # master.arducopter_arm() or:
+        self.master.mav.command_long_send(
+            self.master.target_system,
+            self.master.target_component,
+            self.mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+            0,
+            1, 0, 0, 0, 0, 0, 0)
+
+        # wait until arming confirmed (can manually check with self.master.motors_armed())
+        print("Waiting for the vehicle to arm")
+        self.master.motors_armed_wait()
+        print('Armed!')
+        print(f'Arm check: {self.master.motors_armed()}')
+
+    def disarm(self):
+        # Disarm
+        # master.arducopter_disarm() or:
+        self.master.mav.command_long_send(
+            self.master.target_system,
+            self.master.target_component,
+            mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+            0,
+            0, 0, 0, 0, 0, 0, 0)
+        print('Sent disarm command!')
+
+
+        # wait until disarming confirmed
+        self.master.motors_disarmed_wait()
+
 
     def _make_movement(self, pitch:int, roll:int, throttle:int, yaw:int, buttons=0):
         """
@@ -229,10 +260,16 @@ if __name__ == '__main__':
 
 
     dron_control = MavlinkControl('udpout:127.0.0.1:14550')
+    dron_control.arm()
+
     from math import sin
     while True:
-        # dron_control.yaw = sin(time_ns()/10)
-        dron_control.throttle = sin(time_ns()/10)
-        print(f' {sin(time_ns())}:0.2f')
-        sleep(1/30)
+        try:
+            # dron_control.yaw = sin(time_ns()/10)
+            dron_control.throttle = sin(time_ns()/10)
+            print(f' {sin(time_ns())}:0.2f')
+            sleep(1/30)
+        except KeyboardInterrupt:
+            dron_control.disarm()
+            break
 
