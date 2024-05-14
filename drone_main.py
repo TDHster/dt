@@ -114,7 +114,7 @@ while True:
 
     objects = object_tracker.update(bbox)
 
-    print(f'{objects=}')
+    print(f'objects={objects}')
     if objects:
         object_id_near_center = find_nearest_object_id(objects)
         for object_id, (x, y, w, h) in objects.items():
