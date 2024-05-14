@@ -8,9 +8,9 @@ from video_send import NetworkConnection, get_key_from_byte
 video_path = 'test_videos/6387-191695740.mp4'  # Commercial from top
 # video_path = 'test_videos/188778-883818276_small.mp4' # Two womans
 # video_path = 'test_videos/10831-226624994.mp4'  # Square
-cap = cv2.VideoCapture(video_path)
+# cap = cv2.VideoCapture(video_path)
 # From video device
-# cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(0)
 if not cap.isOpened():
     print("Error opening video stream or file")
     exit()
