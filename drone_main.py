@@ -107,8 +107,8 @@ while True:
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 0, 255), 2)
                 dron_control.throttle_yaw = (elevation_pixels/INPUT_VIDEO_HEIGHT, yaw_pixels/INPUT_VIDEO_WIDTH)
             else:
-                cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
+                # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
+                #             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 255, 0), 1)
 
             # cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), -1)
