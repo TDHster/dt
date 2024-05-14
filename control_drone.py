@@ -26,6 +26,7 @@ def normalize_value(value: float, min_norm=-1000, max_norm=1000):
 class MavlinkControl:
     _pitch, _roll, _yaw, _throttle = 0, 0, 0, 0  # for be defined
     THROTTLE_NEUTRAL = 500
+    THROTTLE_NEUTRAL_FLOAT = 0.5
     def __init__(self, connection_string='udpout:127.0.0.1:14550'):
         """
         udpin:0.0.0.0:14550
@@ -76,7 +77,7 @@ class MavlinkControl:
         self.master.motors_disarmed_wait()
 
 
-    def _make_movement(self, pitch:int, roll:int, throttle:int, yaw:int, buttons=0):
+    def _make_movement(self, pitch:float, roll:float, throttle:float, yaw:float, buttons=0):
         """
         Send a positive x value, negative y, negative z,
         positive rotation and no button.
@@ -99,13 +100,14 @@ class MavlinkControl:
             The lowest bit corresponds to Button 1. (type:uint16_t)
 
         """
+
         print(f'pitch={pitch}, roll={roll}, yaw={yaw}, throttle={throttle}')
         self.master.mav.manual_control_send(
             self.master.target_system,
-            pitch,
-            roll,
-            throttle,
-            yaw,
+            normalize_value(pitch),
+            normalize_value(roll),
+            normalize_value(throttle, min_norm=0, max_norm=1000),
+            normalize_value(yaw),
             buttons)
 
 
@@ -118,7 +120,7 @@ class MavlinkControl:
         :param value: -1,1 float
         :return: None
         """
-        self._make_movement(0,0, self.THROTTLE_NEUTRAL, normalize_value(value))
+        self._make_movement(0,0, self.THROTTLE_NEUTRAL, value)
 
     @property
     def pitch(self):
@@ -130,17 +132,20 @@ class MavlinkControl:
         :param value: -1..1 float
         :return:
         """
-        self._make_movement(normalize_value(value), 0, self.THROTTLE_NEUTRAL, 0)
+        self._pitch = value
+        self._make_movement(self._pitch, self._roll, self._throttle, self._yaw)
+
+    def to_target(self):
+        self._make_movement(1,self._roll, self._throttle, self._yaw)
 
     @property
-    def pitch_yaw(self):
-        return self._pitch, self._yaw
+    def throttle_yaw(self):
+        return self._throttle, self._yaw
 
-
-    @pitch_yaw.setter
-    def pitch_yaw(self, pitch_and_yaw):
-        _pitch, _yaw = pitch_and_yaw
-        self._make_movement(normalize_value(_pitch), 0, self.THROTTLE_NEUTRAL, normalize_value(self._yaw))
+    @throttle_yaw.setter
+    def throttle_yaw(self, throttle_and_yaw):
+        _throttle, _yaw = throttle_and_yaw
+        self._make_movement(self._pitch, self._roll, self._throttle, self._yaw)
 
     @property
     def throttle(self):
@@ -152,7 +157,8 @@ class MavlinkControl:
         :param value: -1..1 float
         :return:
         """
-        self._make_movement(0, 0, normalize_value(value, min_norm=0, max_norm=1000), 0)
+        self._throttle = value
+        self._make_movement(self._pitch, self._roll, self._throttle, self._yaw)
 
     def ___control_with_buttons(self):
         # To active button 0 (first button), 3 (fourth button) and 7 (eighth button)

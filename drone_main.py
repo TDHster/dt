@@ -3,6 +3,11 @@ from object_tracker import CentroidTracker
 import math
 import heapq
 from video_send import NetworkConnection, get_key_from_byte
+from control_drone import MavlinkControl
+
+
+dron_control = MavlinkControl('udpout:127.0.0.1:14550')
+dron_control.arm()
 
 
 video_path = 'test_videos/6387-191695740.mp4'  # Commercial from top
@@ -125,18 +130,22 @@ while True:
                 cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 1)
 
-                cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 0, 255), 2)  # Blue rectangle
-
-                cv2.line(frame, (int(INPUT_VIDEO_WIDTH/2), int(INPUT_VIDEO_HEIGHT/2)), (x, y), (0, 0, 255), thickness=2)
+                cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 255, 255), 2)
+            elif object_id == target_object_id:
+                cv2.line(frame, (int(INPUT_VIDEO_WIDTH / 2), int(INPUT_VIDEO_HEIGHT / 2)),
+                         (x, y), (0, 0, 255), thickness=2)
                 yaw_pixels = INPUT_VIDEO_WIDTH/2 - x
                 elevation_pixels = INPUT_VIDEO_HEIGHT/2 - y
                 cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
+                cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 0, 255), 2)
+
+                dron_control.throttle_yaw =(elevation_pixels/INPUT_VIDEO_HEIGHT, yaw_pixels/INPUT_VIDEO_WIDTH)
 
             else:
                 cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
-                cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 255, 0), 1)  # Blue rectangle
+                cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 255, 0), 1)
 
             # cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), -1)
 
@@ -156,6 +165,12 @@ while True:
             received_key = netconnection.key_queue.get(timeout=0.1)
             command = key_to_command.get(received_key, "Unknown command")
             print(f"Received from Queue: {received_key}, '{command}'")
+            if command == 'Select target':
+                target_object_id = object_id_near_center
+                print(f'Select target: {target_object_id}')
+            elif command == 'To target':
+                dron_control.to_target()
+
         except netconnection.key_queue.Empty:
             pass  # No data in queue, continue the loop
 
