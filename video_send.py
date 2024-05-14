@@ -68,10 +68,10 @@ class NetworkConnection:
         # Send the encoded frame to the receiver
         self.sock.sendall(frame_encoded)
 
-    def receive_data(self, sock, key_queue):
+    def receive_data(self, sock, key_queue, buffer_size=1024):
         # Function to receive data (non-blocking)
         try:
-            data = sock.recv(1024).decode()
+            data = sock.recv(buffer_size).decode()
             if data:
                 self.key_queue.put(data)
                 print(f"Get from server: {data}")

@@ -131,7 +131,7 @@ while True:
     # Check for received keys from the queue
     if not netconnection.key_queue.empty():
         received_key = netconnection.key_queue.get()
-        print(f"Received from Queue: {get_key_from_byte(received_key)}")
+        print(f"Received key from Queue: {get_key_from_byte(received_key)}")
 
     if cv2.waitKey(1) == 27:  # Esc key
         break
