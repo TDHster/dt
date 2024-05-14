@@ -4,7 +4,7 @@ import numpy as np
 
 
 class VideoStreamReceiver:
-    def __init__(self, listen_ip="0.0.0.0", listen_port='5000'):
+    def __init__(self, listen_ip="0.0.0.0", listen_port=5000):
         # Define socket parameters
         # "0.0.0.0"   Listen on all interfaces
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
             # Check for 'q' key to quit
             key_byte = cv2.waitKey(1)
-            if key_byte & 0xFF == ord('q'):
+            if key_byte & 0xFF == ord('q'): #27 Esc
                 break
             elif key_byte:
                 print(f'Key: {key_byte}')

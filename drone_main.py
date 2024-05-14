@@ -15,6 +15,18 @@ if not cap.isOpened():
     print("Error opening video stream or file")
     exit()
 
+# Dictionary mapping keys to commands
+key_to_command = {
+    'w': "Move forward",
+    's': "Move backward",
+    'a': "Move left",
+    'd': "Move right",
+    'q': "Yaw left",
+    'e': "Yaw right",
+    ' ': "Select target",
+    '\r': "Attack"  # Use '\r' for the enter key
+}
+
 # detection_threshold = 0.45  # Threshold to detect object
 detection_threshold = 0.3  # Threshold to detect object
 
@@ -85,6 +97,9 @@ object_tracker = CentroidTracker(max_disappeared_frames=40, distance_threshold=5
 netconnection = NetworkConnection()
 print(f'Video streamer activated.')
 
+target_object_id = None
+object_id_near_center = None
+
 while True:
     success, frame = cap.read()
     # Resize the frame to 320x200 while maintaining aspect ratio
@@ -128,10 +143,21 @@ while True:
     # cv2.imshow("Output", frame)
     netconnection.send_frame(frame)
     # video_stream_sender.make_time_delay(0.05)  # Adjust as needed
+    # try:
+    #     received_key = netconnection.key_queue.get(timeout=0.1)
+    #     command = key_to_command.get(received_key, "Unknown command")
+    #     print(f"Received from Queue: {received_key}, '{command}'")
+    # except netconnection.key_queue.Empty:
+    #     pass  # No data in queue, continue the loop
+
     # Check for received keys from the queue
     if not netconnection.key_queue.empty():
-        received_key = netconnection.key_queue.get()
-        print(f"Received key from Queue: {get_key_from_byte(received_key)}")
+        try:
+            received_key = netconnection.key_queue.get(timeout=0.1)
+            command = key_to_command.get(received_key, "Unknown command")
+            print(f"Received from Queue: {received_key}, '{command}'")
+        except netconnection.key_queue.Empty:
+            pass  # No data in queue, continue the loop
 
     if cv2.waitKey(1) == 27:  # Esc key
         break
