@@ -106,7 +106,7 @@ while True:
     frame = cv2.resize(frame, (320, 200), interpolation=cv2.INTER_AREA)
 
     classIds, confs, bbox = object_detector.detect(frame, confThreshold=detection_threshold)
-    print(f'{classIds=}, {bbox=}')
+    print(f'classIds={classIds}, bbox={bbox}')
 
     classIds, bbox = filter_by_target_class_id(classIds, bbox,
                                                names_list=object_detector.object_class_names,
