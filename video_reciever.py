@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
             # Check for 'q' key to quit
             key_byte = cv2.waitKey(1)
-            if key_byte & 0xFF == ord('q'): #27 Esc
+            if key_byte & 0xFF == ord('q'):  # 27 Esc
                 break
             elif key_byte:
                 print(f'Key: {key_byte}')

@@ -37,17 +37,19 @@ def get_key_from_byte(key_code):
         character = key_map.get(key_code, f'Unknown key ({key_code})')
 
     return character
+
+
 class NetworkConnection:
-    def __init__(self, reciever_ip="192.168.0.169", server_port=5000):
-        #queue for recieving data
+    def __init__(self, receiver_ip="192.168.0.169", server_port=5000):
+        # queue for receiving data
         self.key_queue = queue.Queue()
 
         # Define socket parameters (replace with receiver's IP address)
-        self.server_ip = reciever_ip  # Replace with receiver's IP address
+        self.server_ip = receiver_ip  # Replace with receiver's IP address
         self.server_port = server_port
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((reciever_ip, server_port))  #TODO add try in loop
+        self.sock.connect((receiver_ip, server_port))  # TODO add try in loop
 
         # Create threads for receiving data and sending data
         self.receive_thread = threading.Thread(target=self.receive_data, args=(self.sock, self.key_queue,))
@@ -56,17 +58,17 @@ class NetworkConnection:
         self.receive_thread.start()
         # self.send_thread.start()
 
-    def send_data(self, data, sock):
+    def send_data(self, data):
         # Encode data to bytes
         data_bytes = str(data).encode()
-        sock.sendall(data_bytes)
+        self.sock.sendall(data_bytes)
 
     def send_frame(self, open_cv_frame):
         # frame = cv2.resize(open_cv_frame, (320, 240))  # Reduce resolution
         # Encode the frame using JPEG compression (adjust quality for balance)
         frame_encoded = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 80])[1]
         # Send the encoded frame to the receiver
-        self.sock.sendall(frame_encoded)
+        self.send_data(frame_encoded)
 
     def receive_data(self, sock, key_queue, buffer_size=1024):
         # Function to receive data (non-blocking)
@@ -78,7 +80,6 @@ class NetworkConnection:
         except BlockingIOError as e:
             print(f'Error from network receive data: {e}')  # No data received (expected behavior for non-blocking)
 
-
     def receive_data_blocking(self, buffer_size=1024):
         # Receive data from the server
         received_data = self.sock.recv(buffer_size)  # Adjust buffer size as needed
@@ -87,11 +88,7 @@ class NetworkConnection:
         if not received_data:
             print("Empty data. Server disconnected.")
             return
-
-        # Decode received data
         data_decoded = received_data.decode()
-
-        # Print received data
         print(f"Server received: {data_decoded}")
         return data_decoded
 
@@ -110,19 +107,21 @@ if __name__ == '__main__':
     camera_index = 0
     cap = cv2.VideoCapture(camera_index)
 
-    netconnection = NetworkConnection(reciever_ip="192.168.0.169", server_port=5000)
+    netconnection = NetworkConnection(receiver_ip="192.168.0.169", server_port=5000)
 
     while True:
-        # Capture frame-by-frame
-        ret, frame = cap.read()
-        resized_frame = cv2.resize(frame, (320, 240))  # Reduce resolution
-        netconnection.send_frame(resized_frame)
-        netconnection.make_time_delay(0.05)  # Adjust as needed
+        try:
+            ret, frame = cap.read()
+            resized_frame = cv2.resize(frame, (320, 240))  # Reduce resolution
+            netconnection.send_frame(resized_frame)
+            netconnection.make_time_delay(0.05)  # Adjust as needed
 
-        # Check for received keys from the queue
-        if not netconnection.key_queue.empty():
-            received_key =  netconnection.key_queue.get()
-            print(f"Received from Queue: {received_key}")
+            # Check for received keys from the queue
+            if not netconnection.key_queue.empty():
+                received_key =  netconnection.key_queue.get()
+                print(f"Received from Queue: {received_key}")
+        except KeyboardInterrupt:
+            break
 
-    netconnection.close()
     cap.release()
+    netconnection.close()

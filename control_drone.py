@@ -23,13 +23,17 @@ def normalize_value(value: float, min_norm=-1000, max_norm=1000):
     # Scale to desired range
     return int(min_norm + normalized_value * (max_norm - min_norm))
 
+
 class MavlinkControl:
     _pitch, _roll, _yaw, _throttle = 0, 0, 0, 0  # for be defined
+    _buttons = 0
     THROTTLE_NEUTRAL = 500
     THROTTLE_NEUTRAL_FLOAT = 0.5
+    MAXIMUM_PITCH = 1
+
     def __init__(self, connection_string='udpout:127.0.0.1:14550'):
         """
-        udpin:0.0.0.0:14550
+        udpin:0.0.0.0:14550 or udpout:127.0.0.1:14550
         Linux computer connected to the vehicle via USB	/dev/ttyUSB0
         Linux computer connected to the vehicle via serial port (RaspberryPi example)	/dev/ttyAMA0 (also set baud=57600)
         MAVLink API listening for SITL connection via UDP	udpin:localhost:14540 (or udp:localhost:14540, 127.0.0.1:14540,etc.)
@@ -48,36 +52,39 @@ class MavlinkControl:
     def arm(self):
         # Arm
         # master.arducopter_arm() or:
-        self.master.mav.command_long_send(
-            self.master.target_system,
-            self.master.target_component,
-            mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-            0,
-            1, 0, 0, 0, 0, 0, 0)
+        try:
+            self.master.mav.command_long_send(
+                self.master.target_system,
+                self.master.target_component,
+                mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+                0, 1, 0, 0, 0, 0, 0, 0
+            )
 
-        # wait until arming confirmed (can manually check with self.master.motors_armed())
-        print("Waiting for the vehicle to arm")
-        self.master.motors_armed_wait()
-        print('Armed!')
-        print(f'Arm check: {self.master.motors_armed()}')
+            # wait until arming confirmed (can manually check with self.master.motors_armed())
+            print("Waiting for the vehicle to arm")
+            self.master.motors_armed_wait()
+            print('Armed!')
+            print(f'Arm check: {self.master.motors_armed()}')
+        except Exception as e:
+            print(f'Problem with arm: {e}')
 
     def disarm(self):
         # Disarm
         # master.arducopter_disarm() or:
-        self.master.mav.command_long_send(
-            self.master.target_system,
-            self.master.target_component,
-            mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-            0,
-            0, 0, 0, 0, 0, 0, 0)
-        print('Sent disarm command!')
+        try:
+            self.master.mav.command_long_send(
+                self.master.target_system,
+                self.master.target_component,
+                mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+                0,
+                0, 0, 0, 0, 0, 0, 0)
+            print('Sent disarm command!')
+            # wait until disarming confirmed
+            print(f'Disarm wait: {self.master.motors_disarmed_wait()}')
+        except Exception as e:
+            print(f'Problem with disarm: {e}')
 
-
-        # wait until disarming confirmed
-        self.master.motors_disarmed_wait()
-
-
-    def _make_movement(self, pitch:float, roll:float, throttle:float, yaw:float, buttons=0):
+    def _make_movement(self):
         """
         Send a positive x value, negative y, negative z,
         positive rotation and no button.
@@ -101,42 +108,49 @@ class MavlinkControl:
 
         """
 
-        print(f'pitch={pitch}, roll={roll}, yaw={yaw}, throttle={throttle}')
+        print(f'Send command: pitch={self._pitch}, roll={self._roll}, yaw={self._yaw}, throttle={self._throttle}')
         self.master.mav.manual_control_send(
             self.master.target_system,
-            normalize_value(pitch),
-            normalize_value(roll),
-            normalize_value(throttle, min_norm=0, max_norm=1000),
-            normalize_value(yaw),
-            buttons)
-
+            normalize_value(self._fpitch),
+            normalize_value(self._roll),
+            normalize_value(self._throttle, min_norm=0, max_norm=1000),
+            normalize_value(self._yaw),
+            self._buttons
+        )
 
     @property
     def yaw(self):
         return self._yaw
+
     @yaw.setter
-    def yaw(self, value:float):
+    def yaw(self, value: float):
         """
         :param value: -1,1 float
         :return: None
         """
-        self._make_movement(0,0, self.THROTTLE_NEUTRAL, value)
+        self._yaw = value
+        self._make_movement()
+        self._yaw = 0
+
 
     @property
     def pitch(self):
         return self._pitch
 
     @pitch.setter
-    def pitch(self, value:float):
+    def pitch(self, value: float):
         """
         :param value: -1..1 float
         :return:
         """
         self._pitch = value
-        self._make_movement(self._pitch, self._roll, self._throttle, self._yaw)
+        self._make_movement()
+        self._pitch = 0
+
 
     def to_target(self):
-        self._make_movement(1,self._roll, self._throttle, self._yaw)
+        self._pitch = self.MAXIMUM_PITCH
+        self._make_movement()
 
     @property
     def throttle_yaw(self):
@@ -145,20 +159,22 @@ class MavlinkControl:
     @throttle_yaw.setter
     def throttle_yaw(self, throttle_and_yaw):
         _throttle, _yaw = throttle_and_yaw
-        self._make_movement(self._pitch, self._roll, self._throttle, self._yaw)
+        self._make_movement()
+        _throttle, _yaw = self.THROTTLE_NEUTRAL_FLOAT, 0
 
     @property
     def throttle(self):
         return self._throttle
 
     @throttle.setter
-    def throttle(self, value:float):
+    def throttle(self, value: float):
         """
         :param value: -1..1 float
         :return:
         """
         self._throttle = value
-        self._make_movement(self._pitch, self._roll, self._throttle, self._yaw)
+        self._make_movement()
+        self._throttle = 0
 
     def ___control_with_buttons(self):
         # To active button 0 (first button), 3 (fourth button) and 7 (eighth button)
