@@ -94,7 +94,7 @@ while True:
     frame = cv2.resize(frame, (320, 200), interpolation=cv2.INTER_AREA)
     if not success:  # Check success flag
         continue
-    print(frame)
+    # print(frame)
     classIds, confs, bbox = net.detect(frame, confThreshold=detection_threshold)
     print(f'classIds={classIds}, bbox={bbox}')
 
