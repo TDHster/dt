@@ -78,6 +78,7 @@ while True:
     frame = cv2.resize(frame, (320, 200), interpolation=cv2.INTER_AREA)
     if not success:  # Check success flag
         continue
+    print(frame)
     classIds, confs, bbox = object_detector.detect_objects(frame, confThreshold=detection_threshold)
     print(f'classIds={classIds}, bbox={bbox}')
 
