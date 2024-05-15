@@ -22,7 +22,7 @@ class NeuroNetObjectDetector:
     def object_class_names(self):
         return self._object_class_names
 
-    def detect(self, frame, confThreshold=0.4):
+    def detect_objects(self, frame, confThreshold=0.4):
         classIds, confs, bbox = self.net.detect(frame, confThreshold=confThreshold)
         return classIds, confs, bbox
 
