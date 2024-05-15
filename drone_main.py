@@ -9,7 +9,7 @@ from object_detector import filter_by_target_class_id
 
 
 dron_control = MavlinkControl('udpout:127.0.0.1:14550')
-dron_control.arm()
+# dron_control.arm()
 
 # detection_threshold = 0.45  # Threshold to detect object
 detection_threshold = 0.3  # Threshold to detect object
