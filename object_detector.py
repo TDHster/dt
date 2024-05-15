@@ -18,13 +18,13 @@ class NeuroNetObjectDetector:
         with open(classFile, 'rt') as f:
             self._object_class_names = f.read().rstrip('\n').split('\n')
 
-    @property
-    def object_class_names(self):
-        return self._object_class_names
-
-    def detect_objects(self, frame=None, confThreshold=0.4):
+    def detect_objects(self, frame, confThreshold=0.3):
         classIds, confs, bbox = self.net.detect(frame, confThreshold=confThreshold)
         return classIds, confs, bbox
+
+    @property
+    def object_class_names(self):
+        return self._object_class_name
 
 
 def filter_by_target_class_id(classIds, bbox, names_list, target_class_name='person'):

@@ -4,7 +4,7 @@ import math
 import heapq
 from video_send import NetworkConnection, get_key_from_byte
 from control_drone import MavlinkControl
-from object_detector import NeuroNetObjectDetector as ObjectDetector
+from object_detector import NeuroNetObjectDetector
 from object_detector import filter_by_target_class_id
 
 
@@ -63,7 +63,7 @@ def find_nearest_object_id(objects):
     return nearest_object_id
 
 
-object_detector = ObjectDetector
+object_detector = NeuroNetObjectDetector
 object_tracker = CentroidTracker(max_disappeared_frames=50, distance_threshold=50)
 
 netconnection = NetworkConnection()
@@ -78,7 +78,7 @@ while True:
     frame = cv2.resize(frame, (320, 200), interpolation=cv2.INTER_AREA)
     if not success:  # Check success flag
         continue
-    classIds, confs, bbox = object_detector.detect_objects(frame=frame, confThreshold=detection_threshold)
+    classIds, confs, bbox = object_detector.detect_objects(frame, confThreshold=detection_threshold)
     print(f'classIds={classIds}, bbox={bbox}')
 
     classIds, bbox = filter_by_target_class_id(classIds, bbox,
