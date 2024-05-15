@@ -63,7 +63,21 @@ def find_nearest_object_id(objects):
     return nearest_object_id
 
 
-object_detector = NeuroNetObjectDetector
+# object_detector = NeuroNetObjectDetector
+classFile='neuronet/coco.names'
+with open(classFile, 'rt') as f:
+    object_class_names = f.read().rstrip('\n').split('\n')
+
+configPath = 'neuronet/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt'
+weightsPath = 'neuronet/frozen_inference_graph.pb'
+
+net = cv2.dnn_DetectionModel(weightsPath, configPath)
+net.setInputSize(320, 320)
+net.setInputScale(1.0 / 127.5)
+net.setInputMean((127.5, 127.5, 127.5))
+net.setInputSwapRB(True)
+# enf of object_detector = NeuroNetObjectDetector
+
 object_tracker = CentroidTracker(max_disappeared_frames=50, distance_threshold=50)
 
 netconnection = NetworkConnection()
@@ -79,11 +93,11 @@ while True:
     if not success:  # Check success flag
         continue
     print(frame)
-    classIds, confs, bbox = object_detector.detect_objects(frame, frame, confThreshold=detection_threshold)
+    classIds, confs, bbox = net.detect_objects(frame, confThreshold=detection_threshold)
     print(f'classIds={classIds}, bbox={bbox}')
 
     classIds, bbox = filter_by_target_class_id(classIds, bbox,
-                                               names_list=object_detector.object_class_names,
+                                               names_list=object_class_names,
                                                target_class_name='person')
 
     objects = object_tracker.update(bbox)
