@@ -123,20 +123,21 @@ while True:
     # except netconnection.key_queue.Empty:
     #     pass  # No data in queue, continue the loop
 
-    # Check for received keys from the queue
-    if not netconnection.key_queue.empty():
-        try:
-            received_key = netconnection.key_queue.get(timeout=0.1)
-            command = key_to_command.get(received_key, "Unknown command")
-            print(f"Received from Queue: {received_key}, '{command}'")
-            if command == 'Select target':
-                target_object_id = object_id_near_center
-                print(f'Select target: {target_object_id}')
-            elif command == 'To target':
-                dron_control.to_target()
 
-        except netconnection.key_queue.Empty:
-            pass  # No data in queue, continue the loop
+    # # Check for received keys from the queue
+    # if not netconnection.key_queue.empty():
+    #     try:
+    #         received_key = netconnection.key_queue.get(timeout=0.1)
+    #         command = key_to_command.get(received_key, "Unknown command")
+    #         print(f"Received from Queue: {received_key}, '{command}'")
+    #         if command == 'Select target':
+    #             target_object_id = object_id_near_center
+    #             print(f'Select target: {target_object_id}')
+    #         elif command == 'To target':
+    #             dron_control.to_target()
+    #
+    #     except netconnection.key_queue.Empty:
+    #         pass  # No data in queue, continue the loop
 
     if cv2.waitKey(1) == 27:  # Esc key
         break
