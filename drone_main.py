@@ -76,7 +76,7 @@ while True:
     success, frame = cap.read()
     # Resize the frame to 320x200 while maintaining aspect ratio
     frame = cv2.resize(frame, (320, 200), interpolation=cv2.INTER_AREA)
-    if not frame:
+    if not success:  # Check success flag
         continue
     classIds, confs, bbox = object_detector.detect_objects(frame, confThreshold=detection_threshold)
     print(f'classIds={classIds}, bbox={bbox}')
