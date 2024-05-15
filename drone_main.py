@@ -7,6 +7,8 @@ from control_drone import MavlinkControl
 from object_detector import NeuroNetObjectDetector
 from object_detector import filter_by_target_class_id
 
+print('Starting.')
+print(f"OpenCV version: {cv2.__version__}")
 
 dron_control = MavlinkControl('udpout:127.0.0.1:14550')
 # dron_control.arm()
