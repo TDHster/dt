@@ -95,7 +95,7 @@ while True:
     if not success:  # Check success flag
         continue
     print(frame)
-    classIds, confs, bbox = net.detect_objects(frame, confThreshold=detection_threshold)
+    classIds, confs, bbox = net.detect(frame, confThreshold=detection_threshold)
     print(f'classIds={classIds}, bbox={bbox}')
 
     classIds, bbox = filter_by_target_class_id(classIds, bbox,
