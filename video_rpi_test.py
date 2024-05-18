@@ -1,30 +1,26 @@
 import cv2
 
-# cap = cv2.VideoCapture(0)
-cap = cv2.VideoCapture(0, cv2.CAP_V4L2)  # Add cv2.CAP_V4L2 for user-level access (optional)
+# Open camera using device index 0 and explicitly request user-level access
+cap = cv2.VideoCapture(0, cv2.CAP_ANY)  # Try cv2.CAP_ANY for auto-detection
 
 if not cap.isOpened():
     print("Ошибка при открытии камеры!")
     exit()
 
 while True:
+    # Capture frame
     ret, frame = cap.read()
 
     if not ret:
         print("Не удалось получить кадр!")
-        print(f'Код ошибки: {int(ret)}')
         break
 
-    # Отображение разрешения кадра
-    height, width = frame.shape[:2]
-    print(f"Разрешение кадра: {width}x{height}")
+    # Process or display the frame (add your code here)
 
-    # Отображение кадра (необязательно)
-    # cv2.imshow('Камера', frame)
-
-    # Обработка нажатия клавиши 'q' для выхода
+    # Exit on 'q' press
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
+# Release resources
 cap.release()
 cv2.destroyAllWindows()
