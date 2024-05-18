@@ -11,7 +11,7 @@ while True:
 
     if not ret:
         print("Не удалось получить кадр!")
-        print(f'Код ошибки: {ret}')
+        print(f'Код ошибки: {int(ret)}')
         break
 
     # Отображение разрешения кадра
@@ -19,7 +19,7 @@ while True:
     print(f"Разрешение кадра: {width}x{height}")
 
     # Отображение кадра (необязательно)
-    cv2.imshow('Камера', frame)
+    # cv2.imshow('Камера', frame)
 
     # Обработка нажатия клавиши 'q' для выхода
     if cv2.waitKey(1) & 0xFF == ord('q'):
