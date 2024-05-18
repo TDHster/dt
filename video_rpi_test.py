@@ -1,6 +1,7 @@
 import cv2
 
-cap = cv2.VideoCapture(0)
+# cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(0, cv2.CAP_V4L2)  # Add cv2.CAP_V4L2 for user-level access (optional)
 
 if not cap.isOpened():
     print("Ошибка при открытии камеры!")
