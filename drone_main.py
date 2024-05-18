@@ -83,7 +83,7 @@ net.setInputSwapRB(True)
 object_tracker = CentroidTracker(max_disappeared_frames=50, distance_threshold=50)
 
 netconnection = NetworkConnection()
-print(f'Network connection for video transfer started started.')
+print(f'Network connection for video transfer started.')
 
 target_object_id = None
 object_id_near_center = None
@@ -95,7 +95,7 @@ while True:
         continue
     frame = cv2.resize(frame, (320, 200), interpolation=cv2.INTER_AREA)
 
-    print(frame)
+    print(frame.shape)
 
     classIds, confs, bbox = net.detect(frame, confThreshold=detection_threshold)
     print(f'classIds={classIds}, bbox={bbox}')
