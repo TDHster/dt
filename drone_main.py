@@ -30,6 +30,7 @@ cap = cv2.VideoCapture(0)
 if not cap.isOpened():
     print("Error opening video stream or file")
     exit()
+print('Video device opened.')
 
 # Dictionary mapping keys to commands
 key_to_command = {
@@ -83,7 +84,7 @@ net.setInputSwapRB(True)
 object_tracker = CentroidTracker(max_disappeared_frames=50, distance_threshold=50)
 
 netconnection = NetworkConnection()
-print(f'Video streamer activated.')
+print(f'Video net streamer started.')
 
 target_object_id = None
 object_id_near_center = None
@@ -91,9 +92,10 @@ object_id_near_center = None
 while True:
     success, frame = cap.read()
     # Resize the frame to 320x200 while maintaining aspect ratio
-    frame = cv2.resize(frame, (320, 200), interpolation=cv2.INTER_AREA)
     if not success:  # Check success flag
         continue
+    frame = cv2.resize(frame, (320, 200), interpolation=cv2.INTER_AREA)
+
     # print(frame)
     classIds, confs, bbox = net.detect(frame, confThreshold=detection_threshold)
     print(f'classIds={classIds}, bbox={bbox}')
