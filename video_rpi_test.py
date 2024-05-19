@@ -3,8 +3,8 @@ import cv2
 
 # Open camera using device index 0 and explicitly request user-level access
 cap = cv2.VideoCapture(0, cv2.CAP_ANY)  # Try cv2.CAP_ANY for auto-detection
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1640)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1232)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 3280)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 2464)
 
 
 if not cap.isOpened():
