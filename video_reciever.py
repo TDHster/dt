@@ -29,6 +29,7 @@ class VideoStreamReceiver:
         # key_bytes = str(key).encode()
         # Send key press data
         # self.sock.sendall(key_bytes)
+
         self.sock.sendall(byte)
         return True  # Indicate successful key press sending
 
@@ -44,8 +45,10 @@ class VideoStreamReceiver:
             print(f"Invalid key code: {key_code}")
             return
 
-        # Send the key code as bytes directly
-        self.sock.sendall(bytes([key_code]))  # Convert key code to single byte
+        try:
+            self.client_socket.sendall(bytes([key_code])) # Convert key code to single byte
+        except ConnectionError:
+            print("Connection error while sending data!")
 
     def close(self):
         self.client_socket.close()
@@ -53,8 +56,8 @@ class VideoStreamReceiver:
 
 
 if __name__ == '__main__':
+    print(f'Waiting for connection.')
     video_stream_receiver = VideoStreamReceiver()
-
     while True:
         # Receive encoded frame data
         frame_encoded = video_stream_receiver.receive_data()

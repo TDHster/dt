@@ -1,3 +1,5 @@
+#!./venv/bin/python3 drone_main.py
+
 import cv2
 from object_tracker import CentroidTracker
 import math
