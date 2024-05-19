@@ -66,7 +66,7 @@ class NetworkConnection:
     def send_frame(self, open_cv_frame):
         # frame = cv2.resize(open_cv_frame, (320, 240))  # Reduce resolution
         # Encode the frame using JPEG compression (adjust quality for balance)
-        frame_encoded = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 80])[1]
+        frame_encoded = cv2.imencode('.jpg', open_cv_frame, [cv2.IMWRITE_JPEG_QUALITY, 80])[1]
         # Send the encoded frame to the receiver
         self.send_data(frame_encoded)
 
