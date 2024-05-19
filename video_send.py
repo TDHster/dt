@@ -58,17 +58,17 @@ class NetworkConnection:
         self.receive_thread.start()
         # self.send_thread.start()
 
-    def send_data(self, data):
+    def _send_data(self, data):
         # Encode data to bytes
-        data_bytes = str(data).encode()
-        self.sock.sendall(data_bytes)
+        # data_encoded = str(data).encode()
+        self.sock.sendall(data)
 
     def send_frame(self, open_cv_frame):
         # frame = cv2.resize(open_cv_frame, (320, 240))  # Reduce resolution
         # Encode the frame using JPEG compression (adjust quality for balance)
         frame_encoded = cv2.imencode('.jpg', open_cv_frame, [cv2.IMWRITE_JPEG_QUALITY, 80])[1]
         # Send the encoded frame to the receiver
-        self.send_data(frame_encoded)
+        self._send_data(frame_encoded)
 
     def receive_data(self, sock, key_queue, buffer_size=1024):
         # Function to receive data (non-blocking)
