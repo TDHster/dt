@@ -1,7 +1,7 @@
 import cv2
 
 
-def test_camera_via_opencv():
+def test_camera_opencv():
     # Open camera using device index 0 and explicitly request user-level access
     cap = cv2.VideoCapture(0, cv2.CAP_ANY)  # Try cv2.CAP_ANY for auto-detection
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 3280)
@@ -51,4 +51,4 @@ def test_camera_picamera():
 
 
 if __name__ == '__main__':
-    test_camera_picamera()
+    test_camera_opencv()
