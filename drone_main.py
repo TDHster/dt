@@ -10,20 +10,21 @@ from object_detector import filter_by_target_class_id
 print('Starting.')
 print(f"OpenCV version: {cv2.__version__}")
 
+print(f'Starting connection to mavlink.')
 dron_control = MavlinkControl('udpout:127.0.0.1:14550')
 # dron_control.arm()
 
 # detection_threshold = 0.45  # Threshold to detect object
 detection_threshold = 0.3  # Threshold to detect object
 
-# INPUT_VIDEO_WIDTH = 320
-# INPUT_VIDEO_HEIGHT = 200
-INPUT_VIDEO_WIDTH = 640
-INPUT_VIDEO_HEIGHT = 480
+INPUT_VIDEO_WIDTH = 320
+INPUT_VIDEO_HEIGHT = 200
+# INPUT_VIDEO_WIDTH = 640
+# INPUT_VIDEO_HEIGHT = 480
 INPUT_VIDEO_FPS = 5
 
 
-video_path = 'test_videos/6387-191695740.mp4'  # Commercial from top
+# video_path = 'test_videos/6387-191695740.mp4'  # Commercial from top
 # video_path = 'test_videos/188778-883818276_small.mp4' # Two womans
 # video_path = 'test_videos/10831-226624994.mp4'  # Square
 # cap = cv2.VideoCapture(video_path)
@@ -34,7 +35,7 @@ cap = cv2.VideoCapture(opencv_device)
 if not cap.isOpened():
     print("Error opening video stream or file")
     exit()
-print('Video device opened.')
+print(f'Video device {opencv_device} opened.')
 
 # Dictionary mapping keys to commands
 key_to_command = {
@@ -83,23 +84,27 @@ net.setInputScale(1.0 / 127.5)
 net.setInputMean((127.5, 127.5, 127.5))
 net.setInputSwapRB(True)
 # enf of object_detector = NeuroNetObjectDetector
+print(f'Object NN detector configured.')
 
 object_tracker = CentroidTracker(max_disappeared_frames=50, distance_threshold=50)
 
-netconnection = NetworkConnection()
-print(f'Network connection for video transfer started.')
+receiver_ip = "192.168.0.169"
+server_port = 5000
+netconnection = NetworkConnection(receiver_ip="192.168.0.169", server_port=5000)
+print(f'Network connection started with {receiver_ip}{server_port}.')
 
 target_object_id = None
 object_id_near_center = None
 
+print('Starting program main loop.')
 while True:
     success, frame = cap.read()
     # Resize the frame to 320x200 while maintaining aspect ratio
     if not success:  # Check success flag
         continue
-    frame = cv2.resize(frame, (320, 200), interpolation=cv2.INTER_AREA)
+    frame = cv2.resize(frame, (INPUT_VIDEO_WIDTH, INPUT_VIDEO_HEIGHT), interpolation=cv2.INTER_AREA)
 
-    print(frame.shape)
+    print(f'{frame.shape=}')
 
     classIds, confs, bbox = net.detect(frame, confThreshold=detection_threshold)
     print(f'classIds={classIds}, bbox={bbox}')
@@ -148,20 +153,20 @@ while True:
     #     pass  # No data in queue, continue the loop
 
 
-    # # Check for received keys from the queue
-    # if not netconnection.key_queue.empty():
-    #     try:
-    #         received_key = netconnection.key_queue.get(timeout=0.1)
-    #         command = key_to_command.get(received_key, "Unknown command")
-    #         print(f"Received from Queue: {received_key}, '{command}'")
-    #         if command == 'Select target':
-    #             target_object_id = object_id_near_center
-    #             print(f'Select target: {target_object_id}')
-    #         elif command == 'To target':
-    #             dron_control.to_target()
-    #
-    #     except netconnection.key_queue.Empty:
-    #         pass  # No data in queue, continue the loop
+    # Check for received keys from the queue
+    if not netconnection.key_queue.empty():
+        try:
+            received_key = netconnection.key_queue.get(timeout=0.1)
+            command = key_to_command.get(received_key, "Unknown command")
+            print(f"Received from Queue: {received_key}, '{command}'")
+            if command == 'Select target':
+                target_object_id = object_id_near_center
+                print(f'Select target: {target_object_id}')
+            elif command == 'To target':
+                dron_control.to_target()
+
+        except netconnection.key_queue.Empty:
+            pass  # No data in queue, continue the loop
 
     if cv2.waitKey(1) == 27:  # Esc key
         break

@@ -32,6 +32,21 @@ class VideoStreamReceiver:
         self.sock.sendall(byte)
         return True  # Indicate successful key press sending
 
+    def send_key_code(self, key_code):
+        """Sends a key code to the receiver.
+
+        Args:
+            key_code: The integer key code representing the pressed key.
+        """
+
+        # Validate key code (optional, adjust based on your logic)
+        if key_code not in range(256):  # Assuming key codes are within 0-255
+            print(f"Invalid key code: {key_code}")
+            return
+
+        # Send the key code as bytes directly
+        self.sock.sendall(bytes([key_code]))  # Convert key code to single byte
+
     def close(self):
         self.client_socket.close()
         self.sock.close()
@@ -67,7 +82,7 @@ if __name__ == '__main__':
                 break
             elif key_byte:
                 print(f'Key: {key_byte}')
-                video_stream_receiver.send_byte(key_byte)
+                video_stream_receiver.send_key_code(key_byte)
 
         except Exception as e:
             print("Error:", e)
