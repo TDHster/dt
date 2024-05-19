@@ -8,49 +8,27 @@ def test_camera_opencv(device):
     cap = cv2.VideoCapture(device, cv2.CAP_ANY)  # Try cv2.CAP_ANY for auto-detection
     # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 3280)
     # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 2464)
-    #
-    #
-    # if not cap.isOpened():
-    #     print("Ошибка при открытии камеры!")
-    #     exit()
-    #
-    # while True:
-    #     # Capture frame
-    #     ret, frame = cap.read()
-    #
-    #     if not ret:
-    #         print("Не удалось получить кадр!")
-    #         break
-    #
-    #     # Process or display the frame (add your code here)
-    #
-    #     # Exit on 'q' press
-    #     if cv2.waitKey(1) & 0xFF == ord('q'):
-    #         break
-    ascii = asciify.AsciiArt(width=80, height=40)
+
+
+    if not cap.isOpened():
+        print("Ошибка при открытии камеры!")
+        exit()
 
     while True:
         # Capture frame
         ret, frame = cap.read()
 
-        # height, width = frame.shape[:2]
-        # print(f'{height=}, {width=}')
-
-        # Check if frame is read correctly
         if not ret:
-            print("Failed to capture frame!")
+            print("Не удалось получить кадр!")
             break
 
-        # Convert to grayscale
-        gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        # Process or display the frame (add your code here)
+        height, width = frame.shape[:2]
+        print(f'{height=}, {width=}')
 
-        # Convert to ASCII art
-        ascii_art = ascii.convert_image(gray_frame)
-
-        # Clear screen and print ASCII art
-        print('\033[H\033[2J')
-        print(ascii_art)
-
+        # Exit on 'q' press
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
     # Release resources
     cap.release()
