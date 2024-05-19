@@ -2,7 +2,7 @@ import cv2
 import sys
 
 
-def test_camera_opencv(device=0):
+def test_camera_opencv(device):
     print(f'Using video device {device}')
     # Open camera using device index 0 and explicitly request user-level access
     cap = cv2.VideoCapture(device, cv2.CAP_ANY)  # Try cv2.CAP_ANY for auto-detection
@@ -55,5 +55,8 @@ def test_camera_picamera():
 if __name__ == '__main__':
 
     # Get the first argument (assuming it's the filename)
-    device = sys.argv[1]
+    # device = sys.argv[1]
+    rtsp_url = "rtsp://localhost:8554/cam"
+    # device = 0
+    device = rtsp_url
     test_camera_opencv(device)
