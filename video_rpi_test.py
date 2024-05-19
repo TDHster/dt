@@ -1,11 +1,13 @@
 import cv2
+import sys
 
 
-def test_camera_opencv():
+def test_camera_opencv(device=0):
+    print(f'Using video device {device}')
     # Open camera using device index 0 and explicitly request user-level access
-    cap = cv2.VideoCapture(0, cv2.CAP_ANY)  # Try cv2.CAP_ANY for auto-detection
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 3280)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 2464)
+    cap = cv2.VideoCapture(device, cv2.CAP_ANY)  # Try cv2.CAP_ANY for auto-detection
+    # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 3280)
+    # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 2464)
 
 
     if not cap.isOpened():
@@ -51,4 +53,7 @@ def test_camera_picamera():
 
 
 if __name__ == '__main__':
-    test_camera_opencv()
+
+    # Get the first argument (assuming it's the filename)
+    device = sys.argv[1]
+    test_camera_opencv(device)
