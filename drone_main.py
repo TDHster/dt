@@ -139,7 +139,7 @@ while True:
                 cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 0, 255), 2)
-                dron_control.throttle_yaw = (elevation_pixels/INPUT_VIDEO_HEIGHT, yaw_pixels/INPUT_VIDEO_WIDTH)
+                # dron_control.throttle_yaw = (elevation_pixels/INPUT_VIDEO_HEIGHT, yaw_pixels/INPUT_VIDEO_WIDTH)
             elif object_id == object_id_near_center:
                 # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
                 #             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
