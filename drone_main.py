@@ -9,8 +9,8 @@ from control_drone import MavlinkControl
 from object_detector import NeuroNetObjectDetector
 from object_detector import filter_by_target_class_id
 
-receiver_ip = "192.168.0.169"
-server_port = 5000
+ground_receiver_ip = "192.168.0.169"
+ground_server_port = 5000
 
 print('Starting.')
 print(f"OpenCV version: {cv2.__version__}")
@@ -94,8 +94,8 @@ print(f'Object NN detector configured.')
 
 object_tracker = CentroidTracker(max_disappeared_frames=50, distance_threshold=50)
 
-print(f'Trying connect with {receiver_ip}{server_port}.')
-netconnection = NetworkConnection(receiver_ip="192.168.0.169", server_port=5000)
+print(f'Trying connect with {ground_receiver_ip}:{ground_server_port}.')
+netconnection = NetworkConnection(receiver_ip=ground_receiver_ip, server_port=ground_server_port)
 print(f'Network connection started')
 
 target_object_id = None
@@ -157,7 +157,7 @@ while True:
     # except netconnection.key_queue.Empty:
     #     pass  # No data in queue, continue the loop
 
-
+    target_object_id = object_id_near_center #  TODO remove this after keyboard connection will work.
     # Check for received keys from the queue
     if not netconnection.key_queue.empty():
         try:
