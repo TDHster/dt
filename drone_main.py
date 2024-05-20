@@ -22,10 +22,10 @@ dron_control = MavlinkControl('udpout:127.0.0.1:14550')
 # detection_threshold = 0.45  # Threshold to detect object
 detection_threshold = 0.3  # Threshold to detect object
 
-# INPUT_VIDEO_WIDTH = 320
-# INPUT_VIDEO_HEIGHT = 200
-INPUT_VIDEO_WIDTH = 640
-INPUT_VIDEO_HEIGHT = 480
+INPUT_VIDEO_WIDTH = 320
+INPUT_VIDEO_HEIGHT = 200
+# INPUT_VIDEO_WIDTH = 640
+# INPUT_VIDEO_HEIGHT = 480
 INPUT_VIDEO_FPS = 5
 
 
@@ -94,9 +94,9 @@ print(f'Object NN detector configured.')
 
 object_tracker = CentroidTracker(max_disappeared_frames=50, distance_threshold=50)
 
-
+print(f'Trying connect with {receiver_ip}{server_port}.')
 netconnection = NetworkConnection(receiver_ip="192.168.0.169", server_port=5000)
-print(f'Network connection started with {receiver_ip}{server_port}.')
+print(f'Network connection started')
 
 target_object_id = None
 object_id_near_center = None
