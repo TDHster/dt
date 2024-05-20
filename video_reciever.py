@@ -56,42 +56,46 @@ class VideoStreamReceiver:
 
 
 if __name__ == '__main__':
-    print(f'Waiting for connection.')
-    video_stream_receiver = VideoStreamReceiver()
     while True:
-        # Receive encoded frame data
-        frame_encoded = video_stream_receiver.receive_data()
+        print(f'Waiting for connection.')
+        video_stream_receiver = VideoStreamReceiver()
+        while True:
+            # Receive encoded frame data
+            frame_encoded = video_stream_receiver.receive_data()
+            if frame_encoded is None:
+                print('Seems to be lost network connection')
+                break
 
-        if len(frame_encoded) == 0:
-            print("Error: Empty frame received, skipping.")
-            continue
-
-        try:
-            # Convert the encoded frame data to a numpy array
-            frame_decoded = np.frombuffer(frame_encoded, dtype=np.uint8)
-            # Decode the frame
-            frame = cv2.imdecode(frame_decoded, cv2.IMREAD_COLOR)
-
-            if frame is None:
-                print("Error: Failed to decode frame!")
+            if len(frame_encoded) == 0:
+                print("Error: Empty frame received, skipping.")
                 continue
 
-            # frame = cv2.resize(frame, (INPUT_VIDEO_WIDTH, INPUT_VIDEO_HEIGHT), interpolation=cv2.INTER_AREA)
-            frame = cv2.resize(frame, (640, 480), interpolation=cv2.INTER_AREA)
+            try:
+                # Convert the encoded frame data to a numpy array
+                frame_decoded = np.frombuffer(frame_encoded, dtype=np.uint8)
+                # Decode the frame
+                frame = cv2.imdecode(frame_decoded, cv2.IMREAD_COLOR)
 
-            # Display the received frame
-            cv2.imshow('Drone Camera Stream', frame)
+                if frame is None:
+                    print("Error: Failed to decode frame!")
+                    continue
 
-            # Check for 'q' key to quit
-            key_byte = cv2.waitKey(1)
-            if key_byte & 0xFF == ord('q'):  # 27 Esc
-                break
-            elif key_byte:
-                print(f'Key: {key_byte}')
-                video_stream_receiver.send_key_code(key_byte)
+                # frame = cv2.resize(frame, (INPUT_VIDEO_WIDTH, INPUT_VIDEO_HEIGHT), interpolation=cv2.INTER_AREA)
+                frame = cv2.resize(frame, (640, 480), interpolation=cv2.INTER_AREA)
 
-        except Exception as e:
-            print("Error:", e)
+                # Display the received frame
+                cv2.imshow('Drone Camera Stream', frame)
+
+                # Check for 'q' key to quit
+                key_byte = cv2.waitKey(1)
+                if key_byte & 0xFF == ord('q'):  # 27 Esc
+                    break
+                elif key_byte:
+                    print(f'Key: {key_byte}')
+                    video_stream_receiver.send_key_code(key_byte)
+
+            except Exception as e:
+                print("Error:", e)
 
     # Close the socket and windows
     video_stream_receiver.close()
