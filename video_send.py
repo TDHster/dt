@@ -94,8 +94,9 @@ class NetworkConnection:
             if data:
                 # Extract and add key code (assuming single byte)
                 key_code = int.from_bytes(data, byteorder='big')
+                print(f"In thread: get from sender: {key_code}")
                 self.key_queue.put(key_code)
-                print(f"Get from sender: {key_code}")
+                print(f"In thread: putted in queue.")
         except BlockingIOError as e:
             # No data received (expected for non-blocking)
             pass

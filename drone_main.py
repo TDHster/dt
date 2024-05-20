@@ -13,7 +13,7 @@ ground_receiver_ip = "192.168.0.169"
 ground_server_port = 5000
 
 print('Starting.')
-print(f"OpenCV version: {cv2.__version__}")
+print(f"Installed OpenCV version: {cv2.__version__}")
 
 print(f'Starting connection to mavlink.')
 dron_control = MavlinkControl('udpout:127.0.0.1:14550')
@@ -100,7 +100,7 @@ object_tracker = CentroidTracker(max_disappeared_frames=50, distance_threshold=5
 
 print(f'Trying connect with {ground_receiver_ip}:{ground_server_port}.')
 netconnection = NetworkConnection(receiver_ip=ground_receiver_ip, server_port=ground_server_port)
-print(f'Network connection started')
+print(f'Network connection established.')
 
 target_object_id = None
 object_id_near_center = None
@@ -113,7 +113,7 @@ while True:
         continue
     # frame = cv2.resize(frame, (INPUT_VIDEO_WIDTH, INPUT_VIDEO_HEIGHT), interpolation=cv2.INTER_AREA)
 
-    print(f'{frame.shape=}')
+    # print(f'{frame.shape=}')
 
     classIds, confs, bbox = net.detect(frame, confThreshold=detection_threshold)
     # print(f'classIds={classIds}, bbox={bbox}')
@@ -124,11 +124,11 @@ while True:
 
     objects = object_tracker.update(bbox)
 
-    print(f'objects={objects}')
+    # print(f'objects={objects}')
     if objects:
         object_id_near_center = find_nearest_object_id(objects)
         for object_id, (x, y, w, h) in objects.items():
-            print(f'{object_id, (x, y, w, h)}')
+            # print(f'{object_id, (x, y, w, h)}')
             rect_top_left = (int(x - w / 2), int(y - h / 2))
             rect_bottom_right = (int(x + w / 2), int(y + h / 2))
             if object_id == target_object_id:
@@ -173,6 +173,8 @@ while True:
                 print(f'Select target: {target_object_id}')
             elif command == 'To target':
                 dron_control.to_target()
+            else:
+                print(f'{command}')
 
         except netconnection.key_queue.Empty:
             pass  # No data in queue, continue the loop
