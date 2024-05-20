@@ -47,6 +47,7 @@ class VideoStreamReceiver:
 
         try:
             self.client_socket.sendall(bytes([key_code])) # Convert key code to single byte
+            print(f'Sended {key_code} as {bytes([key_code])}')
         except ConnectionError:
             print("Connection error while sending data!")
 
@@ -97,6 +98,6 @@ if __name__ == '__main__':
             except Exception as e:
                 print("Error:", e)
 
-    # Close the socket and windows
-    video_stream_receiver.close()
+        # Close the socket and windows
+        video_stream_receiver.close()
     cv2.destroyAllWindows()
