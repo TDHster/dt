@@ -99,6 +99,7 @@ class NetworkConnection:
         except BlockingIOError as e:
             # No data received (expected for non-blocking)
             pass
+        self.make_time_delay()
 
     def receive_data_blocking(self, buffer_size=1024):
         # Receive data from the server
