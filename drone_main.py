@@ -131,11 +131,7 @@ while True:
             print(f'{object_id, (x, y, w, h)}')
             rect_top_left = (int(x - w / 2), int(y - h / 2))
             rect_bottom_right = (int(x + w / 2), int(y + h / 2))
-            if object_id == object_id_near_center:
-                # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
-                #             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
-                cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 255, 255), 2)
-            elif object_id == target_object_id:
+            if object_id == target_object_id:
                 cv2.line(frame, (int(INPUT_VIDEO_WIDTH / 2), int(INPUT_VIDEO_HEIGHT / 2)),
                          (x, y), (0, 0, 255), thickness=2)
                 yaw_pixels = INPUT_VIDEO_WIDTH/2 - x
@@ -144,6 +140,10 @@ while True:
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 0, 255), 2)
                 dron_control.throttle_yaw = (elevation_pixels/INPUT_VIDEO_HEIGHT, yaw_pixels/INPUT_VIDEO_WIDTH)
+            elif object_id == object_id_near_center:
+                # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
+                #             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
+                cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 255, 255), 2)
             else:
                 # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
                 #             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
