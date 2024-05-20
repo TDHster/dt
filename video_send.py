@@ -88,19 +88,19 @@ class NetworkConnection:
             key_queue: A queue to store received key codes.
             buffer_size: The maximum size of data to receive at once.
         """
-
-        try:
-            data = sock.recv(buffer_size)  # Receive data as bytes
-            if data:
-                # Extract and add key code (assuming single byte)
-                key_code = int.from_bytes(data, byteorder='big')
-                print(f"In thread: get from sender: {key_code}")
-                self.key_queue.put(key_code)
-                print(f"In thread: putted in queue.")
-        except BlockingIOError as e:
-            # No data received (expected for non-blocking)
-            pass
-        self.make_time_delay()
+        while True:
+            try:
+                data = sock.recv(buffer_size)  # Receive data as bytes
+                if data:
+                    # Extract and add key code (assuming single byte)
+                    key_code = int.from_bytes(data, byteorder='big')
+                    print(f"In thread: get from sender: {key_code}")
+                    self.key_queue.put(key_code)
+                    print(f"In thread: putted in queue.")
+            except BlockingIOError as e:
+                # No data received (expected for non-blocking)
+                pass
+            self.make_time_delay()
 
     def receive_data_blocking(self, buffer_size=1024):
         # Receive data from the server
