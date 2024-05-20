@@ -19,8 +19,8 @@ print(f'Starting connection to mavlink.')
 dron_control = MavlinkControl('udpout:127.0.0.1:14550')
 # dron_control.arm()
 
-# detection_threshold = 0.45  # Threshold to detect object
-detection_threshold = 0.3  # Threshold to detect object
+detection_threshold = 0.45  # Threshold to detect object
+# detection_threshold = 0.3  # Threshold to detect object
 
 INPUT_VIDEO_WIDTH = 320
 INPUT_VIDEO_HEIGHT = 200
@@ -37,7 +37,11 @@ INPUT_VIDEO_FPS = 5
 rtsp_url = "rtsp://localhost:8554/cam"
 opencv_device = rtsp_url
 # opencv_device = 0
-cap = cv2.VideoCapture(opencv_device)
+try:
+    cap = cv2.VideoCapture(opencv_device)
+except Exception as e:
+    print(f'Error opening video source {opencv_device}: {e}')
+    exit(1)
 if not cap.isOpened():
     print("Error opening video stream or file")
     exit()
