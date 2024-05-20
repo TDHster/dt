@@ -76,6 +76,9 @@ if __name__ == '__main__':
                 print("Error: Failed to decode frame!")
                 continue
 
+            # frame = cv2.resize(frame, (INPUT_VIDEO_WIDTH, INPUT_VIDEO_HEIGHT), interpolation=cv2.INTER_AREA)
+            frame = cv2.resize(frame, (640, 480), interpolation=cv2.INTER_AREA)
+
             # Display the received frame
             cv2.imshow('Drone Camera Stream', frame)
 
