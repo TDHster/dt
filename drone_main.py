@@ -30,6 +30,7 @@ INPUT_VIDEO_FPS = 5
 # video_path = 'test_videos/188778-883818276_small.mp4' # Two womans
 # video_path = 'test_videos/10831-226624994.mp4'  # Square
 # cap = cv2.VideoCapture(video_path)
+
 rtsp_url = "rtsp://localhost:8554/cam"
 opencv_device = rtsp_url
 # opencv_device = 0
