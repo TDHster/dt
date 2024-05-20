@@ -56,7 +56,7 @@ key_to_command = {
     'q': "Yaw left",
     'e': "Yaw right",
     ' ': "Select target",
-    '\r': "Attack"  # Use '\r' for the enter key
+    '\r': "To target"  # Use '\r' for the enter key
 }
 
 # Set the frame width, height, and FPS for the capture object
@@ -161,13 +161,16 @@ while True:
     # except netconnection.key_queue.Empty:
     #     pass  # No data in queue, continue the loop
 
-    target_object_id = object_id_near_center #  TODO remove this after keyboard connection will work.
+    # target_object_id = object_id_near_center #  TODO remove this after keyboard connection will work.
     # Check for received keys from the queue
     if not netconnection.key_queue.empty():
         try:
-            received_key = netconnection.key_queue.get(timeout=0.1)
-            command = key_to_command.get(received_key, "Unknown command")
-            print(f"Received from Queue: {received_key}, '{command}'")
+            received_byte = netconnection.key_queue.get(timeout=0.1)
+            key = chr(received_byte)
+            key_encoded = key.encode()
+            print(f'{key=}\t{key_encoded=}')
+            command = key_to_command.get(key, "Unknown command")
+            print(f"Received from Queue: {key}, '{command}'")
             if command == 'Select target':
                 target_object_id = object_id_near_center
                 print(f'Select target: {target_object_id}')
