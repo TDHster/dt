@@ -9,6 +9,9 @@ from control_drone import MavlinkControl
 from object_detector import NeuroNetObjectDetector
 from object_detector import filter_by_target_class_id
 
+receiver_ip = "192.168.0.169"
+server_port = 5000
+
 print('Starting.')
 print(f"OpenCV version: {cv2.__version__}")
 
@@ -19,10 +22,10 @@ dron_control = MavlinkControl('udpout:127.0.0.1:14550')
 # detection_threshold = 0.45  # Threshold to detect object
 detection_threshold = 0.3  # Threshold to detect object
 
-INPUT_VIDEO_WIDTH = 320
-INPUT_VIDEO_HEIGHT = 200
-# INPUT_VIDEO_WIDTH = 640
-# INPUT_VIDEO_HEIGHT = 480
+# INPUT_VIDEO_WIDTH = 320
+# INPUT_VIDEO_HEIGHT = 200
+INPUT_VIDEO_WIDTH = 640
+INPUT_VIDEO_HEIGHT = 480
 INPUT_VIDEO_FPS = 5
 
 
@@ -53,9 +56,9 @@ key_to_command = {
 }
 
 # Set the frame width, height, and FPS for the capture object
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, INPUT_VIDEO_WIDTH)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, INPUT_VIDEO_HEIGHT)
-cap.set(cv2.CAP_PROP_FPS, INPUT_VIDEO_FPS)
+# cap.set(cv2.CAP_PROP_FRAME_WIDTH, INPUT_VIDEO_WIDTH)
+# cap.set(cv2.CAP_PROP_FRAME_HEIGHT, INPUT_VIDEO_HEIGHT)
+# cap.set(cv2.CAP_PROP_FPS, INPUT_VIDEO_FPS)
 
 
 def find_nearest_object_id(objects):
@@ -91,8 +94,7 @@ print(f'Object NN detector configured.')
 
 object_tracker = CentroidTracker(max_disappeared_frames=50, distance_threshold=50)
 
-receiver_ip = "192.168.0.169"
-server_port = 5000
+
 netconnection = NetworkConnection(receiver_ip="192.168.0.169", server_port=5000)
 print(f'Network connection started with {receiver_ip}{server_port}.')
 
@@ -105,12 +107,12 @@ while True:
     # Resize the frame to 320x200 while maintaining aspect ratio
     if not success:  # Check success flag
         continue
-    frame = cv2.resize(frame, (INPUT_VIDEO_WIDTH, INPUT_VIDEO_HEIGHT), interpolation=cv2.INTER_AREA)
+    # frame = cv2.resize(frame, (INPUT_VIDEO_WIDTH, INPUT_VIDEO_HEIGHT), interpolation=cv2.INTER_AREA)
 
     print(f'{frame.shape=}')
 
     classIds, confs, bbox = net.detect(frame, confThreshold=detection_threshold)
-    print(f'classIds={classIds}, bbox={bbox}')
+    # print(f'classIds={classIds}, bbox={bbox}')
 
     classIds, bbox = filter_by_target_class_id(classIds, bbox,
                                                names_list=object_class_names,
