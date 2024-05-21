@@ -5,8 +5,8 @@ from object_tracker import CentroidTracker
 import math
 import heapq
 from video_send import NetworkConnection, get_key_from_byte
-from control_drone import MavlinkControl
-from object_detector import NeuroNetObjectDetector
+from control_drone import MavlinkJoystickControl as MavlinkControl
+# from object_detector import NeuroNetObjectDetector
 from object_detector import filter_by_target_class_id
 
 ground_receiver_ip = "192.168.0.169"
@@ -16,8 +16,8 @@ print('Starting.')
 print(f"Installed OpenCV version: {cv2.__version__}")
 
 print(f'Starting connection to mavlink.')
-dron_control = MavlinkControl('udpout:127.0.0.1:14550')
-# dron_control.arm()
+dron = MavlinkControl('udpout:127.0.0.1:14550')
+# dron.arm()
 
 detection_threshold = 0.45  # Threshold to detect object
 # detection_threshold = 0.3  # Threshold to detect object
@@ -139,7 +139,10 @@ while True:
                 cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 0, 255), 2)
-                # dron_control.throttle_yaw = (elevation_pixels/INPUT_VIDEO_HEIGHT, yaw_pixels/INPUT_VIDEO_WIDTH)
+                # dron.throttle_yaw = (elevation_pixels/INPUT_VIDEO_HEIGHT, yaw_pixels/INPUT_VIDEO_WIDTH)
+                dron.yaw = yaw_pixels/INPUT_VIDEO_WIDTH
+                dron.throttle = elevation_pixels/INPUT_VIDEO_HEIGHT
+
             elif object_id == object_id_near_center:
                 # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
                 #             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
@@ -175,7 +178,7 @@ while True:
                 target_object_id = object_id_near_center
                 print(f'Select target: {target_object_id}')
             elif command == 'To target':
-                dron_control.to_target()
+                dron.to_target()
             else:
                 print(f'{command}')
 

@@ -1,5 +1,6 @@
 from pymavlink import mavutil
-
+import queue
+import threading
 from time import sleep, time, time_ns
 from sys import exit
 
@@ -24,7 +25,142 @@ def normalize_value(value: float, min_norm=-1000, max_norm=1000):
     return int(min_norm + normalized_value * (max_norm - min_norm))
 
 
-class MavlinkControl:
+class MavlinkJoystickControl:
+    PITCH_CHANNEL_ID = 1
+    ROLL_CHANNEL_ID = 2
+    THROTTLE_CHANNEL_ID = 3
+    YAW_CHANNEL_ID = 4
+    FORWARD_CHANNEL_ID = 5
+    _pitch, _roll, _yaw, _throttle = 0, 0, 0, 0  # for be defined
+
+    def __init__(self, connection_string='udpout:127.0.0.1:14550', yaw_pid=1, throttle_pid=1, pitch_pid=1, roll_pid=1):
+        """
+        udpin:0.0.0.0:14550 or udpout:127.0.0.1:14550
+        Linux computer connected to the vehicle via USB	/dev/ttyUSB0
+        Linux computer connected to the vehicle via serial port (RaspberryPi example)	/dev/ttyAMA0 (also set baud=57600)
+        MAVLink API listening for SITL connection via UDP	udpin:localhost:14540 (or udp:localhost:14540, 127.0.0.1:14540,etc.)
+        MAVLink API initiating a connection to SITL via UDP	udpout:localhost:14540 (or udpout:127.0.0.1:14540)
+        GCS connected to the vehicle via UDP	127.0.0.1:14550 or udp:localhost:14550
+        SITL connected to the vehicle via TCP	tcp:127.0.0.1:5760 (ArduPilot only, PX4 does not support TCP)
+        OSX computer connected to the vehicle via USB	dev/cu.usbmodem1
+        Windows computer connected to the vehicle via USB (in this case on COM14)	com14
+        Windows computer connected to the vehicle using a 3DR Telemetry Radio on COM14	com14 (also set baud=57600)
+        """
+        print('Trying make mavlink connection...')
+        self.master = mavutil.mavlink_connection(connection_string)
+        print(f'Connected to {connection_string} {self.master}')
+        # print(f'Heartbeat: {self.master.wait_heartbeat()}')
+
+        # self.control_commands = queue.Queue()
+
+        self.yaw_pid = yaw_pid
+        self.roll_pid = roll_pid
+        self.pitch_pid = pitch_pid
+        self.throttle_pid = throttle_pid
+        self.PWM_neutral = 1500
+        self.PWN_min = 1100
+        self.PWM_max = 1900
+
+    def arm(self):
+        try:
+            # worked:
+            # self.master.mav.command_long_send(
+            #     self.master.target_system,
+            #     self.master.target_component,
+            #     mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 1, 0, 0, 0, 0, 0, 0 )
+            self.master.arducopter_arm()
+            # wait until arming confirmed (can manually check with self.master.motors_armed())
+            print("Waiting for the vehicle to arm")
+            self.master.motors_armed_wait()
+            print('Armed!')
+            print(f'Arm status check: {self.master.motors_armed()}')
+            return True
+        except Exception as e:
+            print(f'Problem with arming: {e}')
+            return False
+
+    def disarm(self):
+        try:
+            # not worked
+            # self.master.mav.command_long_send(
+            #     self.master.target_system,
+            #     self.master.target_component,
+            #     mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+            #     0,
+            #     0, 0, 0, 0, 0, 0, 0)
+            self.master.arducopter_disarm()
+            print('Sent disarm command!')
+            # wait until disarming confirmed
+            print(f'Disarm wait: {self.master.motors_disarmed_wait()}')
+            return True
+        except Exception as e:
+            print(f'Problem with disarming: {e}')
+            return False
+
+    def _set_rc_channel_pwm(self, channel_id, pwm=1500):
+        # Create a function to send RC values
+        # More information about Joystick channels
+        # here: https://www.ardusub.com/operators-manual/rc-input-and-output.html#rc-inputs
+        # 1500 neutral
+        """ Set RC channel pwm value
+        Args:
+            channel_id (TYPE): Channel ID
+            pwm (int, optional): Channel pwm value 1100-1900
+
+        # Channel Meaning
+        # 1        Pitch
+        # 2        Roll
+        # 3        Throttle
+        # 4        Yaw
+        # 5        Forward
+        """
+        if channel_id < 1 or channel_id > 18:
+            print("Channel does not exist.")
+            return
+
+        # Mavlink 2 supports up to 18 channels:
+        # https://mavlink.io/en/messages/common.html#RC_CHANNELS_OVERRIDE
+        rc_channel_values = [65535 for _ in range(18)]
+        rc_channel_values[channel_id - 1] = pwm
+        self.master.mav.rc_channels_override_send(
+            self.master.target_system,  # target_system
+            self.master.target_component,  # target_component
+            *rc_channel_values)  # RC channel list, in microseconds.
+
+    @property
+    def yaw(self):
+        return self._yaw
+
+    @yaw.setter
+    def yaw(self, yaw: float):
+        self._yaw = yaw * self.yaw_pid
+        self._set_rc_channel_pwm(self.YAW_CHANNEL_ID,
+                                 normalize_value(yaw, min_norm=self.PWN_min, max_norm=self.PWM_max))
+
+    @property
+    def throttle(self):
+        return self._throttle
+
+    @throttle.setter
+    def throttle(self, throttle: float):
+        self._throttle = throttle * self.throttle_pid
+        self._set_rc_channel_pwm(self.THROTTLE_CHANNEL_ID,
+                                 normalize_value(throttle, min_norm=self.PWN_min, max_norm=self.PWM_max))
+
+
+    def get_modes_list(self):
+        return list(self.master.mode_mapping().keys())
+
+    def set_mode(self, mode='LAND'):
+        '''
+        Modes: ['STABILIZE', 'ACRO', 'ALT_HOLD', 'AUTO', 'GUIDED', 'LOITER', 'RTL', 'CIRCLE', 'POSITION', 'LAND',
+                'OF_LOITER', 'DRIFT', 'SPORT', 'FLIP', 'AUTOTUNE', 'POSHOLD', 'BRAKE', 'THROW', 'AVOID_ADSB',
+                'GUIDED_NOGPS', 'SMART_RTL', 'FLOWHOLD', 'FOLLOW', 'ZIGZAG', 'SYSTEMID', 'AUTOROTATE', 'AUTO_RTL']
+        '''
+        self.master.set_mode(mode)
+
+
+class MavlinkManualControl:
     _pitch, _roll, _yaw, _throttle = 0, 0, 0, 0  # for be defined
     _buttons = 0
     THROTTLE_NEUTRAL = 500
@@ -125,12 +261,6 @@ class MavlinkControl:
         # Create a function to send RC values
         # More information about Joystick channels
         # here: https://www.ardusub.com/operators-manual/rc-input-and-output.html#rc-inputs
-        # Channel Meaning
-        # 1        # Pitch
-        # 2        # Roll
-        # 3        # Throttle
-        # 4        # Yaw
-        # 5        # Forward
         """ Set RC channel pwm value
         Args:
             channel_id (TYPE): Channel ID
@@ -319,15 +449,15 @@ if __name__ == '__main__':
     #     dron_control._read_parameters()
 
 
-    dron_control = MavlinkControl('udpout:127.0.0.1:14550')
-    print('Modes:', list(dron_control.master.mode_mapping().keys()))
+    dron = MavlinkJoystickControl('udpout:127.0.0.1:14550')
+    print('Modes:', list(dron.master.mode_mapping().keys()))
     '''
     Modes: ['STABILIZE', 'ACRO', 'ALT_HOLD', 'AUTO', 'GUIDED', 'LOITER', 'RTL', 'CIRCLE', 'POSITION', 'LAND',
             'OF_LOITER', 'DRIFT', 'SPORT', 'FLIP', 'AUTOTUNE', 'POSHOLD', 'BRAKE', 'THROW', 'AVOID_ADSB',
             'GUIDED_NOGPS', 'SMART_RTL', 'FLOWHOLD', 'FOLLOW', 'ZIGZAG', 'SYSTEMID', 'AUTOROTATE', 'AUTO_RTL']
     '''
-    dron_control.master.set_mode('STABILIZE')
-    dron_control.arm()
+    dron.master.set_mode('STABILIZE')
+    dron.arm()
 
     from math import sin
     while True:
@@ -340,19 +470,19 @@ if __name__ == '__main__':
            # Set some roll
             # set_rc_channel_pwm(2, 1600)
             # Set some yaw
-            dron_control.set_rc_channel_pwm(4, 1700)
+            dron.set_rc_channel_pwm(4, 1700)
             # dron_control.throttle = 0
             sleep(2)
-            dron_control.set_rc_channel_pwm(4, 1200)
+            dron.set_rc_channel_pwm(4, 1200)
             # dron_control.throttle = 0.5
             sleep(2)
-            dron_control.set_rc_channel_pwm(4, 1500)
+            dron.set_rc_channel_pwm(4, 1500)
             # dron_control.throttle = 0.1
             sleep(2)
 
 
         except KeyboardInterrupt:
-            dron_control.disarm()
+            dron.disarm()
 
             exit(0)
 

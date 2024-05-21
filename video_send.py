@@ -5,6 +5,7 @@ import time
 import queue
 import threading
 
+
 def get_key_from_byte(key_code):
     # Basic mapping dictionary for common special keys
     key_map = {
