@@ -111,7 +111,7 @@ class MavlinkControl:
         print(f'Send command: pitch={self._pitch}, roll={self._roll}, yaw={self._yaw}, throttle={self._throttle}')
         self.master.mav.manual_control_send(
             self.master.target_system,
-            normalize_value(self._fpitch),
+            normalize_value(self._pitch),
             normalize_value(self._roll),
             normalize_value(self._throttle, min_norm=0, max_norm=1000),
             normalize_value(self._yaw),

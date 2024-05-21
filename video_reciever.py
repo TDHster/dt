@@ -88,8 +88,10 @@ if __name__ == '__main__':
                 cv2.imshow('Drone Camera Stream', frame)
 
                 # Check for 'q' key to quit
-                key_byte = cv2.waitKey(1)
-                if key_byte & 0xFF == ord('q'):  # 27 Esc
+                key_byte = cv2.waitKey(1) & 0xFF  #  masks out any higher-order bits, ensuring you get the actual keycode value
+                # if key_byte == ord('q'):  # 27 Esc
+                if key_byte == 27:  # 27 Esc
+                    print('Exiting by keyboard command.')
                     break
                 elif key_byte:
                     print(f'Key: {key_byte}')
