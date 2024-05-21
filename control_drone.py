@@ -320,6 +320,13 @@ if __name__ == '__main__':
 
 
     dron_control = MavlinkControl('udpout:127.0.0.1:14550')
+    print('Modes:', list(dron_control.master.mode_mapping().keys()))
+    '''
+    Modes: ['STABILIZE', 'ACRO', 'ALT_HOLD', 'AUTO', 'GUIDED', 'LOITER', 'RTL', 'CIRCLE', 'POSITION', 'LAND',
+            'OF_LOITER', 'DRIFT', 'SPORT', 'FLIP', 'AUTOTUNE', 'POSHOLD', 'BRAKE', 'THROW', 'AVOID_ADSB',
+            'GUIDED_NOGPS', 'SMART_RTL', 'FLOWHOLD', 'FOLLOW', 'ZIGZAG', 'SYSTEMID', 'AUTOROTATE', 'AUTO_RTL']
+    '''
+    dron_control.master.set_mode('STABILIZE')
     dron_control.arm()
 
     from math import sin
@@ -330,10 +337,7 @@ if __name__ == '__main__':
             # print(f' {sin(time_ns())}:0.2f')
             # sleep(1/30)
             # dron_control.master.flightmode_list() - give error
-            print('Modes:', list(dron_control.master.mode_mapping().keys()))
-            dron_control.master.set_mode('STABILIZE')
-
-            # Set some roll
+           # Set some roll
             # set_rc_channel_pwm(2, 1600)
             # Set some yaw
             dron_control.set_rc_channel_pwm(4, 1700)
