@@ -329,7 +329,7 @@ if __name__ == '__main__':
             # dron_control.throttle = sin(time_ns()/10)
             # print(f' {sin(time_ns())}:0.2f')
             # sleep(1/30)
-            dron_control.master.flightmode_list()
+            # dron_control.master.flightmode_list() - give error
             print('Modes:', list(dron_control.master.mode_mapping().keys()))
             dron_control.master.set_mode('STABILIZE')
 
