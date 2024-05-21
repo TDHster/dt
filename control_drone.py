@@ -292,13 +292,13 @@ if __name__ == '__main__':
             # print(f' {sin(time_ns())}:0.2f')
             # sleep(1/30)
             dron_control.throttle = 0
-            # sleep(2)
-            # dron_control.throttle = 0.5
-            # sleep(2)
-            # dron_control.throttle = 0.1
-            # sleep(2)
-            dron_control.disarm()
-            exit(0)
+            sleep(2)
+            dron_control.throttle = 0.5
+            sleep(2)
+            dron_control.throttle = 0.1
+            sleep(2)
+
+
         except KeyboardInterrupt:
             dron_control.disarm()
             break
