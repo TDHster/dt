@@ -294,13 +294,19 @@ if __name__ == '__main__':
             # dron_control.throttle = sin(time_ns()/10)
             # print(f' {sin(time_ns())}:0.2f')
             # sleep(1/30)
-            dron_control.throttle = 0
-            sleep(2)
-            dron_control.throttle = 0.5
-            sleep(2)
-            dron_control.throttle = 0.1
-            sleep(2)
+            dron_control.master.flightmode_list()
+            print('Modes:', list(dron_control.master.mode_mapping().keys()))
 
+            # dron_control.master.set_mode()
+            # dron_control.throttle = 0
+            # sleep(2)
+            # dron_control.throttle = 0.5
+            # sleep(2)
+            # dron_control.throttle = 0.1
+            # sleep(2)
+            print(dron_control.disarm())
+)
+            exit(0)
 
         except KeyboardInterrupt:
             dron_control.disarm()
