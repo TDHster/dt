@@ -121,6 +121,41 @@ class MavlinkControl:
             self._buttons
         )
 
+    def set_rc_channel_pwm(self, channel_id, pwm=1500):
+        # Create a function to send RC values
+        # More information about Joystick channels
+        # here: https://www.ardusub.com/operators-manual/rc-input-and-output.html#rc-inputs
+        # Channel Meaning
+        # 1        # Pitch
+        # 2        # Roll
+        # 3        # Throttle
+        # 4        # Yaw
+        # 5        # Forward
+        """ Set RC channel pwm value
+        Args:
+            channel_id (TYPE): Channel ID
+            pwm (int, optional): Channel pwm value 1100-1900
+
+        # Channel Meaning
+        # 1        Pitch
+        # 2        Roll
+        # 3        Throttle
+        # 4        Yaw
+        # 5        Forward
+        """
+        if channel_id < 1 or channel_id > 18:
+            print("Channel does not exist.")
+            return
+
+        # Mavlink 2 supports up to 18 channels:
+        # https://mavlink.io/en/messages/common.html#RC_CHANNELS_OVERRIDE
+        rc_channel_values = [65535 for _ in range(18)]
+        rc_channel_values[channel_id - 1] = pwm
+        self.master.mav.rc_channels_override_send(
+            self.master.target_system,  # target_system
+            self.master.target_component,  # target_component
+            *rc_channel_values)  # RC channel list, in microseconds.
+
     @property
     def yaw(self):
         return self._yaw
@@ -296,19 +331,25 @@ if __name__ == '__main__':
             # sleep(1/30)
             dron_control.master.flightmode_list()
             print('Modes:', list(dron_control.master.mode_mapping().keys()))
+            dron_control.master.set_mode('STABILIZE')
 
-            # dron_control.master.set_mode()
+            # Set some roll
+            # set_rc_channel_pwm(2, 1600)
+
+            # Set some yaw
+            dron_control.master.set_rc_channel_pwm(4, 1700)
             # dron_control.throttle = 0
-            # sleep(2)
+            sleep(2)
+            dron_control.master.set_rc_channel_pwm(4, 1200)
             # dron_control.throttle = 0.5
-            # sleep(2)
+            sleep(2)
+            dron_control.master.set_rc_channel_pwm(4, 1500)
             # dron_control.throttle = 0.1
-            # sleep(2)
-            print(dron_control.disarm())
+            sleep(2)
 
-            exit(0)
 
         except KeyboardInterrupt:
             dron_control.disarm()
-            break
+
+            exit(0)
 
