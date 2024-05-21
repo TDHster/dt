@@ -297,6 +297,8 @@ if __name__ == '__main__':
             # sleep(2)
             # dron_control.throttle = 0.1
             # sleep(2)
+            dron_control.disarm()
+            exit(0)
         except KeyboardInterrupt:
             dron_control.disarm()
             break
