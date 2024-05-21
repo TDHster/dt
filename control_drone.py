@@ -1,6 +1,6 @@
 from pymavlink import mavutil
-import queue
-import threading
+# import queue
+# import threading
 from time import sleep, time, time_ns
 from sys import exit
 
