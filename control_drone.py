@@ -288,9 +288,15 @@ if __name__ == '__main__':
     while True:
         try:
             # dron_control.yaw = sin(time_ns()/10)
-            dron_control.throttle = sin(time_ns()/10)
-            print(f' {sin(time_ns())}:0.2f')
-            sleep(1/30)
+            # dron_control.throttle = sin(time_ns()/10)
+            # print(f' {sin(time_ns())}:0.2f')
+            # sleep(1/30)
+            dron_control.throttle = 1
+            sleep(2)
+            dron_control.throttle = 0.5
+            sleep(2)
+            dron_control.throttle = 0.1
+            sleep(2)
         except KeyboardInterrupt:
             dron_control.disarm()
             break
