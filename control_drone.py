@@ -45,21 +45,22 @@ class MavlinkControl:
         Windows computer connected to the vehicle using a 3DR Telemetry Radio on COM14	com14 (also set baud=57600)
         """
         # Create the connection
+        print('Trying make mavlink connection...')
         self.master = mavutil.mavlink_connection(connection_string)
         print(f'Connected to {connection_string} {self.master}')
         # print(f'Heartbeat: {self.master.wait_heartbeat()}')
 
     def arm(self):
         # Arm
-        # master.arducopter_arm() or:
         try:
-            self.master.mav.command_long_send(
-                self.master.target_system,
-                self.master.target_component,
-                mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-                0, 1, 0, 0, 0, 0, 0, 0
-            )
-
+            # worked:
+            # self.master.mav.command_long_send(
+            #     self.master.target_system,
+            #     self.master.target_component,
+            #     mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+            #     0, 1, 0, 0, 0, 0, 0, 0
+            # )
+            self.master.arducopter_arm()
             # wait until arming confirmed (can manually check with self.master.motors_armed())
             print("Waiting for the vehicle to arm")
             self.master.motors_armed_wait()
@@ -72,12 +73,14 @@ class MavlinkControl:
         # Disarm
         # master.arducopter_disarm() or:
         try:
-            self.master.mav.command_long_send(
-                self.master.target_system,
-                self.master.target_component,
-                mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-                0,
-                0, 0, 0, 0, 0, 0, 0)
+            # not worked
+            # self.master.mav.command_long_send(
+            #     self.master.target_system,
+            #     self.master.target_component,
+            #     mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+            #     0,
+            #     0, 0, 0, 0, 0, 0, 0)
+            self.master.arducopter_disarm()
             print('Sent disarm command!')
             # wait until disarming confirmed
             print(f'Disarm wait: {self.master.motors_disarmed_wait()}')
