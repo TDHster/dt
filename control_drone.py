@@ -335,15 +335,14 @@ if __name__ == '__main__':
 
             # Set some roll
             # set_rc_channel_pwm(2, 1600)
-
             # Set some yaw
-            dron_control.master.set_rc_channel_pwm(4, 1700)
+            dron_control.set_rc_channel_pwm(4, 1700)
             # dron_control.throttle = 0
             sleep(2)
-            dron_control.master.set_rc_channel_pwm(4, 1200)
+            dron_control.set_rc_channel_pwm(4, 1200)
             # dron_control.throttle = 0.5
             sleep(2)
-            dron_control.master.set_rc_channel_pwm(4, 1500)
+            dron_control.set_rc_channel_pwm(4, 1500)
             # dron_control.throttle = 0.1
             sleep(2)
 
