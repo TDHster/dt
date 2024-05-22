@@ -132,6 +132,43 @@ class MavlinkJoystickControl:
             # *rc_channel_values)  # RC channel list, in microseconds.
             *rc_channel_values[:12])  # RC channel list, in microseconds.
 
+    def _set_rc_4_channels_pwm(self):
+        # Create a function to send RC values
+        # More information about Joystick channels
+        # here: https://www.ardusub.com/operators-manual/rc-input-and-output.html#rc-inputs
+        # 1500 neutral
+        """ Set RC channel pwm value
+        Args:
+            channel_id (TYPE): Channel ID
+            pwm (int, optional): Channel pwm value 1100-1900
+
+        # Channel Meaning
+        # 1        Pitch
+        # 2        Roll
+        # 3        Throttle
+        # 4        Yaw
+        # 5        Forward
+        """
+        # if channel_id < 1 or channel_id > 18:
+        #     print("Channel does not exist.")
+        #     return
+
+        # Mavlink 2 supports up to 18 channels:
+        # https://mavlink.io/en/messages/common.html#RC_CHANNELS_OVERRIDE
+        rc_channel_values = [65535 for _ in range(18)]
+        rc_channel_values[self.THROTTLE_CHANNEL_ID - 1] = normalize_value(self._throttle, min_norm=self.PWN_min, max_norm=self.PWM_max)
+        rc_channel_values[self.YAW_CHANNEL_ID - 1] = normalize_value(self._yaw , min_norm=self.PWN_min, max_norm=self.PWM_max)
+        rc_channel_values[self.PITCH_CHANNEL_ID - 1] = normalize_value(self._pitch , min_norm=self.PWN_min, max_norm=self.PWM_max)
+        rc_channel_values[self.ROLL_CHANNEL_ID - 1] = normalize_value(self._roll , min_norm=self.PWN_min, max_norm=self.PWM_max)
+
+        # print(f'Debug _set_rc_channel_pwm:\r\t {self._master.target_system=} {self._master.target_component=} {rc_channel_values=}')
+        self._master.mav.rc_channels_override_send(
+            self._master.target_system,  # target_system
+            self._master.target_component,  # target_component
+            # *rc_channel_values)  # RC channel list, in microseconds.
+            *rc_channel_values)  # RC channel list, in microseconds.
+
+
     @property
     def yaw(self):
         return self._yaw
@@ -139,8 +176,10 @@ class MavlinkJoystickControl:
     @yaw.setter
     def yaw(self, yaw: float):
         self._yaw = yaw * self.yaw_pid
-        self._set_rc_channel_pwm(self.YAW_CHANNEL_ID,
-                                 normalize_value(yaw, min_norm=self.PWN_min, max_norm=self.PWM_max))
+        # self._set_rc_channel_pwm(self.YAW_CHANNEL_ID,
+        #                          normalize_value(yaw, min_norm=self.PWN_min, max_norm=self.PWM_max))
+
+        self._set_rc_4_channels_pwm()
 
     @property
     def throttle(self):
@@ -149,13 +188,15 @@ class MavlinkJoystickControl:
     @throttle.setter
     def throttle(self, throttle: float):
         self._throttle = throttle * self.throttle_pid
-        self._set_rc_channel_pwm(self.THROTTLE_CHANNEL_ID,
-                                 normalize_value(throttle, min_norm=self.PWN_min, max_norm=self.PWM_max))
+        # self._set_rc_channel_pwm(self.THROTTLE_CHANNEL_ID,
+        #                          normalize_value(throttle, min_norm=self.PWN_min, max_norm=self.PWM_max))
+        self._set_rc_4_channels_pwm()
 
     def to_target(self):
         self._pitch = 1  # maximum
-        self._set_rc_channel_pwm(self.PITCH_CHANNEL_ID,
-                                 normalize_value(self._pitch, min_norm=self.PWN_min, max_norm=self.PWM_max))
+        # self._set_rc_channel_pwm(self.PITCH_CHANNEL_ID,
+        #                          normalize_value(self._pitch, min_norm=self.PWN_min, max_norm=self.PWM_max))
+        self._set_rc_4_channels_pwm()
 
     def get_modes_list(self):
         return list(self._master.mode_mapping().keys())
