@@ -62,13 +62,15 @@ class MavlinkJoystickControl:
         self.PWN_min = 1100
         self.PWM_max = 1900
 
-    def arm(self):
+    def arm(self, mode='GUIDED'):
         try:
             # worked:
             # self.master.mav.command_long_send(
             #     self.master.target_system,
             #     self.master.target_component,
             #     mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 1, 0, 0, 0, 0, 0, 0 )
+            self..set_mode(mode)
+
             self._master.arducopter_arm()
             # wait until arming confirmed (can manually check with self.master.motors_armed())
             print("Waiting for the vehicle to arm")
@@ -463,12 +465,15 @@ if __name__ == '__main__':
             'OF_LOITER', 'DRIFT', 'SPORT', 'FLIP', 'AUTOTUNE', 'POSHOLD', 'BRAKE', 'THROW', 'AVOID_ADSB',
             'GUIDED_NOGPS', 'SMART_RTL', 'FLOWHOLD', 'FOLLOW', 'ZIGZAG', 'SYSTEMID', 'AUTOROTATE', 'AUTO_RTL']
     '''
-    dron.arm()
+    dron.arm(mode='GUIDED')
     # dron.set_mode('ALT_HOLD')
     # dron.set_mode('STABILIZE')
-    dron.set_mode('GUIDED')
+    # dron.set_mode('GUIDED')  # <- this work
 
     from math import sin
+
+    dron.throttle = 0.2
+
     while True:
         try:
             # dron_control.yaw = sin(time_ns()/10)
@@ -480,16 +485,20 @@ if __name__ == '__main__':
             # set_rc_channel_pwm(2, 1600)
             # Set some yaw
             # dron.set_rc_channel_pwm(4, 1700)
-            dron.throttle = 0.1
+            # dron.throttle = 0.1
+            dron.yaw = 0
             # dron_control.throttle = 0
             sleep(2)
             # dron.set_rc_channel_pwm(4, 1200)
-            dron.throttle = 0.5
+            # dron.throttle = 0.5
+            dron.yaw = 0.5
             sleep(2)
             # dron.set_rc_channel_pwm(4, 1500)
-            dron.throttle = 1
+            # dron.throttle = 1
+            dron.yaw = 1
             sleep(2)
-            dron.throttle = 0
+            # dron.throttle = 0
+            dron.yaw = 0.5
             sleep(2)
 
 
