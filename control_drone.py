@@ -69,7 +69,7 @@ class MavlinkJoystickControl:
             #     self.master.target_system,
             #     self.master.target_component,
             #     mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 1, 0, 0, 0, 0, 0, 0 )
-            self..set_mode(mode)
+            self.set_mode(mode)
 
             self._master.arducopter_arm()
             # wait until arming confirmed (can manually check with self.master.motors_armed())
