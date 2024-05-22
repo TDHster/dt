@@ -463,9 +463,8 @@ if __name__ == '__main__':
             'OF_LOITER', 'DRIFT', 'SPORT', 'FLIP', 'AUTOTUNE', 'POSHOLD', 'BRAKE', 'THROW', 'AVOID_ADSB',
             'GUIDED_NOGPS', 'SMART_RTL', 'FLOWHOLD', 'FOLLOW', 'ZIGZAG', 'SYSTEMID', 'AUTOROTATE', 'AUTO_RTL']
     '''
-    dron._master.set_mode('STABILIZE')
     dron.arm()
-    dron.set_mode('STABILIZE')
+    dron.set_mode('ALT_HOLD')
 
     from math import sin
     while True:
@@ -494,6 +493,6 @@ if __name__ == '__main__':
 
         except KeyboardInterrupt:
             dron.disarm()
-            dron.set_mode('STABILIZE')
+            dron.set_mode('LAND')
             exit(0)
 
