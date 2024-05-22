@@ -472,7 +472,9 @@ if __name__ == '__main__':
 
     from math import sin
 
-    dron.throttle = 0.2
+    dron.throttle = 0.7
+    sleep(0.5)
+    dron.throttle = 0.5
 
     while True:
         try:
