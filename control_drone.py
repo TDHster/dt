@@ -359,7 +359,7 @@ class MavlinkManualControl:
             self.master.target_system,
             0,
             0,
-            500, # 500 means neutral throttle
+            500,  # 500 means neutral throttle
             0,
             buttons)
 
@@ -465,7 +465,8 @@ if __name__ == '__main__':
     '''
     dron.arm()
     # dron.set_mode('ALT_HOLD')
-    dron.set_mode('STABILIZE')
+    # dron.set_mode('STABILIZE')
+    dron.set_mode('GUIDED')
 
     from math import sin
     while True:
