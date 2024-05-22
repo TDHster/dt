@@ -5,6 +5,7 @@ from time import sleep, time, time_ns
 from sys import exit
 
 
+
 def normalize_value(value: float, min_norm=-1000, max_norm=1000):
     """
     Normalizes a value between -1 and 1 to a specified range.
@@ -147,7 +148,10 @@ class MavlinkJoystickControl:
         self._set_rc_channel_pwm(self.THROTTLE_CHANNEL_ID,
                                  normalize_value(throttle, min_norm=self.PWN_min, max_norm=self.PWM_max))
 
-
+    def to_target(self):
+        self._pitch = 1  # maximum
+        self._set_rc_channel_pwm(self.PITCH_CHANNEL_ID,
+                                 normalize_value(self._pitch, min_norm=self.PWN_min, max_norm=self.PWM_max))
     def get_modes_list(self):
         return list(self.master.mode_mapping().keys())
 

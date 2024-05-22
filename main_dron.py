@@ -8,6 +8,23 @@ from video_send import NetworkConnection, get_key_from_byte
 from control_drone import MavlinkJoystickControl as MavlinkControl
 # from object_detector import NeuroNetObjectDetector
 from object_detector import filter_by_target_class_id
+import argparse
+
+# Create the parser object
+parser = argparse.ArgumentParser(description="Main dron script")
+
+# Add an argument for the camera type with a default value
+parser.add_argument(
+    "-c",
+    "--camera",
+    type=str,
+    default="0",
+    help="Specify path for camera connection ex: 0 for opencv device, for RTSP: rtsp://localhost:8554/cam",
+)
+args = parser.parse_args()
+
+# Get the camera type from the parsed arguments
+opencv_device = args.camera
 
 ground_receiver_ip = "192.168.0.169"
 ground_server_port = 5000
@@ -35,7 +52,7 @@ INPUT_VIDEO_FPS = 5
 # cap = cv2.VideoCapture(video_path)
 
 rtsp_url = "rtsp://localhost:8554/cam"
-opencv_device = rtsp_url
+# opencv_device = rtsp_url
 # opencv_device = 0
 try:
     cap = cv2.VideoCapture(opencv_device)
@@ -55,7 +72,10 @@ key_to_command = {
     'd': "Move right",
     'q': "Yaw left",
     'e': "Yaw right",
+    'p': "Throttle up",
+    'l': "Throttle down",
     ' ': "Select target",
+    'с': "Clear target",
     '\r': "To target"  # Use '\r' for the enter key
 }
 
@@ -178,6 +198,16 @@ while True:
                 print(f'Select target: {target_object_id}')
             elif command == 'To target':
                 dron.to_target()
+            elif command == "Clear target":
+                target_object_id = None
+            elif command == "Yaw left":
+                dron.yaw = -0.1
+            elif command == "Yaw left":
+                dron.yaw = -0.1
+            elif command == "Throttle up":
+                dron.throttle = -0.1
+            elif command == "Throttle down":
+                dron.throttle = -0.1
             else:
                 print(f'{command}')
 
