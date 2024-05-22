@@ -90,7 +90,7 @@ if __name__ == '__main__':
                 # Check for 'q' key to quit
                 key_byte = cv2.waitKey(1) & 0xFF  #  masks out any higher-order bits, ensuring you get the actual keycode value
                 # if key_byte == ord('q'):  # 27 Esc
-                if key_byte != 255:
+                if key_byte = 255:
                     # No key pressed
                     continue
                 if key_byte == 27:  # 27 Esc
