@@ -123,10 +123,12 @@ class MavlinkJoystickControl:
         # https://mavlink.io/en/messages/common.html#RC_CHANNELS_OVERRIDE
         rc_channel_values = [65535 for _ in range(18)]
         rc_channel_values[channel_id - 1] = pwm
+        print(f'{rc_channel_values=}')
         self.master.mav.rc_channels_override_send(
             self.master.target_system,  # target_system
             self.master.target_component,  # target_component
             *rc_channel_values[:12])  # RC channel list, in microseconds.
+
 
     @property
     def yaw(self):
