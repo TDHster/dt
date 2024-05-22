@@ -43,7 +43,7 @@ detection_threshold = 0.45  # Threshold to detect object
 # INPUT_VIDEO_HEIGHT = 200
 INPUT_VIDEO_WIDTH = 640
 INPUT_VIDEO_HEIGHT = 480
-# INPUT_VIDEO_FPS = 5
+INPUT_VIDEO_FPS = 5
 
 
 # video_path = 'test_videos/6387-191695740.mp4'  # Commercial from top
@@ -81,9 +81,9 @@ key_to_command = {
 }
 
 # Set the frame width, height, and FPS for the capture object
-# cap.set(cv2.CAP_PROP_FRAME_WIDTH, INPUT_VIDEO_WIDTH)
-# cap.set(cv2.CAP_PROP_FRAME_HEIGHT, INPUT_VIDEO_HEIGHT)
-# cap.set(cv2.CAP_PROP_FPS, INPUT_VIDEO_FPS)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, INPUT_VIDEO_WIDTH)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, INPUT_VIDEO_HEIGHT)
+cap.set(cv2.CAP_PROP_FPS, INPUT_VIDEO_FPS)
 
 
 def find_nearest_object_id(objects):
