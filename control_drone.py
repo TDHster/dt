@@ -464,7 +464,8 @@ if __name__ == '__main__':
             'GUIDED_NOGPS', 'SMART_RTL', 'FLOWHOLD', 'FOLLOW', 'ZIGZAG', 'SYSTEMID', 'AUTOROTATE', 'AUTO_RTL']
     '''
     dron.arm()
-    dron.set_mode('ALT_HOLD')
+    # dron.set_mode('ALT_HOLD')
+    dron.set_mode('STABILIZE')
 
     from math import sin
     while True:
