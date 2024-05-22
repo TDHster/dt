@@ -126,7 +126,7 @@ class MavlinkJoystickControl:
         self.master.mav.rc_channels_override_send(
             self.master.target_system,  # target_system
             self.master.target_component,  # target_component
-            *rc_channel_values)  # RC channel list, in microseconds.
+            *rc_channel_values[:12])  # RC channel list, in microseconds.
 
     @property
     def yaw(self):
