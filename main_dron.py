@@ -53,7 +53,14 @@ INPUT_VIDEO_FPS = 5
 
 rtsp_url = "rtsp://localhost:8554/cam"
 # opencv_device = rtsp_url
-opencv_device = 0
+# opencv_device = 0
+try:
+    # Try converting to integer
+    opencv_device = int(opencv_device)
+except ValueError:
+    # If conversion fails, return the original string
+    pass
+
 print(f'Try to open video device: {opencv_device}')
 try:
     cap = cv2.VideoCapture(opencv_device)
