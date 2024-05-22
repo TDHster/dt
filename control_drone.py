@@ -48,8 +48,8 @@ class MavlinkJoystickControl:
         Windows computer connected to the vehicle using a 3DR Telemetry Radio on COM14	com14 (also set baud=57600)
         """
         print('Trying make mavlink connection...')
-        self.master = mavutil.mavlink_connection(connection_string)
-        print(f'Connected to {connection_string} {self.master}')
+        self._master = mavutil.mavlink_connection(connection_string)
+        print(f'Connected to {connection_string} {self._master}')
         # print(f'Heartbeat: {self.master.wait_heartbeat()}')
 
         # self.control_commands = queue.Queue()
@@ -69,12 +69,12 @@ class MavlinkJoystickControl:
             #     self.master.target_system,
             #     self.master.target_component,
             #     mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 1, 0, 0, 0, 0, 0, 0 )
-            self.master.arducopter_arm()
+            self._master.arducopter_arm()
             # wait until arming confirmed (can manually check with self.master.motors_armed())
             print("Waiting for the vehicle to arm")
-            self.master.motors_armed_wait()
+            self._master.motors_armed_wait()
             print('Armed!')
-            print(f'Arm status check: {self.master.motors_armed()}')
+            print(f'Arm status check: {self._master.motors_armed()}')
             return True
         except Exception as e:
             print(f'Problem with arming: {e}')
@@ -89,10 +89,10 @@ class MavlinkJoystickControl:
             #     mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
             #     0,
             #     0, 0, 0, 0, 0, 0, 0)
-            self.master.arducopter_disarm()
+            self._master.arducopter_disarm()
             print('Sent disarm command!')
             # wait until disarming confirmed
-            print(f'Disarm wait: {self.master.motors_disarmed_wait()}')
+            print(f'Disarm wait: {self._master.motors_disarmed_wait()}')
             return True
         except Exception as e:
             print(f'Problem with disarming: {e}')
@@ -123,12 +123,12 @@ class MavlinkJoystickControl:
         # https://mavlink.io/en/messages/common.html#RC_CHANNELS_OVERRIDE
         rc_channel_values = [65535 for _ in range(18)]
         rc_channel_values[channel_id - 1] = pwm
-        print(f'Debug rc_channels_override_send:\r\t {self.master.target_system=} {self.master.target_component=} {rc_channel_values=}')
-        self.master.mav.rc_channels_override_send(
-            self.master.target_system,  # target_system
-            self.master.target_component,  # target_component
+        print(f'Debug _set_rc_channel_pwm:\r\t {self._master.target_system=} {self._master.target_component=} {rc_channel_values=}')
+        self._master.mav.rc_channels_override_send(
+            self._master.target_system,  # target_system
+            self._master.target_component,  # target_component
+            # *rc_channel_values)  # RC channel list, in microseconds.
             *rc_channel_values[:12])  # RC channel list, in microseconds.
-
 
     @property
     def yaw(self):
@@ -154,8 +154,9 @@ class MavlinkJoystickControl:
         self._pitch = 1  # maximum
         self._set_rc_channel_pwm(self.PITCH_CHANNEL_ID,
                                  normalize_value(self._pitch, min_norm=self.PWN_min, max_norm=self.PWM_max))
+
     def get_modes_list(self):
-        return list(self.master.mode_mapping().keys())
+        return list(self._master.mode_mapping().keys())
 
     def set_mode(self, mode='LAND'):
         '''
@@ -163,7 +164,7 @@ class MavlinkJoystickControl:
                 'OF_LOITER', 'DRIFT', 'SPORT', 'FLIP', 'AUTOTUNE', 'POSHOLD', 'BRAKE', 'THROW', 'AVOID_ADSB',
                 'GUIDED_NOGPS', 'SMART_RTL', 'FLOWHOLD', 'FOLLOW', 'ZIGZAG', 'SYSTEMID', 'AUTOROTATE', 'AUTO_RTL']
         '''
-        self.master.set_mode(mode)
+        self._master.set_mode(mode)
 
 
 class MavlinkManualControl:
@@ -456,14 +457,15 @@ if __name__ == '__main__':
 
 
     dron = MavlinkJoystickControl('udpout:127.0.0.1:14550')
-    print('Modes:', list(dron.master.mode_mapping().keys()))
+    print('Modes:', list(dron._master.mode_mapping().keys()))
     '''
     Modes: ['STABILIZE', 'ACRO', 'ALT_HOLD', 'AUTO', 'GUIDED', 'LOITER', 'RTL', 'CIRCLE', 'POSITION', 'LAND',
             'OF_LOITER', 'DRIFT', 'SPORT', 'FLIP', 'AUTOTUNE', 'POSHOLD', 'BRAKE', 'THROW', 'AVOID_ADSB',
             'GUIDED_NOGPS', 'SMART_RTL', 'FLOWHOLD', 'FOLLOW', 'ZIGZAG', 'SYSTEMID', 'AUTOROTATE', 'AUTO_RTL']
     '''
-    dron.master.set_mode('STABILIZE')
+    dron._master.set_mode('STABILIZE')
     dron.arm()
+    dron.set_mode('STABILIZE')
 
     from math import sin
     while True:
@@ -476,19 +478,22 @@ if __name__ == '__main__':
            # Set some roll
             # set_rc_channel_pwm(2, 1600)
             # Set some yaw
-            dron.set_rc_channel_pwm(4, 1700)
+            # dron.set_rc_channel_pwm(4, 1700)
+            dron.throttle = 0.1
             # dron_control.throttle = 0
             sleep(2)
-            dron.set_rc_channel_pwm(4, 1200)
-            # dron_control.throttle = 0.5
+            # dron.set_rc_channel_pwm(4, 1200)
+            dron.throttle = 0.5
             sleep(2)
-            dron.set_rc_channel_pwm(4, 1500)
-            # dron_control.throttle = 0.1
+            # dron.set_rc_channel_pwm(4, 1500)
+            dron.throttle = 1
+            sleep(2)
+            dron.throttle = 0
             sleep(2)
 
 
         except KeyboardInterrupt:
             dron.disarm()
-
+            dron.set_mode('STABILIZE')
             exit(0)
 
