@@ -1,4 +1,4 @@
-from pymavlink import mavutil
+from pymavlink_iq import mavutil
 # import queue
 # import threading
 from time import sleep, time, time_ns
@@ -62,25 +62,49 @@ class MavlinkJoystickControl:
         self.PWN_min = 1100
         self.PWM_max = 1900
 
-    def arm(self, mode='GUIDED'):
-        try:
-            # worked:
-            # self.master.mav.command_long_send(
-            #     self.master.target_system,
-            #     self.master.target_component,
-            #     mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 1, 0, 0, 0, 0, 0, 0 )
-            self.set_mode(mode)
+    # def arm(self):
+    #     try:
+    #         # worked:
+    #         # self.master.mav.command_long_send(
+    #         #     self.master.target_system,
+    #         #     self.master.target_component,
+    #         #     mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 1, 0, 0, 0, 0, 0, 0 )
+    #         self.set_mode(mode)
+    #
+    #         self._master.arducopter_arm()
+    #         # wait until arming confirmed (can manually check with self.master.motors_armed())
+    #         print("Waiting for the vehicle to arm")
+    #         self._master.motors_armed_wait()
+    #         print('Armed!')
+    #         print(f'Arm status check: {self._master.motors_armed()}')
+    #         return True
+    #     except Exception as e:
+    #         print(f'Problem with arming: {e}')
+    #         return False
 
-            self._master.arducopter_arm()
-            # wait until arming confirmed (can manually check with self.master.motors_armed())
-            print("Waiting for the vehicle to arm")
-            self._master.motors_armed_wait()
-            print('Armed!')
-            print(f'Arm status check: {self._master.motors_armed()}')
-            return True
-        except Exception as e:
-            print(f'Problem with arming: {e}')
-            return False
+    def arm(self, arm_command=1):
+        '''
+        Args:
+            arm_command: 1 - arm
+            0 - disarm
+
+        Returns:
+        '''
+        # Wait for the first heartbeat
+        # This sets the system and component ID of remote system for the link
+        self._master.wait_heartbeat()
+        print("Heartbeat from system (system %u component %u)" %
+              (self._master.target_system, self._master.target_component))
+
+        self._master.mav.command_long_send(self._master.target_system, self._master.target_component,
+                                           mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, arm_command, 0, 0, 0, 0,
+                                           0, 0)
+
+        msg = self._master.recv_match(type='COMMAND_ACK', blocking=True)
+        print(msg)
+
+        # return the result of the ACK message
+        return msg.result
 
     def disarm(self):
         try:
@@ -506,10 +530,10 @@ if __name__ == '__main__':
             'OF_LOITER', 'DRIFT', 'SPORT', 'FLIP', 'AUTOTUNE', 'POSHOLD', 'BRAKE', 'THROW', 'AVOID_ADSB',
             'GUIDED_NOGPS', 'SMART_RTL', 'FLOWHOLD', 'FOLLOW', 'ZIGZAG', 'SYSTEMID', 'AUTOROTATE', 'AUTO_RTL']
     '''
-    dron.arm(mode='GUIDED')
+    dron.arm()
     # dron.set_mode('ALT_HOLD')
     # dron.set_mode('STABILIZE')
-    # dron.set_mode('GUIDED')  # <- this work
+    dron.set_mode('GUIDED')  # <- this work
 
     from math import sin
 
