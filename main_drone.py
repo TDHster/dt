@@ -12,8 +12,28 @@ from mavlink_control import MavlinkDrone as MavlinkControl
 from object_detector import filter_by_target_class_id
 import argparse
 
+PID_X = 0.1
+PID_Z = 0.1
+PID_YAW = 0.5
+
+ground_receiver_ip = "192.168.0.169"
+ground_server_port = 5000
+
+mavproxy_connect_string = 'udpout:127.0.0.1:14550'
+
+
+detection_threshold = 0.45  # Threshold to detect object
+# detection_threshold = 0.3  # Threshold to detect object
+
+# INPUT_VIDEO_WIDTH = 320
+# INPUT_VIDEO_HEIGHT = 200
+INPUT_VIDEO_WIDTH = 640
+INPUT_VIDEO_HEIGHT = 480
+INPUT_VIDEO_FPS = 15
+
+
 # Create the parser object
-parser = argparse.ArgumentParser(description="Main dron script")
+parser = argparse.ArgumentParser(description="Main drone script")
 
 # Add an argument for the camera type with a default value
 parser.add_argument(
@@ -28,32 +48,19 @@ args = parser.parse_args()
 # Get the camera type from the parsed arguments
 opencv_device = args.camera
 
-ground_receiver_ip = "192.168.0.169"
-ground_server_port = 5000
-
 print('Starting.')
 print(f"Installed OpenCV version: {cv2.__version__}")
 
 print(f'Starting connection to mavlink.')
-dron = MavlinkControl('udpout:127.0.0.1:14550')
+dron = MavlinkControl(mavproxy_connect_string)
 # dron.arm()
-
-detection_threshold = 0.45  # Threshold to detect object
-# detection_threshold = 0.3  # Threshold to detect object
-
-# INPUT_VIDEO_WIDTH = 320
-# INPUT_VIDEO_HEIGHT = 200
-INPUT_VIDEO_WIDTH = 640
-INPUT_VIDEO_HEIGHT = 480
-INPUT_VIDEO_FPS = 15
-
 
 # video_path = 'test_videos/6387-191695740.mp4'  # Commercial from top
 # video_path = 'test_videos/188778-883818276_small.mp4' # Two womans
 # video_path = 'test_videos/10831-226624994.mp4'  # Square
 # cap = cv2.VideoCapture(video_path)
 
-rtsp_url = "rtsp://localhost:8554/cam"
+# rtsp_url = "rtsp://localhost:8554/cam"
 # opencv_device = rtsp_url
 # opencv_device = 0
 try:
@@ -76,14 +83,15 @@ print(f'Video device {opencv_device} opened.')
 
 # Dictionary mapping keys to commands
 key_to_command = {
+    't': "Takeoff",
     'w': "Move forward",
     's': "Move backward",
     'a': "Move left",
     'd': "Move right",
     'q': "Yaw left",
     'e': "Yaw right",
-    'p': "Throttle up",
-    'l': "Throttle down",
+    'p': "Move up",
+    'l': "Move down",
     ' ': "Select target",
     'с': "Clear target",
     '\r': "To target"  # Use '\r' for the enter key
@@ -134,6 +142,7 @@ print(f'Network connection established.')
 
 target_object_id = None
 object_id_near_center = None
+target_object_diagonal = None
 
 print('Starting program main loop.')
 while True:
@@ -169,10 +178,15 @@ while True:
                 cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 0, 255), 2)
-
-                dron.yaw = yaw_pixels/INPUT_VIDEO_WIDTH / 2 / 2  * pi/180
-                dz = elevation_pixels/INPUT_VIDEO_HEIGHT
+                target_object_current_diagonal = sqrt(w*w + h*h)
+                if not target_object_diagonal:
+                    target_object_diagonal = target_object_current_diagonal
+                dx =  (target_object_diagonal - target_object_current_diagonal) / INPUT_VIDEO_WIDTH * PID_X
+                # dron.move(dx, 0, 0)
+                dron.yaw = yaw_pixels/INPUT_VIDEO_WIDTH / 2 * pi/180 * PID_YAW
+                dz = elevation_pixels/INPUT_VIDEO_HEIGHT * PID_Z
                 # dron.move(0, 0, dz * 0.1)
+                dron.move(dx, 0, dz)
 
             elif object_id == object_id_near_center:
                 # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
@@ -216,9 +230,9 @@ while True:
                 dron.yaw = -5
             elif command == "Yaw right":
                 dron.yaw = 5
-            elif command == "Throttle up":
+            elif command == "Move up":
                 dron.move(0,0, -0.1)
-            elif command == "Throttle down":
+            elif command == "Move down":
                 dron.move(0,0, 0.1)
             else:
                 print(f'{command}')
