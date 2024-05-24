@@ -2,7 +2,7 @@ from pymavlink import mavutil
 from pymavlink_iq_utilites import *
 from time import sleep
 
-class MavlinkDron:
+class MavlinkDrone:
     def __init__(self, connection_string='udpin:localhost:14550'):
         self.connection = mavutil.mavlink_connection(connection_string)
         self.connection.wait_heartbeat()
@@ -91,7 +91,7 @@ class MavlinkDron:
         '''
         self.connection.set_mode(mode)
 
-    def yaw(self, yaw_angle, yaw_rate=25):
+    def yaw(self, yaw_angle, yaw_rate=15):
         """Set yaw of MAVLink client.
 
          Args:
@@ -119,7 +119,10 @@ class MavlinkDron:
             self.connection.target_component,
             mavutil.mavlink.MAV_CMD_CONDITION_YAW, 0, yaw_angle, yaw_rate, direction, abs_rel_flag, 0, 0, 0)
 
-    def move(self, relative_x, relative_y, relative_z):
+    def move(self, relative_x=0, relative_y=0, relative_z=0,
+             velocity_x=0, velocity_y=0, velocity_z=0,
+             axel_x=0, axel_y=0, axel_z=0,
+             type_mask='Use Position'):
         '''
             time_boot_ms	Sender's system time in milliseconds since boot (any random 10 ms ex.)
             target_system	System ID of vehicle
@@ -153,18 +156,26 @@ class MavlinkDron:
             yaw_rate	yaw rate in rad/s
             '''
 
-        time_boot_ms = 10  # ms
-        type_mask = int(0b010111111000)
+        time_boot_ms = 10  # ms - just for some value
+
+        if type == 'Use Position':
+            type_mask = int(0b110111111000)
+        elif type == 'Use Velocity':
+            type_mask = int(0b110111000111)
+        elif type == 'Use Acceleration':
+            type_mask = int(0b110000111111)
+
         # x, y, z = 0, 0, -1
-        velocity_x, velocity_y, velocity_z = 0, 0, 0
-        axel_x, axel_y, axel_z = 0, 0, 0
+        # velocity_x, velocity_y, velocity_z = 0, 0, 0
+        # axel_x, axel_y, axel_z = 0, 0, 0
         yaw = 0  # radians
         yaw_rate = 0
         x, y, z = relative_x, relative_y, relative_z
         self.connection.mav.send(
             mavutil.mavlink.MAVLink_set_position_target_local_ned_message(
                 time_boot_ms, self.connection.target_system,
-                self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_NED,
+                # self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_NED,
+                self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_OFFSET_NED,
                 type_mask,
                 x, y, z,
                 velocity_x, velocity_y, velocity_z,
@@ -172,6 +183,11 @@ class MavlinkDron:
                 yaw, yaw_rate
             )
         )
+
+    def to_target(self):
+        pass
+        self.move(2,0,0)
+        # self.move(velocity_x=30, type='Use Velocity')
 
     def _get_message(self, type='LOCAL_POSITION_NED', blocking=True):
         msg = self.connection.recv_match(
@@ -210,7 +226,7 @@ if __name__ == '__main__':
     wait_time = 3
     box_size = 2
     # drone = MavlinkDron('udpin:localhost:14550')
-    drone = MavlinkDron('udpout:localhost:14550')
+    drone = MavlinkDrone('udpout:localhost:14550')
     drone.takeoff(1)
     sleep(wait_time)
     drone.move(box_size, 0, -1)

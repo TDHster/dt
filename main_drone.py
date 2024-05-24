@@ -2,10 +2,12 @@
 
 import cv2
 from object_tracker import CentroidTracker
-import math
+# import math
+from math import pi, sqrt
 import heapq
 from video_send import NetworkConnection, get_key_from_byte
-from control_drone import MavlinkJoystickControl as MavlinkControl
+# from control_drone import MavlinkJoystickControl as MavlinkControl
+from mavlink_control import MavlinkDrone as MavlinkControl
 # from object_detector import NeuroNetObjectDetector
 from object_detector import filter_by_target_class_id
 import argparse
@@ -99,7 +101,7 @@ def find_nearest_object_id(objects):
     # Calculate distances and add them to the priority queue
     for object_id, object_data in objects.items():
         object_x, object_y = object_data[:2]
-        distance = math.sqrt((object_x - INPUT_VIDEO_WIDTH/2)**2 + (object_y - INPUT_VIDEO_HEIGHT/2)**2)
+        distance = sqrt((object_x - INPUT_VIDEO_WIDTH/2)**2 + (object_y - INPUT_VIDEO_HEIGHT/2)**2)
         heapq.heappush(pq, (distance, object_id))
 
     # Extract the nearest object ID from the priority queue (smallest distance)
@@ -167,8 +169,10 @@ while True:
                 cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 0, 255), 2)
-                # dron.yaw = yaw_pixels/INPUT_VIDEO_WIDTH
-                # dron.throttle = elevation_pixels/INPUT_VIDEO_HEIGHT
+
+                dron.yaw = yaw_pixels/INPUT_VIDEO_WIDTH / 2 / 2  * pi/180
+                dz = elevation_pixels/INPUT_VIDEO_HEIGHT
+                # dron.move(0, 0, dz * 0.1)
 
             elif object_id == object_id_near_center:
                 # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
@@ -209,13 +213,13 @@ while True:
             elif command == "Clear target":
                 target_object_id = None
             elif command == "Yaw left":
-                dron.yaw = -0.1
-            elif command == "Yaw left":
-                dron.yaw = -0.1
+                dron.yaw = -5
+            elif command == "Yaw right":
+                dron.yaw = 5
             elif command == "Throttle up":
-                dron.throttle = -0.1
+                dron.move(0,0, -0.1)
             elif command == "Throttle down":
-                dron.throttle = -0.1
+                dron.move(0,0, 0.1)
             else:
                 print(f'{command}')
 
