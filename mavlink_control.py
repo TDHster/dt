@@ -261,19 +261,26 @@ if __name__ == '__main__':
     drone.move_test(box_size, 0, -altitude)
     print(drone.get_message_local_position_ned())
     sleep(wait_time)
+
     print(drone.get_message_local_position_ned())
     print(f'Right')
     drone.move_test(0, box_size, -altitude)
     print(drone.get_message_local_position_ned())
     sleep(wait_time)
+
     print(drone.get_message_local_position_ned())
     print(f'Back')
     drone.move_test(-box_size, 0, -altitude)
+    sleep(wait_time)
+
     print(drone.get_message_local_position_ned())
     print(f'Left')
     drone.move_test(0, -box_size, -altitude)
+    sleep(wait_time)
+
     print(drone.get_message_local_position_ned())
     sleep(wait_time)
+
     print(drone.get_message_local_position_ned())
     print('Landing command')
     drone.land_now()
