@@ -225,7 +225,7 @@ class MavlinkDrone:
 if __name__ == '__main__':
     wait_time = 3
     box_size = 2
-    drone = MavlinkDrone('udpin:localhost:14550')
+    drone = MavlinkDrone('udpin:127.0.0.1:14540')
     # drone = MavlinkDrone('udpout:localhost:14550')
     print('takeoff')
     drone.takeoff(1)
