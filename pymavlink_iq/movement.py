@@ -90,7 +90,7 @@ if __name__ == '__main__':
 
     # Start a connection listening to a UDP port
     # the_connection = mavutil.mavlink_connection('udpin:localhost:14550')  # original connection string
-    mav_connection = mavutil.mavlink_connection('udpout:localhost:14550')
+    mav_connection = mavutil.mavlink_connection('udpin:127.0.0.1:14540')
 
     # Wait for the first heartbeat
     #   This sets the system and component ID of remote system for the link

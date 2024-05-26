@@ -2,7 +2,7 @@ from pymavlink import mavutil
 from takeoff import takeoff
 from time import sleep
 
-mav_connection = mavutil.mavlink_connection('udpout:localhost:14550')
+mav_connection = mavutil.mavlink_connection('udpin:127.0.0.1:14540')
 
 mav_connection.wait_heartbeat()
 print("Heartbeat from system (system %u component %u)" %
