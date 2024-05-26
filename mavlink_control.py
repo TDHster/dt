@@ -184,6 +184,26 @@ class MavlinkDrone:
             )
         )
 
+    def move_test(self, rel_x, rel_y, rel_z):
+        time_boot_ms = 10  # ms
+        type_mask = int(0b010111111000)
+        # x, y, z = 0, 0, -1
+        velocity_x, velocity_y, velocity_z = 0, 0, 0
+        axel_x, axel_y, axel_z = 0, 0, 0
+        yaw = 0  # radians
+        yaw_rate = 0
+        self.connection.mav.send(
+            mavutil.mavlink.MAVLink_set_position_target_local_ned_message(
+                time_boot_ms, self.connection.target_system,
+                self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_NED,
+                type_mask,
+                rel_x, rel_y, rel_z,
+                velocity_x, velocity_y, velocity_z,
+                axel_x, axel_y, axel_z,
+                yaw, yaw_rate
+            )
+        )
+
     def to_target(self):
         pass
         self.move(2,0,0)
@@ -225,6 +245,7 @@ class MavlinkDrone:
 if __name__ == '__main__':
     wait_time = 3
     box_size = 2
+    altitude = 2
     connection_string = 'udpin:127.0.0.1:14540'
     print(f'Trying to connect: {connection_string}')
     drone = MavlinkDrone(connection_string)
@@ -232,6 +253,12 @@ if __name__ == '__main__':
     print('takeoff')
     drone.takeoff(1)
     sleep(wait_time)
+    drone.move_test(box_size, 0, -altitude)
+    sleep(wait_time)
+    drone.move_test(box_size, 0, -altitude)
+    sleep(wait_time)
+    exit(0)
+
     drone.move(box_size, 0, -1)
     print(drone.get_message_local_position_ned())
     sleep(wait_time)
