@@ -243,20 +243,36 @@ class MavlinkDrone:
 
 
 if __name__ == '__main__':
-    wait_time = 3
+    wait_time = 5
     box_size = 2
-    altitude = 2
+    altitude = 1
     connection_string = 'udpin:127.0.0.1:14540'
     print(f'Trying to connect: {connection_string}')
     drone = MavlinkDrone(connection_string)
     # drone = MavlinkDrone('udpout:localhost:14550')
-    print('takeoff')
-    drone.takeoff(1)
+    print('Taking off')
+    drone.takeoff(altitude)
     sleep(wait_time)
+    print(drone.get_message_local_position_ned())
+    print(f'Forward')
     drone.move_test(box_size, 0, -altitude)
+    print(drone.get_message_local_position_ned())
     sleep(wait_time)
-    drone.move_test(box_size, 0, -altitude)
+    print(drone.get_message_local_position_ned())
+    print(f'Right')
+    drone.move_test(0, box_size, -altitude)
+    print(drone.get_message_local_position_ned())
     sleep(wait_time)
+    print(drone.get_message_local_position_ned())
+    print(f'Back')
+    drone.move_test(-box_size, 0, -altitude)
+    print(drone.get_message_local_position_ned())
+    print(f'Left')
+    drone.move_test(0, -box_size, -altitude)
+    print(drone.get_message_local_position_ned())
+    sleep(wait_time)
+    print(drone.get_message_local_position_ned())
+
     exit(0)
 
     drone.move(box_size, 0, -1)
