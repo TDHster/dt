@@ -522,7 +522,7 @@ if __name__ == '__main__':
     # while True:
     #     dron_control._read_parameters()
 
-    connection_string = 'udpout:127.0.0.1:14540'
+    connection_string = 'udpin:127.0.0.1:14540'
     print(f'Trying to connect: {connection_string}')
     dron = MavlinkJoystickControl(connection_string)
     print('Modes:', list(dron._master.mode_mapping().keys()))

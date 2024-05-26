@@ -227,7 +227,7 @@ if __name__ == '__main__':
     box_size = 2
     connection_string = 'udpin:127.0.0.1:14540'
     print(f'Trying to connect: {connection_string}')
-    drone = MavlinkDrone('connection_string')
+    drone = MavlinkDrone(connection_string)
     # drone = MavlinkDrone('udpout:localhost:14550')
     print('takeoff')
     drone.takeoff(1)
