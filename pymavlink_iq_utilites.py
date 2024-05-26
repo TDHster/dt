@@ -1,4 +1,6 @@
 import time
+from pymavlink import mavutil
+
 
 
 def ekf_pos_aiding(mav_connection, flags, estimator_status_msg="ESTIMATOR_STATUS"):
