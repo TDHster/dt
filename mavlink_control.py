@@ -195,7 +195,9 @@ class MavlinkDrone:
         self.connection.mav.send(
             mavutil.mavlink.MAVLink_set_position_target_local_ned_message(
                 time_boot_ms, self.connection.target_system,
-                self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_NED,
+                self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_NED, # seems to be working
+                # self.connection.target_component, mavutil.mavlink.MAV_FRAME_BODY_OFFSET_NED, # best
+                # self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_OFFSET_NED,
                 type_mask,
                 rel_x, rel_y, rel_z,
                 velocity_x, velocity_y, velocity_z,
@@ -273,7 +275,8 @@ if __name__ == '__main__':
     print(drone.get_message_local_position_ned())
     sleep(wait_time)
     print(drone.get_message_local_position_ned())
-
+    print('Landing command')
+    drone.land_now()
     exit(0)
 
     drone.move(box_size, 0, -1)
