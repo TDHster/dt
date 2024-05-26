@@ -9,7 +9,7 @@ class MavlinkDrone:
         print("Heartbeat from system (system %u component %u)" %
               (self.connection.target_system, self.connection.target_component))
         self.autopilot_info = get_autopilot_info(self.connection, self.connection.target_system)
-        print(f"Connected to {self.autopilot_info["autopilot"]} autopilot")
+        print(f'Connected to {self.autopilot_info["autopilot"]} autopilot')
 
     def _arm(self, arm_command=1):
         self.connection.wait_heartbeat()

@@ -209,7 +209,7 @@ while True:
     # except netconnection.key_queue.Empty:
     #     pass  # No data in queue, continue the loop
 
-    # target_object_id = object_id_near_center #  TODO remove this after keyboard connection will work.
+    # target_object_id = object_id_near_center #  for debug - autotarget nearest
     # Check for received keys from the queue
     if not netconnection.key_queue.empty():
         try:
