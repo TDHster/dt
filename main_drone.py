@@ -222,6 +222,7 @@ while True:
             if command == 'Select target':
                 target_object_id = object_id_near_center
                 print(f'Select target: {target_object_id}')
+                target_object_diagonal = None
             elif command == 'To target':
                 dron.to_target()
             elif command == "Clear target":
