@@ -102,16 +102,16 @@ if __name__ == '__main__':
 
     time_between_wpts = 4
 
-    make_movement(1, 0, -1)
+    make_movement(mav_connection, 1, 0, -1)
     run_for_seconds(time_between_wpts, mav_connection)
     # sleep(time_between_wpts)
-    make_movement(1, 1, -1)
+    make_movement(mav_connection, 1, 1, -1)
     run_for_seconds(time_between_wpts, mav_connection)
     # sleep(time_between_wpts)
-    make_movement(0, 1, -1)
+    make_movement(mav_connection, 0, 1, -1)
     run_for_seconds(time_between_wpts, mav_connection)
     # sleep(time_between_wpts)
-    make_movement(0, 0, -1)
+    make_movement(mav_connection, 0, 0, -1)
     run_for_seconds(time_between_wpts, mav_connection)
     # sleep(time_between_wpts)
 
