@@ -249,6 +249,8 @@ if __name__ == '__main__':
     box_size = 2
     altitude = 1
     # mavproxy.py --master=/dev/ttyACM0 --out=udpin:0.0.0.0:14550
+    # connection_string = 'udpin:127.0.0.1:14540' # working
+
     connection_string = 'udpin:127.0.0.1:14540'
     print(f'Trying to connect: {connection_string}')
     drone = MavlinkDrone(connection_string)
