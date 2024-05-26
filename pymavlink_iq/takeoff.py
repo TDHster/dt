@@ -47,8 +47,11 @@ def takeoff(mav_connection, takeoff_altitude: float, tgt_sys_id: int = 1, tgt_co
     print(f"Arm ACK:  {arm_msg}")
 
     # Command Takeoff
+    takeoff_params[6] = 2 # altitude
     mav_connection.mav.command_long_send(tgt_sys_id, tgt_comp_id,
-                                         mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0, takeoff_params[0], takeoff_params[1], takeoff_params[2], takeoff_params[3], takeoff_params[4], takeoff_params[5], takeoff_params[6])
+                                         mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0,
+                                         takeoff_params[0], takeoff_params[1], takeoff_params[2], takeoff_params[3],
+                                         takeoff_params[4], takeoff_params[5], takeoff_params[6])
 
     takeoff_msg = mav_connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
     print(f"Takeoff ACK:  {takeoff_msg}")
