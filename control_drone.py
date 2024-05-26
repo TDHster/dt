@@ -523,7 +523,7 @@ if __name__ == '__main__':
     #     dron_control._read_parameters()
 
 
-    dron = MavlinkJoystickControl('udpout:127.0.0.1:14550')
+    dron = MavlinkJoystickControl('udpout:127.0.0.1:14540')
     print('Modes:', list(dron._master.mode_mapping().keys()))
     '''
     Modes: ['STABILIZE', 'ACRO', 'ALT_HOLD', 'AUTO', 'GUIDED', 'LOITER', 'RTL', 'CIRCLE', 'POSITION', 'LAND',
