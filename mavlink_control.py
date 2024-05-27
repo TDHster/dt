@@ -91,7 +91,7 @@ class MavlinkDrone:
         '''
         self.connection.set_mode(mode)
 
-    def yaw(self, yaw_angle, yaw_rate=15):
+    def yaw(self, yaw_angle, yaw_rate=5):
         """Set yaw of MAVLink client.
 
          Args:
@@ -259,6 +259,18 @@ if __name__ == '__main__':
     drone.takeoff(altitude)
     sleep(wait_time)
     print(drone.get_message_local_position_ned())
+    print('yaw left')
+    drone.yaw(-30)
+    print(drone.get_message_local_position_ned())
+    sleep(wait_time)
+
+    drone.yaw(60)
+    print('yaw right')
+    print(drone.get_message_local_position_ned())
+    sleep(wait_time)
+
+    exit(0)
+
     print(f'Forward')
     drone.move_test(box_size, 0, -altitude)
     print(drone.get_message_local_position_ned())
