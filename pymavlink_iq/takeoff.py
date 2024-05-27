@@ -1,9 +1,14 @@
 # takeoff.py
-import argparse
 from pymavlink import mavutil
 from utilities.connect_to_sysid import connect_to_sysid
 from utilities.wait_for_position_aiding import wait_until_position_aiding
 from utilities.get_autopilot_info import get_autopilot_info
+import argparse
+
+parser = argparse.ArgumentParser(description="Mavlink сontrol")
+
+
+
 
 
 def takeoff(mav_connection, takeoff_altitude: float, tgt_sys_id: int = 1, tgt_comp_id=1):
@@ -62,10 +67,20 @@ def main():
     parser = argparse.ArgumentParser(description="A simple script to command a UAV to takeoff.")
     parser.add_argument("--altitude", type=int, help="Altitude for the UAV to reach upon takeoff.", default=1)
     parser.add_argument("--sysid", type=int, help="System ID of the UAV to command.", default=1)
-
+    parser.add_argument(
+        "-c",
+        "--connectionstring",
+        type=str,
+        default="udpin:127.0.0.1:14550",
+        help="Specify path for mavlink connection",
+    )
 
     args = parser.parse_args()
-    mav_connection = connect_to_sysid('udpin:localhost:14550', args.sysid)
+    connection_string = args.connectionstring
+    print(f"Using mavlink connection string: {connection_string}")
+
+    args = parser.parse_args()
+    mav_connection = connect_to_sysid(connection_string, args.sysid)
     takeoff(mav_connection, args.altitude)
 
 if __name__ == "__main__":
