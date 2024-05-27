@@ -1,6 +1,24 @@
 from pymavlink import mavutil
 from pymavlink_iq_utilites import *
 from time import sleep
+import argparse
+
+# Create the parser object
+parser = argparse.ArgumentParser(description="MavlinkcControl")
+
+# Add an argument for the camera type with a default value
+parser.add_argument(
+    "-c",
+    "--connectionstring",
+    type=str,
+    default="udpin:127.0.0.1:14550",
+    help="Specify path for mavlink connection",
+)
+
+args = parser.parse_args()
+connection_string = args.connectionstring
+print(f"Using mavlink connection string: {connection_string}")
+
 
 class MavlinkDrone:
     def __init__(self, connection_string='udpin:localhost:14550'):
@@ -251,7 +269,8 @@ if __name__ == '__main__':
     # mavproxy.py --master=/dev/ttyACM0 --out=udpout:0.0.0.0:14550
     # connection_string = 'udpin:127.0.0.1:14540' # working
 
-    connection_string = 'udpin:127.0.0.1:14550'
+    # connection_string = 'udpin:127.0.0.1:14550'
+    connection_string = 'tcp:localhost:5763'
     print(f'Trying to connect: {connection_string}')
     drone = MavlinkDrone(connection_string)
     # drone = MavlinkDrone('udpout:localhost:14550')
