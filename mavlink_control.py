@@ -270,7 +270,7 @@ if __name__ == '__main__':
     # connection_string = 'udpin:127.0.0.1:14540' # working
 
     # connection_string = 'udpin:127.0.0.1:14550'
-    connection_string = 'tcp:localhost:5763'
+    connection_string = 'tcp:localhost:5063'
     print(f'Trying to connect: {connection_string}')
     drone = MavlinkDrone(connection_string)
     # drone = MavlinkDrone('udpout:localhost:14550')
