@@ -3,10 +3,8 @@ from pymavlink_iq_utilites import *
 from time import sleep
 import argparse
 
-# Create the parser object
-parser = argparse.ArgumentParser(description="MavlinkcControl")
+parser = argparse.ArgumentParser(description="Mavlink сontrol")
 
-# Add an argument for the camera type with a default value
 parser.add_argument(
     "-c",
     "--connectionstring",

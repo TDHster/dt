@@ -3,6 +3,22 @@ from time import sleep, time
 
 from takeoff import takeoff
 
+import argparse
+
+parser = argparse.ArgumentParser(description="Mavlink сontrol")
+
+parser.add_argument(
+    "-c",
+    "--connectionstring",
+    type=str,
+    default="udpin:127.0.0.1:14550",
+    help="Specify path for mavlink connection",
+)
+
+args = parser.parse_args()
+connection_string = args.connectionstring
+print(f"Using mavlink connection string: {connection_string}")
+
 
 def make_movement(mav_connection, x, y, z):
     '''
@@ -90,7 +106,8 @@ if __name__ == '__main__':
 
     # Start a connection listening to a UDP port
     # the_connection = mavutil.mavlink_connection('udpout:localhost:14550')  # original connection string
-    mav_connection = mavutil.mavlink_connection('udpin:127.0.0.1:14540')
+    # mav_connection = mavutil.mavlink_connection('udpin:127.0.0.1:14540')
+    mav_connection = mavutil.mavlink_connection(connection_string)
 
     # Wait for the first heartbeat
     #   This sets the system and component ID of remote system for the link

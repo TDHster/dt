@@ -2,7 +2,27 @@ from pymavlink import mavutil
 from takeoff import takeoff
 from time import sleep
 
-mav_connection = mavutil.mavlink_connection('udpin:127.0.0.1:14540')
+
+import argparse
+
+parser = argparse.ArgumentParser(description="Mavlink сontrol")
+
+parser.add_argument(
+    "-c",
+    "--connectionstring",
+    type=str,
+    default="udpin:127.0.0.1:14550",
+    help="Specify path for mavlink connection",
+)
+
+args = parser.parse_args()
+connection_string = args.connectionstring
+print(f"Using mavlink connection string: {connection_string}")
+
+
+
+# mav_connection = mavutil.mavlink_connection('udpin:127.0.0.1:14540')
+mav_connection = mavutil.mavlink_connection(connection_string)
 
 mav_connection.wait_heartbeat()
 print("Heartbeat from system (system %u component %u)" %
