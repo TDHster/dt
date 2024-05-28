@@ -20,6 +20,25 @@ print(f"Using mavlink connection string: {connection_string}")
 
 class MavlinkDrone:
     def __init__(self, connection_string='udpin:localhost:14550'):
+        '''
+          Args:
+            connection_string:
+            The mavutil.mavlink_connection() connection string has the format:
+
+            [protocol:]address[:port]
+            where:
+
+            protocol (optional): The IP protocol. If not specified pymavlink will attempt to determine if the address is a serial port (e.g. USB) or a file, and if not will default to a UDP address.
+            tcp: Initiate a TCP connection on the specified address and port.
+            tcpin: Listen for a TCP connection on the specified address and port.
+            udpin: Listen for a UDP connection on the specified address and port.
+            udpout: Initiate a TCP connection on the specified address and port.
+            udp: By default, same as udpin. Set mavlink_connection parameter input=False to make same as udpout.
+            udpcast: Broadcast UDP address and port. This is the same as udp with mavlink_connection() parameters input=False and broadcast=True.
+            address: IP address, serial port name, or file name
+            port: IP port (only if address is an IP address)
+
+        '''
         self.connection = mavutil.mavlink_connection(connection_string)
         self.connection.wait_heartbeat()
         print("Heartbeat from system (system %u component %u)" %
@@ -275,17 +294,19 @@ if __name__ == '__main__':
     print('Taking off')
     drone.takeoff(altitude)
     sleep(wait_time)
-    print(drone.get_message_local_position_ned())
-    print('yaw left')
-    drone.yaw(-30)
-    print(drone.get_message_local_position_ned())
-    sleep(wait_time)
+    # print(drone.get_message_local_position_ned())
+    # print('yaw left')
+    # drone.yaw(-30)
+    # print(drone.get_message_local_position_ned())
+    # sleep(wait_time)
+    #
+    # drone.yaw(60)
+    # print('yaw right')
+    # print(drone.get_message_local_position_ned())
+    # sleep(wait_time)
 
-    drone.yaw(60)
-    print('yaw right')
-    print(drone.get_message_local_position_ned())
-    sleep(wait_time)
-
+    print('Landing command')
+    drone.land_now()
     exit(0)
 
     print(f'Forward')
@@ -317,19 +338,19 @@ if __name__ == '__main__':
     drone.land_now()
     exit(0)
 
-    drone.move(box_size, 0, -1)
-    print(drone.get_message_local_position_ned())
-    sleep(wait_time)
-    drone.move(0, box_size, -1)
-    print(drone.get_message_local_position_ned())
-    sleep(wait_time)
-    drone.move(-box_size, 0, -1)
-    print(drone.get_message_local_position_ned())
-    sleep(wait_time)
-    drone.move(0, -box_size, -1)
-    print(drone.get_message_local_position_ned())
-    sleep(wait_time)
-    print(drone.get_message_local_position_ned())
+    # drone.move(box_size, 0, -1)
+    # print(drone.get_message_local_position_ned())
+    # sleep(wait_time)
+    # drone.move(0, box_size, -1)
+    # print(drone.get_message_local_position_ned())
+    # sleep(wait_time)
+    # drone.move(-box_size, 0, -1)
+    # print(drone.get_message_local_position_ned())
+    # sleep(wait_time)
+    # drone.move(0, -box_size, -1)
+    # print(drone.get_message_local_position_ned())
+    # sleep(wait_time)
+    # print(drone.get_message_local_position_ned())
     drone.land_now()
     while True:
         print(drone.get_message_local_position_ned())
