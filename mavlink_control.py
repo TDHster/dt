@@ -280,7 +280,7 @@ class MavlinkDrone:
 
 
 if __name__ == '__main__':
-    wait_time = 5
+    wait_time = 3
     box_size = 2
     altitude = 1
     # mavproxy.py --master=/dev/ttyACM0 --out=udpout:0.0.0.0:14550
@@ -310,8 +310,11 @@ if __name__ == '__main__':
     # print(drone.get_message_local_position_ned())
     # sleep(wait_time)
 
+    wait_time = 3
+
     print('Landing command')
     drone.land_now()
+    drone.disarm()
     exit(0)
 
     print(f'Forward')
