@@ -286,7 +286,7 @@ if __name__ == '__main__':
     # mavproxy.py --master=/dev/ttyACM0 --out=udpout:0.0.0.0:14550
     # connection_string = 'udpin:127.0.0.1:14540' # working
 
-    connection_string = 'udpout:127.0.0.1:14550'
+    # connection_string = 'udpout:127.0.0.1:14550'
     # connection_string = 'tcp:localhost:5063'
     print(f'Trying to connect: {connection_string}')
     drone = MavlinkDrone(connection_string)
