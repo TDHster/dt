@@ -5,3 +5,6 @@ scipy
 
 pymavlink
 pyserial
+
+questionary
+textual
