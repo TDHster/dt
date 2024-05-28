@@ -300,16 +300,16 @@ if __name__ == '__main__':
     print('Taking off')
     drone.takeoff(altitude)
     sleep(wait_time)
-    # print(drone.get_message_local_position_ned())
-    # print('yaw left')
-    # drone.yaw(-30)
-    # print(drone.get_message_local_position_ned())
-    # sleep(wait_time)
-    #
-    # drone.yaw(60)
-    # print('yaw right')
-    # print(drone.get_message_local_position_ned())
-    # sleep(wait_time)
+    print(drone.get_message_local_position_ned())
+    print('yaw left')
+    drone.yaw(-30)
+    print(drone.get_message_local_position_ned())
+    sleep(wait_time)
+
+    drone.yaw(60)
+    print('yaw right')
+    print(drone.get_message_local_position_ned())
+    sleep(wait_time)
 
 
 
