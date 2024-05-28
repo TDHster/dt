@@ -292,6 +292,7 @@ if __name__ == '__main__':
     #working config:
     # udpin:127.0.0.1:14550 =  udpin:127.0.0.1:14550
     # pi@raspberrypi:~ $ mavproxy.py --master=/dev/ttyACM0 --out=udpout:0.0.0.0:14550
+    # arm uncheck all
     print(f'Trying to connect: {connection_string}')
     drone = MavlinkDrone(connection_string)
     # drone = MavlinkDrone('udpout:localhost:14550')
@@ -310,17 +311,18 @@ if __name__ == '__main__':
     # print(drone.get_message_local_position_ned())
     # sleep(wait_time)
 
-    wait_time = 3
+
+
+    print(f'Forward')
+    drone.move_test(box_size, 0, -altitude)
+    print(drone.get_message_local_position_ned())
+    sleep(wait_time)
 
     print('Landing command')
     drone.land_now()
     drone.disarm()
     exit(0)
 
-    print(f'Forward')
-    drone.move_test(box_size, 0, -altitude)
-    print(drone.get_message_local_position_ned())
-    sleep(wait_time)
 
     print(drone.get_message_local_position_ned())
     print(f'Right')
