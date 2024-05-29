@@ -119,8 +119,10 @@ class MavlinkDrone:
     def takeoff2(self, takeoff_altitude: float = 1):
 
         mav_connection = self.connection
-        tgt_sys_id = self.connection.target_system
-        tgt_comp_id = self.connection.target_component
+        # tgt_sys_id = self.connection.target_system
+        # tgt_comp_id = self.connection.target_component
+        tgt_sys_id = 1
+        tgt_comp_id = 1
 
         print("Heartbeat from system (system %u component %u)" %
               (mav_connection.target_system, mav_connection.target_component))

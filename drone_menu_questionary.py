@@ -71,7 +71,7 @@ if __name__ == "__main__":
                 drone.arm()
             case "takeoff":
                 print('Taking off')
-                drone.takeoff2(0.2)
+                drone.takeoff2(1)
             case "disarm":
                 drone.disarm()
             case "mode_land":
