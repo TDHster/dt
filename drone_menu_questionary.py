@@ -58,7 +58,7 @@ if __name__ == "__main__":
     # arm uncheck all
     print(f'Trying to connect: {connection_string}')
     drone = MavlinkDrone(connection_string)
-
+    print('Connected.')
     # pprint(ask_dictstyle()["drone_command"])
     while True:
         print(drone.get_message_local_position_ned())
