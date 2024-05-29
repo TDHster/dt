@@ -17,6 +17,13 @@ args = parser.parse_args()
 connection_string = args.connectionstring
 print(f"Using mavlink connection string: {connection_string}")
 
+class Attitude:
+    # for attitude control
+    def __init__(self, thrust, roll, pitch, yaw):
+        self.thrust = thrust  # Normalized thrust value (0-1)
+        self.roll = roll  # Desired roll angle (radians)
+        self.pitch = pitch  # Desired pitch angle (radians)
+        self.yaw = yaw  # Desired yaw angle (radians)
 
 class MavlinkDrone:
     def __init__(self, connection_string='udpin:localhost:14550'):
@@ -339,6 +346,55 @@ class MavlinkDrone:
             self.connection.target_system,
             self.connection.target_component,
             mavutil.mavlink.MAV_CMD_NAV_LAND, 0, 0, 0, 0, 0, 0, 0)
+
+    def _attitude(self, thrust=0.5, roll=0, pitch=0, yaw=0):
+        # This message is accepted in Guided or Guided_NoGPS (this is the only message accepted by Guided_NoGPS)
+        # SET_ATTITUDE_TARGET
+        # https://ardupilot.org/dev/docs/copter-commands-in-guided-mode.html#copter-commands-in-guided-mode-set-attitude-target
+        msg = mavutil.mavlink.MAVLink_message_set_attitude_target_pack(
+            self.connection.target_system, self.connection.target_component, 0,  # Target system, target component, ignore rate
+            0,  # Time since system boot (ms)
+            thrust, roll, pitch, yaw, 0, 0)  # Include yaw, ignore yaw rate and body_roll_rate
+        self.connection.send(msg)
+
+    def attitude_takeoff(self):
+        print('Motors on')
+        self._attitude(thrust=0.5)
+        sleep(3)
+        self._attitude(thrust=0.7)
+        sleep(1)
+        self._attitude(thrust=0.5)
+
+    def attitude_land(self):
+        print('Landing by slowdown motors')
+        self._attitude(thrust=0.4)
+        sleep(5)
+        self._attitude(thrust=0.2)
+        sleep(1)
+        self._attitude(thrust=0)
+
+    def attitude_yaw(self, yaw):
+        self._attitude(yaw=yaw)
+
+    def attitude_roll(self, roll):
+        self._attitude(roll=roll)
+
+    def attitude_pitch(self, pitch):
+        self._attitude(pitch=pitch)
+
+    def attitude_test(self):
+        initial_attitude = Attitude(0.5, 0, 0, 0)  # 50% thrust, level attitude, 0 yaw
+
+        # Send initial hover command
+        self._attitude(self.connection, )
+
+        # Gradually increase target thrust for ascent
+        for i in range(1, 11):  # Adjust loop iterations for desired climb rate
+            thrust = i * 0.05  # Increase thrust in steps of 5%
+            self.attitude_test(self.connection, Attitude(thrust, 0, 0, initial_attitude.yaw))
+            # Implement logic to monitor altitude and adjust thrust/pitch as needed
+            # (This part is not included in this simplified example)
+            sleep(0.5)  # Adjust sleep time for desired ascent speed
 
 
 if __name__ == '__main__':

@@ -33,8 +33,18 @@ def ask_dictstyle(**kwargs):
                 "arm",
                 "takeoff",
                 "disarm",
+                "landnow",
                 "mode_land",
                 "mode_quided",
+                Separator(),
+                "attitude takeoff",
+                "attitude land",
+                "attitude yaw left",
+                "attitude yaw right",
+                "attitude roll left",
+                "attitude roll right",
+                "attitude pitch left",
+                "attitude pitch right",
                 Separator(),
                 "yaw_left",
                 "yaw_right",
@@ -64,20 +74,23 @@ if __name__ == "__main__":
         # print(drone.get_message_local_position_ned())
         drone_command = ask_dictstyle()["drone_command"]
         if drone_command is None:
+            print('Emergency off')
             drone.emergency_stop()
         match drone_command:
+            case "mode_quided":
+                drone.mode_guided()
             case "arm":
-                print("Selected option: arm")
                 drone.arm()
             case "takeoff":
                 print('Taking off')
                 drone.takeoff2(1)
             case "disarm":
                 drone.disarm()
+            case "landnow":
+                drone.land_now()
             case "mode_land":
                 drone.mode_land()
-            case "mode_quided":
-                drone.mode_guided()
+
             case "yaw_left":
                 drone.yaw(15)
             case "yaw_right":
@@ -90,6 +103,23 @@ if __name__ == "__main__":
                 drone.move_test(0, 1, 0)
             case "move_back":
                 drone.move_test(0, -1, 0)
+
+            case "attitude takeoff":
+                drone.attitude_takeoff()
+            case "attitude land":
+                drone.attitude_land()
+            case "attitude yaw left":
+                drone.attitude_yaw(-10)
+            case "attitude yaw right":
+                drone.attitude_yaw(10)
+            case "attitude roll left":
+                drone.attitude_roll(-0.1)
+            case "attitude roll right":
+                drone.attitude_roll(0.1)
+            case "attitude pitch left":
+                drone.attitude_pitch(-0.1)
+            case "attitude pitch right":
+                drone.attitude_pitch(0.1)
 
         # print(drone.get_message_local_position_ned())
 
