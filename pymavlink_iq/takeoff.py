@@ -79,7 +79,6 @@ def main():
     connection_string = args.connectionstring
     print(f"Using mavlink connection string: {connection_string}")
 
-    args = parser.parse_args()
     mav_connection = connect_to_sysid(connection_string, args.sysid)
     takeoff(mav_connection, args.altitude)
 
