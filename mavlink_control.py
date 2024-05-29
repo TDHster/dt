@@ -116,9 +116,11 @@ class MavlinkDrone:
         return takeoff_msg.result
 
 
-    def takeoff2(self, mav_connection, takeoff_altitude: float = 1, tgt_sys_id: int = 1, tgt_comp_id = 1):
+    def takeoff2(self, takeoff_altitude: float = 1):
 
         mav_connection = self.connection
+        tgt_sys_id = self.connection.target_system
+        tgt_comp_id = self.connection.target_component
 
         print("Heartbeat from system (system %u component %u)" %
               (mav_connection.target_system, mav_connection.target_component))
@@ -172,6 +174,9 @@ class MavlinkDrone:
 
     def mode_land(self):
         self._set_mode('LAND')
+
+    def mode_guided(self):
+        self._set_mode('GUIDED')
 
     def _set_mode(self, mode='LAND'):
         '''

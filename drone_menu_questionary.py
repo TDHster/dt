@@ -1,11 +1,27 @@
 import questionary
-
+from mavlink_control import MavlinkDrone
 from pprint import pprint
-
 import questionary
 from questionary import Choice
-from questionary import Separator
-from questionary import prompt
+from questionary import Separator, prompt
+from math import pi
+
+import argparse
+
+parser = argparse.ArgumentParser(description="Mavlink сontrol")
+
+parser.add_argument(
+    "-c",
+    "--connectionstring",
+    type=str,
+    default="udpin:127.0.0.1:14550",
+    help="Specify path for mavlink connection",
+)
+
+args = parser.parse_args()
+connection_string = args.connectionstring
+print(f"Using mavlink connection string: {connection_string}")
+
 
 def ask_dictstyle(**kwargs):
     questions = [
@@ -19,7 +35,6 @@ def ask_dictstyle(**kwargs):
                 "disarm",
                 "mode_land",
                 "mode_quided",
-                "mode_acro",
                 Separator(),
                 "yaw_left",
                 "yaw_right",
@@ -37,10 +52,41 @@ def ask_dictstyle(**kwargs):
 
 
 if __name__ == "__main__":
+    #working config:
+    # udpin:127.0.0.1:14550 =  udpin:127.0.0.1:14550
+    # pi@raspberrypi:~ $ mavproxy.py --master=/dev/ttyACM0 --out=udpout:0.0.0.0:14550
+    # arm uncheck all
+    print(f'Trying to connect: {connection_string}')
+    drone = MavlinkDrone(connection_string)
+
     # pprint(ask_dictstyle()["drone_command"])
     while True:
+        print(drone.get_message_local_position_ned())
         drone_command = ask_dictstyle()["drone_command"]
-
         match drone_command:
             case "arm":
                 print("Selected option: arm")
+                drone.arm()
+            case "takeoff":
+                print('Taking off')
+                drone.takeoff2(0.2)
+            case "disarm":
+                drone.disarm()
+            case "mode_land":
+                drone.mode_land()
+            case "mode_quided":
+                drone.mode_guided()
+            case "yaw_left":
+                drone.yaw(15)
+            case "yaw_right":
+                drone.yaw(15)
+            case "move_left":
+                drone.move_test(-1, 0, 0)
+            case "move_right":
+                drone.move_test(1, 0, 0)
+            case "move_forward":
+                drone.move_test(0, 1, 0)
+            case "move_back":
+                drone.move_test(0, -1, 0)
+
+
