@@ -61,7 +61,7 @@ if __name__ == "__main__":
     print('Connected.')
     # pprint(ask_dictstyle()["drone_command"])
     while True:
-        print(drone.get_message_local_position_ned())
+        # print(drone.get_message_local_position_ned())
         drone_command = ask_dictstyle()["drone_command"]
         if drone_command is None:
             drone.emergency_stop()
@@ -90,5 +90,7 @@ if __name__ == "__main__":
                 drone.move_test(0, 1, 0)
             case "move_back":
                 drone.move_test(0, -1, 0)
+
+        print(drone.get_message_local_position_ned())
 
 

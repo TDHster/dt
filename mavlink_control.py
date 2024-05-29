@@ -59,7 +59,7 @@ class MavlinkDrone:
         return self._arm(1)
 
     def disarm(self):
-        print('Disrming')
+        print('Disarming')
         return self._arm(0)
 
     def takeoff(self, takeoff_altitude=1,  tgt_sys_id: int = 1, tgt_comp_id=1):
