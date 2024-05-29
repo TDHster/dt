@@ -63,6 +63,8 @@ if __name__ == "__main__":
     while True:
         print(drone.get_message_local_position_ned())
         drone_command = ask_dictstyle()["drone_command"]
+        if drone_command is None:
+            drone.emergency_stop()
         match drone_command:
             case "arm":
                 print("Selected option: arm")
