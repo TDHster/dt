@@ -26,6 +26,9 @@ class TargetAttitude:
 
 # Function to send SET_ATTITUDE_TARGET message
 def send_attitude_target(mav, target_attitude):
+    # This message is accepted in Guided or Guided_NoGPS (this is the only message accepted by Guided_NoGPS)
+    # SET_ATTITUDE_TARGET
+    # https://ardupilot.org/dev/docs/copter-commands-in-guided-mode.html#copter-commands-in-guided-mode-set-attitude-target
     msg = mavutil.mavlink.MAVLink_message_set_attitude_target_pack(
         mav.target_system, mav.target_component, 0,  # Target system, target component, ignore rate
         0,  # Time since system boot (ms)
