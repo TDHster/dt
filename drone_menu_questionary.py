@@ -91,6 +91,6 @@ if __name__ == "__main__":
             case "move_back":
                 drone.move_test(0, -1, 0)
 
-        print(drone.get_message_local_position_ned())
+        # print(drone.get_message_local_position_ned())
 
 
