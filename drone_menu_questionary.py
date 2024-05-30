@@ -31,21 +31,20 @@ def ask_dictstyle(**kwargs):
             "message": "What do you want to do?",
             "choices": [
                 "arm",
-                "takeoff 1m",
-                "takeoff 0.2m",
                 "disarm",
+                "mode_quided",
+                "takeoff 1m",
                 "landnow",
                 "mode_land",
-                "mode_quided",
                 Separator(),
                 "attitude takeoff",
-                "attitude land",
                 "attitude yaw left",
                 "attitude yaw right",
                 "attitude roll left",
                 "attitude roll right",
                 "attitude pitch left",
                 "attitude pitch right",
+                "attitude land",
                 Separator(),
                 "yaw_left",
                 "yaw_right",
@@ -76,8 +75,10 @@ if __name__ == "__main__":
         # print(drone.get_message_local_position_ned())
         drone_command = ask_dictstyle()["drone_command"]
         if drone_command is None:
+            print(f'{drone_command=}')
             print('Emergency off')
             drone.emergency_stop()
+            exit(0)
         match drone_command:
             case "mode_quided":
                 drone.mode_guided()
