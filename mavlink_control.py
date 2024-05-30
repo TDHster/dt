@@ -345,7 +345,7 @@ class MavlinkDrone:
         self.connection.mav.command_long_send(
             self.connection.target_system,
             self.connection.target_component,
-            mavutil.mavlink.MAV_CMD_NAV_LAND, 0, 0, 0, 0, 0, 0, 0)
+            mavutil.mavlink.MAV_CMD_NAV_LAND, 0, 0, 0, 0, 0, 0, 0, 0)
 
     def _attitude_old(self, thrust=0.5, roll=0, pitch=0, yaw=0):
         # This message is accepted in Guided or Guided_NoGPS (this is the only message accepted by Guided_NoGPS)
