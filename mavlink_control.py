@@ -447,8 +447,8 @@ class MavlinkDrone:
             self.connection.target_system,
             pitch,
             roll,
-            yaw,
             thrust,
+            yaw,
             0)
 
 
