@@ -74,8 +74,9 @@ if __name__ == "__main__":
     # pprint(ask_dictstyle()["drone_command"])
     while True:
         # print(drone.get_message_local_position_ned())
-        drone_command = ask_dictstyle()["drone_command"]
-        if drone_command is None:
+        try:
+            drone_command = ask_dictstyle()["drone_command"]
+        except KeyError:
             print(f'{drone_command=}')
             print('Emergency off')
             drone.emergency_stop()

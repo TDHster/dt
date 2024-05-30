@@ -386,7 +386,7 @@ class MavlinkDrone:
         print('Motors on')
         self._attitude(thrust=500)
         sleep(3)
-        self._attitude(thrust=700)
+        self._attitude(thrust=1000)
         sleep(1)
         self._attitude(thrust=500)
 
