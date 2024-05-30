@@ -331,7 +331,7 @@ class MavlinkDrone:
         self.connection.mav.command_long_send(
             self.connection.target_system,
             self.connection.target_component,
-            mavutil.mavlink.MAV_CMD_DO_FLIGHTTERMINATION, 1, 0, 0, 0, 0, 0, 0)
+            mavutil.mavlink.MAV_CMD_DO_FLIGHTTERMINATION, 1, 0, 0, 0, 0, 0, 0, 0)
 
     def return_to_launch(self):
         self.connection.mav.command_long_send(
