@@ -67,7 +67,7 @@ if __name__ == "__main__":
     # udpin:127.0.0.1:14550 =  udpin:127.0.0.1:14550
     # pi@raspberrypi:~ $ mavproxy.py --master=/dev/ttyACM0 --out=udpout:0.0.0.0:14550
     # arm uncheck all
-    EXPOSURE_TIME = 3
+    EXPOSURE_TIME = 1
     print(f'Trying to connect: {connection_string}')
     drone = MavlinkDrone(connection_string)
     print('Connected.')
