@@ -182,6 +182,9 @@ class MavlinkDrone:
     def mode_guided_nogps(self):
         self._set_mode('GUIDED_NOGPS')
 
+    def mode_alt_hold(self):
+        self._set_mode('ALT_HOLD')
+
     def _set_mode(self, mode='LAND'):
         '''
         Modes: ['STABILIZE', 'ACRO', 'ALT_HOLD', 'AUTO', 'GUIDED', 'LOITER', 'RTL', 'CIRCLE', 'POSITION', 'LAND',
