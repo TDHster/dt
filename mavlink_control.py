@@ -69,7 +69,7 @@ class MavlinkDrone:
         print('Disarming')
         return self._arm(0)
 
-    def takeoff(self, takeoff_altitude=1,  tgt_sys_id: int = 1, tgt_comp_id=1):
+    def __takeoff(self, takeoff_altitude=1,  tgt_sys_id: int = 1, tgt_comp_id=1):
 
         print("Heartbeat from system (system %u component %u)" %
               (self.connection.target_system, self.connection.target_component))
@@ -122,8 +122,7 @@ class MavlinkDrone:
 
         return takeoff_msg.result
 
-
-    def takeoff2(self, takeoff_altitude: float = 1):
+    def takeoff(self, takeoff_altitude: float = 1):
 
         mav_connection = self.connection
         # tgt_sys_id = self.connection.target_system
@@ -352,8 +351,8 @@ class MavlinkDrone:
         # SET_ATTITUDE_TARGET
         # https://ardupilot.org/dev/docs/copter-commands-in-guided-mode.html#copter-commands-in-guided-mode-set-attitude-target
         msg = mavutil.mavlink.MAVLink_message_set_attitude_target_pack(
-                self.connection.target_system, self.connection.target_component,
-            0,  #ignore rate
+            self.connection.target_system, self.connection.target_component,
+            0,  # ignore rate
             0,  # Time since system boot (ms)
             thrust, roll, pitch, yaw, 0, 0)  # Include yaw, ignore yaw rate and body_roll_rate
         self.connection.send(msg)
@@ -379,8 +378,6 @@ class MavlinkDrone:
             body_yaw_rate,  # not supported
             thrust
         )
-
-
 
     def attitude_takeoff(self):
         print('Motors on')
@@ -427,22 +424,13 @@ class MavlinkDrone:
         Example of how to send MANUAL_CONTROL messages to the autopilot using
         pymavlink.
         This message is able to fully replace the joystick inputs.
-
-        # manual_control_send(self, target, roll, pitch, yaw, thrust, roll_manual, pitch_manual, yaw_manual,
-                                thrust_manual):
-
-
-            target                    : The system to be controlled (uint8_t)
-            roll                      : roll (float)
-            pitch                     : pitch (float)
-            yaw                       : yaw (float)
-            thrust                    : thrust (float)
-            roll_manual               : roll control enabled auto:0, manual:1 (uint8_t)
-            pitch_manual              : pitch auto:0, manual:1 (uint8_t)
-            yaw_manual                : yaw auto:0, manual:1 (uint8_t)
-            thrust_manual             : thrust auto:0, manual:1 (uint8_t)
-            self.connection.wait_heartbeat()
-            """
+        x                         : X-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to forward(1000)-backward(-1000) movement on a joystick and the pitch of a vehicle. (type:int16_t)
+        y                         : Y-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to left(-1000)-right(1000) movement on a joystick and the roll of a vehicle. (type:int16_t)
+        z                         : Z-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a separate slider movement with maximum being 1000 and minimum being -1000 on a joystick and the thrust of a vehicle. Positive values are positive thrust, negative values are negative thrust. (type:int16_t)
+        r                         : R-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a twisting of the joystick, with counter-clockwise being 1000 and clockwise being -1000, and the yaw of a vehicle. (type:int16_t)
+        buttons                   : A bitfield corresponding to the joystick buttons' current state, 1 for pressed, 0 for released. The lowest bit corresponds to Button 1. (type:uint16_t)
+        """
+        self.connection.wait_heartbeat()
 
         # Send a positive x value, negative y, negative z,
         # positive rotation and no button.

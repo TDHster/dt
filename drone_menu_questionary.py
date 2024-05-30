@@ -86,10 +86,10 @@ if __name__ == "__main__":
                 drone.arm()
             case "takeoff 1m":
                 print('Taking off')
-                drone.takeoff2(1)
+                drone.takeoff(1)
             case "takeoff 0.2m":
                 print('Taking off')
-                drone.takeoff2(0.2)
+                drone.takeoff(0.2)
             case "disarm":
                 drone.disarm()
             case "landnow":
