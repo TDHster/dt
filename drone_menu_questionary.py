@@ -4,8 +4,8 @@ from pprint import pprint
 import questionary
 from questionary import Choice
 from questionary import Separator, prompt
-from math import pi
-
+# from math import pi
+from time import sleep
 import argparse
 
 parser = argparse.ArgumentParser(description="Mavlink сontrol")
@@ -66,6 +66,7 @@ if __name__ == "__main__":
     # udpin:127.0.0.1:14550 =  udpin:127.0.0.1:14550
     # pi@raspberrypi:~ $ mavproxy.py --master=/dev/ttyACM0 --out=udpout:0.0.0.0:14550
     # arm uncheck all
+    EXPOSURE_TIME = 3
     print(f'Trying to connect: {connection_string}')
     drone = MavlinkDrone(connection_string)
     print('Connected.')
@@ -110,16 +111,28 @@ if __name__ == "__main__":
                 drone.attitude_land()
             case "attitude yaw left":
                 drone.attitude_yaw(-10)
+                sleep(EXPOSURE_TIME)
+                drone.attitude_yaw(0)
             case "attitude yaw right":
                 drone.attitude_yaw(10)
+                sleep(EXPOSURE_TIME)
+                drone.attitude_yaw(0)
             case "attitude roll left":
                 drone.attitude_roll(-0.1)
+                sleep(EXPOSURE_TIME)
+                drone.attitude_roll(0)
             case "attitude roll right":
                 drone.attitude_roll(0.1)
+                sleep(EXPOSURE_TIME)
+                drone.attitude_roll(0)
             case "attitude pitch left":
                 drone.attitude_pitch(-0.1)
+                sleep(EXPOSURE_TIME)
+                drone.attitude_pitch(0)
             case "attitude pitch right":
                 drone.attitude_pitch(0.1)
+                sleep(EXPOSURE_TIME)
+                drone.attitude_pitch(0)
 
         # print(drone.get_message_local_position_ned())
 
