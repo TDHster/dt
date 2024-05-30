@@ -118,19 +118,19 @@ if __name__ == "__main__":
                 sleep(EXPOSURE_TIME)
                 drone.attitude_yaw(0)
             case "attitude roll left":
-                drone.attitude_roll(-0.1)
+                drone.attitude_roll(-100)
                 sleep(EXPOSURE_TIME)
                 drone.attitude_roll(0)
             case "attitude roll right":
-                drone.attitude_roll(0.1)
+                drone.attitude_roll(100)
                 sleep(EXPOSURE_TIME)
                 drone.attitude_roll(0)
             case "attitude pitch left":
-                drone.attitude_pitch(-0.1)
+                drone.attitude_pitch(-100)
                 sleep(EXPOSURE_TIME)
                 drone.attitude_pitch(0)
             case "attitude pitch right":
-                drone.attitude_pitch(0.1)
+                drone.attitude_pitch(100)
                 sleep(EXPOSURE_TIME)
                 drone.attitude_pitch(0)
 

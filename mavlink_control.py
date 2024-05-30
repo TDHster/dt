@@ -347,15 +347,40 @@ class MavlinkDrone:
             self.connection.target_component,
             mavutil.mavlink.MAV_CMD_NAV_LAND, 0, 0, 0, 0, 0, 0, 0)
 
-    def _attitude(self, thrust=0.5, roll=0, pitch=0, yaw=0):
+    def _attitude_old(self, thrust=0.5, roll=0, pitch=0, yaw=0):
         # This message is accepted in Guided or Guided_NoGPS (this is the only message accepted by Guided_NoGPS)
         # SET_ATTITUDE_TARGET
         # https://ardupilot.org/dev/docs/copter-commands-in-guided-mode.html#copter-commands-in-guided-mode-set-attitude-target
         msg = mavutil.mavlink.MAVLink_message_set_attitude_target_pack(
-            self.connection.target_system, self.connection.target_component, 0,  # Target system, target component, ignore rate
+                self.connection.target_system, self.connection.target_component,
+            0,  #ignore rate
             0,  # Time since system boot (ms)
             thrust, roll, pitch, yaw, 0, 0)  # Include yaw, ignore yaw rate and body_roll_rate
         self.connection.send(msg)
+
+    def _attitude2(self, thrust=0.5, roll=0, pitch=0, yaw=0):
+        # not tested
+        time_boot_ms = 10  # ms
+        type_mask = int(0b00000111) #always
+        # x, y, z = 0, 0, -1
+        body_roll_rate, body_pitch_rate, body_yaw_rate = 0, 0, 0
+        quaternion_w, quaternion_x, quaternion_y, quaternion_z = 0, 0, 0, 0
+
+        mavutil.mavlink.MAVLink_set_position_target_local_ned_message(
+            time_boot_ms, self.connection.target_system,
+            # self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_NED,
+            self.connection.target_component, mavutil.mavlink.SET_ATTITUDE_TARGET,
+            # self.connection.target_component, mavutil.mavlink.MAV_FRAME_BODY_OFFSET_NED, # best
+            # self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_OFFSET_NED,
+            type_mask,
+            quaternion_w, quaternion_x, quaternion_y, quaternion_z,
+            body_roll_rate,  # not supported;
+            body_pitch_rate,  # not supported
+            body_yaw_rate,  # not supported
+            thrust
+        )
+
+
 
     def attitude_takeoff(self):
         print('Motors on')
@@ -395,6 +420,38 @@ class MavlinkDrone:
             # Implement logic to monitor altitude and adjust thrust/pitch as needed
             # (This part is not included in this simplified example)
             sleep(0.5)  # Adjust sleep time for desired ascent speed
+
+    # def manual(self, pitch=0, roll=0, yaw=0, thrust=500):
+    def _attitude(self, pitch=0, roll=0, yaw=0, thrust=500):
+        """
+        Example of how to send MANUAL_CONTROL messages to the autopilot using
+        pymavlink.
+        This message is able to fully replace the joystick inputs.
+        """
+
+        # Import mavutil
+        from pymavlink import mavutil
+
+        # Create the connection
+        # Wait a heartbeat before sending commands
+        self.connection.wait_heartbeat()
+
+        # Send a positive x value, negative y, negative z,
+        # positive rotation and no button.
+        # https://mavlink.io/en/messages/common.html#MANUAL_CONTROL
+        # Warning: Because of some legacy workaround, z will work between [0-1000]
+        # where 0 is full reverse, 500 is no output and 1000 is full throttle.
+        # x,y and r will be between [-1000 and 1000].
+
+
+        self.connection.mav.manual_control_send(
+            self.connection.target_system,
+            pitch,
+            roll,
+            yaw,
+            thrust,
+            0)
+
 
 
 if __name__ == '__main__':
