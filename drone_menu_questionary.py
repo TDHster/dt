@@ -146,12 +146,12 @@ if __name__ == "__main__":
                 sleep(EXPOSURE_TIME)
                 drone.attitude_pitch(0)
 
-        running_time = 1  # seconds
-        start_time = time()  # Get the start time
-        elapsed_time = time() - start_time
-        while elapsed_time < running_time:
-            elapsed_time = time() - start_time
-            print(f'{drone.get_message_attitude=}')
+        # running_time = 1  # seconds
+        # start_time = time()  # Get the start time
+        # elapsed_time = time() - start_time
+        # while elapsed_time < running_time:
+        #     elapsed_time = time() - start_time
+        #     print(f'{drone.get_message_attitude=}')
             # print(drone.get_message_local_position_ned())
 
 

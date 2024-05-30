@@ -386,7 +386,7 @@ class MavlinkDrone:
         sleep(0.3)
         # self._attitude(thrust=1000)
         # sleep(1)
-        self._attitude(thrust=500)
+        self._attitude(thrust=525)
 
     def attitude_land(self):
         print('Landing by slowdown motors')
@@ -405,17 +405,17 @@ class MavlinkDrone:
     def attitude_pitch(self, pitch):
         self._attitude(pitch=pitch)
 
-    def attitude_test(self):
-
-        # Send initial hover command
-
-        # Gradually increase target thrust for ascent
-        for i in range(1, 11):  # Adjust loop iterations for desired climb rate
-            thrust = i * 0.05  # Increase thrust in steps of 5%
-            self.attitude_test(self.connection, Attitude(thrust, 0, 0, initial_attitude.yaw))
-            # Implement logic to monitor altitude and adjust thrust/pitch as needed
-            # (This part is not included in this simplified example)
-            sleep(0.5)  # Adjust sleep time for desired ascent speed
+    # def attitude_test(self):
+    #
+    #     # Send initial hover command
+    #
+    #     # Gradually increase target thrust for ascent
+    #     for i in range(1, 11):  # Adjust loop iterations for desired climb rate
+    #         thrust = i * 0.05  # Increase thrust in steps of 5%
+    #         self.attitude_test(self.connection, Attitude(thrust, 0, 0, initial_attitude.yaw))
+    #         # Implement logic to monitor altitude and adjust thrust/pitch as needed
+    #         # (This part is not included in this simplified example)
+    #         sleep(0.5)  # Adjust sleep time for desired ascent speed
 
     # def manual(self, pitch=0, roll=0, yaw=0, thrust=500):
     def _attitude(self, pitch=0, roll=0, thrust=500, yaw=0):
