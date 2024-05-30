@@ -31,7 +31,8 @@ def ask_dictstyle(**kwargs):
             "message": "What do you want to do?",
             "choices": [
                 "arm",
-                "takeoff",
+                "takeoff 1m",
+                "takeoff 0.2m",
                 "disarm",
                 "landnow",
                 "mode_land",
@@ -82,9 +83,12 @@ if __name__ == "__main__":
                 drone.mode_guided()
             case "arm":
                 drone.arm()
-            case "takeoff":
+            case "takeoff 1m":
                 print('Taking off')
                 drone.takeoff2(1)
+            case "takeoff 0.2m":
+                print('Taking off')
+                drone.takeoff2(0.2)
             case "disarm":
                 drone.disarm()
             case "landnow":
