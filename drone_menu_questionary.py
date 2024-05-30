@@ -5,7 +5,7 @@ import questionary
 from questionary import Choice
 from questionary import Separator, prompt
 # from math import pi
-from time import sleep
+from time import sleep, time
 import argparse
 
 parser = argparse.ArgumentParser(description="Mavlink сontrol")
@@ -143,6 +143,11 @@ if __name__ == "__main__":
                 sleep(EXPOSURE_TIME)
                 drone.attitude_pitch(0)
 
-        # print(drone.get_message_local_position_ned())
+        running_time = 1  # seconds
+        start_time = time()  # Get the start time
+        elapsed_time = time() - start_time
+        while elapsed_time < running_time:
+            print(f'{drone.get_message_attitude=}')
+            # print(drone.get_message_local_position_ned())
 
 

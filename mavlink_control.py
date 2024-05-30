@@ -17,13 +17,6 @@ args = parser.parse_args()
 connection_string = args.connectionstring
 print(f"Using mavlink connection string: {connection_string}")
 
-class Attitude:
-    # for attitude control
-    def __init__(self, thrust, roll, pitch, yaw):
-        self.thrust = thrust  # Normalized thrust value (0-1)
-        self.roll = roll  # Desired roll angle (radians)
-        self.pitch = pitch  # Desired pitch angle (radians)
-        self.yaw = yaw  # Desired yaw angle (radians)
 
 class MavlinkDrone:
     def __init__(self, connection_string='udpin:localhost:14550'):
@@ -385,7 +378,9 @@ class MavlinkDrone:
     def attitude_takeoff(self):
         print('Motors on')
         self._attitude(thrust=500)
-        sleep(3)
+        sleep(1)
+        self._attitude(thrust=700)
+        sleep(1)
         self._attitude(thrust=1000)
         sleep(1)
         self._attitude(thrust=500)
@@ -408,10 +403,8 @@ class MavlinkDrone:
         self._attitude(pitch=pitch)
 
     def attitude_test(self):
-        initial_attitude = Attitude(0.5, 0, 0, 0)  # 50% thrust, level attitude, 0 yaw
 
         # Send initial hover command
-        self._attitude(self.connection, )
 
         # Gradually increase target thrust for ascent
         for i in range(1, 11):  # Adjust loop iterations for desired climb rate
@@ -422,16 +415,26 @@ class MavlinkDrone:
             sleep(0.5)  # Adjust sleep time for desired ascent speed
 
     # def manual(self, pitch=0, roll=0, yaw=0, thrust=500):
-    def _attitude(self, roll=0, pitch=0, yaw=0, thrust=500):
+    def _attitude(self, pitch=0, roll=0, thrust=500, yaw=0):
         """
         Example of how to send MANUAL_CONTROL messages to the autopilot using
         pymavlink.
         This message is able to fully replace the joystick inputs.
-        x                         : X-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to forward(1000)-backward(-1000) movement on a joystick and the pitch of a vehicle. (type:int16_t)
-        y                         : Y-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to left(-1000)-right(1000) movement on a joystick and the roll of a vehicle. (type:int16_t)
-        z                         : Z-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a separate slider movement with maximum being 1000 and minimum being -1000 on a joystick and the thrust of a vehicle. Positive values are positive thrust, negative values are negative thrust. (type:int16_t)
-        r                         : R-axis, normalized to the range [-1000,1000]. A value of INT16_MAX indicates that this axis is invalid. Generally corresponds to a twisting of the joystick, with counter-clockwise being 1000 and clockwise being -1000, and the yaw of a vehicle. (type:int16_t)
-        buttons                   : A bitfield corresponding to the joystick buttons' current state, 1 for pressed, 0 for released. The lowest bit corresponds to Button 1. (type:uint16_t)
+        x                         : X-axis, normalized to the range [-1000,1000]. A value of INT16_MAX
+            indicates that this axis is invalid. Generally corresponds to forward(1000)-backward(-1000) movement
+            on a joystick and the pitch of a vehicle. (type:int16_t)
+        y                         : Y-axis, normalized to the range [-1000,1000]. A value of INT16_MAX
+             indicates that this axis is invalid. Generally corresponds to left(-1000)-right(1000) movement
+              on a joystick and the roll of a vehicle. (type:int16_t)
+        z                         : Z-axis, normalized to the range [-1000,1000]. A value of INT16_MAX
+             indicates that this axis is invalid. Generally corresponds to a separate slider movement
+             with maximum being 1000 and minimum being -1000 on a joystick and the thrust of a vehicle.
+             Positive values are positive thrust, negative values are negative thrust. (type:int16_t)
+        r                         : R-axis, normalized to the range [-1000,1000]. A value of INT16_MAX
+            indicates that this axis is invalid. Generally corresponds to a twisting of the joystick,
+            with counter-clockwise being 1000 and clockwise being -1000, and the yaw of a vehicle. (type:int16_t)
+        buttons                   : A bitfield corresponding to the joystick buttons' current state,
+            1 for pressed, 0 for released. The lowest bit corresponds to Button 1. (type:uint16_t)
         """
         self.connection.wait_heartbeat()
 
@@ -448,7 +451,7 @@ class MavlinkDrone:
             pitch,
             roll,
             thrust,
-            yaw,
+            -yaw,
             0)
 
 
