@@ -381,17 +381,17 @@ class MavlinkDrone:
 
     def attitude_takeoff(self):
         print('Motors on')
-        self._attitude(thrust=0.5)
+        self._attitude(thrust=500)
         sleep(3)
-        self._attitude(thrust=0.7)
+        self._attitude(thrust=700)
         sleep(1)
-        self._attitude(thrust=0.5)
+        self._attitude(thrust=500)
 
     def attitude_land(self):
         print('Landing by slowdown motors')
-        self._attitude(thrust=0.4)
+        self._attitude(thrust=400)
         sleep(5)
-        self._attitude(thrust=0.2)
+        self._attitude(thrust=300)
         sleep(1)
         self._attitude(thrust=0)
 
