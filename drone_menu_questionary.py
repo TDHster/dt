@@ -33,7 +33,7 @@ def ask_dictstyle(**kwargs):
                 "arm",
                 "disarm",
                 "mode_quided",
-                "mode_quided_no_GPS",
+                # "mode_quided_no_GPS",
                 "mode_althold",
                 "takeoff 1m",
                 "landnow",
