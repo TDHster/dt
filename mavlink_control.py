@@ -422,19 +422,27 @@ class MavlinkDrone:
             sleep(0.5)  # Adjust sleep time for desired ascent speed
 
     # def manual(self, pitch=0, roll=0, yaw=0, thrust=500):
-    def _attitude(self, pitch=0, roll=0, yaw=0, thrust=500):
+    def _attitude(self, roll=0, pitch=0, yaw=0, thrust=500):
         """
         Example of how to send MANUAL_CONTROL messages to the autopilot using
         pymavlink.
         This message is able to fully replace the joystick inputs.
-        """
 
-        # Import mavutil
-        from pymavlink import mavutil
+        # manual_control_send(self, target, roll, pitch, yaw, thrust, roll_manual, pitch_manual, yaw_manual,
+                                thrust_manual):
 
-        # Create the connection
-        # Wait a heartbeat before sending commands
-        self.connection.wait_heartbeat()
+
+            target                    : The system to be controlled (uint8_t)
+            roll                      : roll (float)
+            pitch                     : pitch (float)
+            yaw                       : yaw (float)
+            thrust                    : thrust (float)
+            roll_manual               : roll control enabled auto:0, manual:1 (uint8_t)
+            pitch_manual              : pitch auto:0, manual:1 (uint8_t)
+            yaw_manual                : yaw auto:0, manual:1 (uint8_t)
+            thrust_manual             : thrust auto:0, manual:1 (uint8_t)
+            self.connection.wait_heartbeat()
+            """
 
         # Send a positive x value, negative y, negative z,
         # positive rotation and no button.
