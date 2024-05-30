@@ -19,6 +19,7 @@ print(f"Using mavlink connection string: {connection_string}")
 
 
 class MavlinkDrone:
+    THROTTLE_NEUTRAL = 600
     def __init__(self, connection_string='udpin:localhost:14550'):
         '''
           Args:
@@ -382,11 +383,11 @@ class MavlinkDrone:
         print('Motors on')
         self._attitude(thrust=500)
         sleep(1)
-        self._attitude(thrust=600)
-        sleep(0.3)
+        self._attitude(thrust=self.THROTTLE_NEUTRAL)
+        # sleep(0.3)
         # self._attitude(thrust=1000)
         # sleep(1)
-        self._attitude(thrust=525)
+        # self._attitude(thrust=525)
 
     def attitude_land(self):
         print('Landing by slowdown motors')
