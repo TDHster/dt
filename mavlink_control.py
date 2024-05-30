@@ -19,7 +19,7 @@ print(f"Using mavlink connection string: {connection_string}")
 
 
 class MavlinkDrone:
-    THROTTLE_NEUTRAL = 600
+    THROTTLE_NEUTRAL = 500
     def __init__(self, connection_string='udpin:localhost:14550'):
         '''
           Args:
@@ -183,6 +183,9 @@ class MavlinkDrone:
     def mode_guided_nogps(self):
         self._set_mode('GUIDED_NOGPS')
 
+    def mode_acro(self):
+        self._set_mode('ACRO')
+
     def mode_alt_hold(self):
         self._set_mode('ALT_HOLD')
 
@@ -332,10 +335,11 @@ class MavlinkDrone:
     def emergency_stop(self):
         #Terminate flight immediately. Crash landing.
 
-        self.connection.mav.command_long_send(
-            self.connection.target_system,
-            self.connection.target_component,
-            mavutil.mavlink.MAV_CMD_DO_FLIGHTTERMINATION, 1, 0, 0, 0, 0, 0, 0, 0)
+        self._set_mode('BRAKE')
+        # self.connection.mav.command_long_send(
+        #     self.connection.target_system,
+        #     self.connection.target_component,
+        #     mavutil.mavlink.MAV_CMD_DO_FLIGHTTERMINATION, 1, 0, 0, 0, 0, 0, 0, 0)
 
     def return_to_launch(self):
         self.connection.mav.command_long_send(

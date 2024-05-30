@@ -92,6 +92,8 @@ if __name__ == "__main__":
                 drone.mode_guided_nogps()
             case "mode_althold":
                 drone.mode_alt_hold()
+            case "mode acro":
+                drone.mode_acro()
             case "arm":
                 drone.arm()
             case "takeoff 1m":
