@@ -35,6 +35,7 @@ def ask_dictstyle(**kwargs):
                 "mode_quided",
                 "mode stabilize",
                 "mode_althold",
+                "mode acro",
                 "takeoff 1m",
                 "landnow",
                 "mode_land",
