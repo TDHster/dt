@@ -186,6 +186,9 @@ class MavlinkDrone:
     def mode_alt_hold(self):
         self._set_mode('ALT_HOLD')
 
+    def mode_stabilize(self):
+        self._set_mode('STABILIZE')
+
     def _set_mode(self, mode='LAND'):
         '''
         Modes: ['STABILIZE', 'ACRO', 'ALT_HOLD', 'AUTO', 'GUIDED', 'LOITER', 'RTL', 'CIRCLE', 'POSITION', 'LAND',

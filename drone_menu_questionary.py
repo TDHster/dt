@@ -33,7 +33,7 @@ def ask_dictstyle(**kwargs):
                 "arm",
                 "disarm",
                 "mode_quided",
-                # "mode_quided_no_GPS",
+                "mode stabilize",
                 "mode_althold",
                 "takeoff 1m",
                 "landnow",
@@ -86,6 +86,8 @@ if __name__ == "__main__":
         match drone_command:
             case "mode_quided":
                 drone.mode_guided()
+            case "mode stabilize":
+                drone.mode_stabilize()
             case "mode_quided_no_GPS":
                 drone.mode_guided_nogps()
             case "mode_althold":
