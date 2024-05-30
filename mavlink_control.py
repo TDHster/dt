@@ -455,7 +455,7 @@ class MavlinkDrone:
             pitch,
             roll,
             thrust,
-            -yaw,
+            yaw,
             0)
 
 
