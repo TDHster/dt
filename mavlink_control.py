@@ -19,7 +19,7 @@ print(f"Using mavlink connection string: {connection_string}")
 
 
 class MavlinkDrone:
-    THROTTLE_NEUTRAL = 700
+    THROTTLE_NEUTRAL = 600
     def __init__(self, connection_string='udpin:localhost:14550'):
         '''
           Args:
@@ -419,7 +419,7 @@ class MavlinkDrone:
     #         sleep(0.5)  # Adjust sleep time for desired ascent speed
 
     # def manual(self, pitch=0, roll=0, yaw=0, thrust=500):
-    def _attitude(self, pitch=0, roll=0, thrust=500, yaw=0):
+    def _attitude(self, pitch=0, roll=0, thrust=THROTTLE_NEUTRAL, yaw=0):
         """
         Example of how to send MANUAL_CONTROL messages to the autopilot using
         pymavlink.

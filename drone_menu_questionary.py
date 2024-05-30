@@ -69,6 +69,7 @@ if __name__ == "__main__":
     # pi@raspberrypi:~ $ mavproxy.py --master=/dev/ttyACM0 --out=udpout:0.0.0.0:14550
     # arm uncheck all
     EXPOSURE_TIME = 1
+    EXPOSURE_XY_VALUE = 500
     print(f'Trying to connect: {connection_string}')
     drone = MavlinkDrone(connection_string)
     print('Connected.')
@@ -122,27 +123,27 @@ if __name__ == "__main__":
             case "attitude land":
                 drone.attitude_land()
             case "attitude yaw left":
-                drone.attitude_yaw(-45)
+                drone.attitude_yaw(-100)
                 sleep(EXPOSURE_TIME)
                 drone.attitude_yaw(0)
             case "attitude yaw right":
-                drone.attitude_yaw(45)
+                drone.attitude_yaw(100)
                 sleep(EXPOSURE_TIME)
                 drone.attitude_yaw(0)
             case "attitude roll left":
-                drone.attitude_roll(-50)
+                drone.attitude_roll(-EXPOSURE_XY_VALUE)
                 sleep(EXPOSURE_TIME)
                 drone.attitude_roll(0)
             case "attitude roll right":
-                drone.attitude_roll(50)
+                drone.attitude_roll(EXPOSURE_XY_VALUE)
                 sleep(EXPOSURE_TIME)
                 drone.attitude_roll(0)
             case "attitude pitch back":
-                drone.attitude_pitch(-50)
+                drone.attitude_pitch(-EXPOSURE_XY_VALUE)
                 sleep(EXPOSURE_TIME)
                 drone.attitude_pitch(0)
             case "attitude pitch forward":
-                drone.attitude_pitch(50)
+                drone.attitude_pitch(EXPOSURE_XY_VALUE)
                 sleep(EXPOSURE_TIME)
                 drone.attitude_pitch(0)
 
