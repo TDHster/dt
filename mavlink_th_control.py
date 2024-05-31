@@ -110,13 +110,14 @@ class AttitudeControlThread(threading.Thread):
             # Check for new attitude command in the queue
             if not self.queue.empty():
                 command = self.queue.get()
+                print(f'{command=}')
 
                 # Update attitude values from the command
                 self.thrust = command.get('thrust', self.thrust)
                 self.pitch = command.get('pitch', self.pitch)
                 self.roll = command.get('roll', self.roll)
                 self.yaw = command.get('yaw', self.yaw)
-                print(f'{self.thrust=}\t{self.pitch=}\t{self.roll=}\t{self.yaw}')
+                print(f'{self.thrust=}\t{self.pitch=}\t{self.roll=}\t{self.yaw=}')
 
             # Send the current attitude command to the drone
             self.connection.mav.manual_control_send(
