@@ -4,6 +4,7 @@ from time import sleep
 import threading
 import queue
 
+
 class MavlinkDrone:
     def __init__(self, connection_string='udpin:localhost:14550'):
         '''
