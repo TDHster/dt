@@ -83,11 +83,11 @@ if __name__ == "__main__":
                 sleep(EXPOSURE_TIME)
                 drone.thrust(500)
             case "attitude yaw left":
-                drone.yaw(-30)
+                drone.yaw(-300)
                 sleep(EXPOSURE_TIME)
                 drone.yaw(0)
             case "attitude yaw right":
-                drone.yaw(30)
+                drone.yaw(300)
                 sleep(EXPOSURE_TIME)
                 drone.yaw(0)
             case "attitude roll left":
