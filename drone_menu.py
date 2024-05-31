@@ -45,8 +45,8 @@ def ask_dictstyle(**kwargs):
     return prompt(questions, **kwargs)
 
 if __name__ == "__main__":
-    EXPOSURE_TIME = 1
-    EXPOSURE_XY_VALUE = 100
+    EXPOSURE_TIME = 3
+    EXPOSURE_XY_VALUE = 400
     #working config:
     # udpin:127.0.0.1:14550 =  udpin:127.0.0.1:14550
     # pi@raspberrypi:~ $ mavproxy.py --master=/dev/ttyACM0 --out=udpout:0.0.0.0:14550
