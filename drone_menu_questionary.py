@@ -66,7 +66,7 @@ def ask_dictstyle(**kwargs):
 
 if __name__ == "__main__":
     #working config:
-    # udpin:127.0.0.1:14550 =  udpin:127.0.0.1:14550
+    # udpin:127.0.0.1:14550
     # pi@raspberrypi:~ $ mavproxy.py --master=/dev/ttyACM0 --out=udpout:0.0.0.0:14550
     # arm uncheck all
     EXPOSURE_TIME = 1

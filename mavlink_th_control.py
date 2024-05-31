@@ -1,0 +1,155 @@
+from pymavlink import mavutil
+from pymavlink_iq_utilites import *
+from time import sleep
+import threading
+import queue
+
+class MavlinkDrone:
+    def __init__(self, connection_string='udpin:localhost:14550'):
+        '''
+          Args:
+            connection_string:
+            The mavutil.mavlink_connection() connection string has the format:
+
+            [protocol:]address[:port]
+            where:
+
+            protocol (optional): The IP protocol. If not specified pymavlink will attempt to determine if the address is a serial port (e.g. USB) or a file, and if not will default to a UDP address.
+            tcp: Initiate a TCP connection on the specified address and port.
+            tcpin: Listen for a TCP connection on the specified address and port.
+            udpin: Listen for a UDP connection on the specified address and port.
+            udpout: Initiate a TCP connection on the specified address and port.
+            udp: By default, same as udpin. Set mavlink_connection parameter input=False to make same as udpout.
+            udpcast: Broadcast UDP address and port. This is the same as udp with mavlink_connection() parameters input=False and broadcast=True.
+            address: IP address, serial port name, or file name
+            port: IP port (only if address is an IP address)
+        '''
+
+        print(f"Using mavlink connection string: {connection_string}")
+        self.connection = mavutil.mavlink_connection(connection_string)
+        self.connection.wait_heartbeat()
+        print("Heartbeat from system (system %u component %u)" %
+              (self.connection.target_system, self.connection.target_component))
+        self.autopilot_info = get_autopilot_info(self.connection, self.connection.target_system)
+        print(f'Connected to {self.autopilot_info["autopilot"]} autopilot')
+
+        # Create a shared queue to pass attitude commands
+        self.attitude_command_queue = queue.Queue()
+
+        # Create and start the attitude control thread
+        self.attitude_control_thread = AttitudeControlThread(self.attitude_command_queue, self.connection)
+        self.attitude_control_thread.start()
+        print('Attitude command thread started.')
+
+
+    def _arm(self, arm_command=1):
+        self.connection.wait_heartbeat()
+        self.connection.mav.command_long_send(self.connection.target_system, self.connection.target_component,
+                                         mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, arm_command, 0, 0, 0, 0, 0, 0)
+        msg = self.connection.recv_match(type='COMMAND_ACK', blocking=True)
+        print(msg)
+        return msg
+
+    def arm(self):
+        print('Arming')
+        return self._arm(1)
+
+    def disarm(self):
+        print('Disarming')
+        return self._arm(0)
+
+    def _set_mode(self, mode='LAND'):
+        '''
+        Modes: ['STABILIZE', 'ACRO', 'ALT_HOLD', 'AUTO', 'GUIDED', 'LOITER', 'RTL', 'CIRCLE', 'POSITION', 'LAND',
+                'OF_LOITER', 'DRIFT', 'SPORT', 'FLIP', 'AUTOTUNE', 'POSHOLD', 'BRAKE', 'THROW', 'AVOID_ADSB',
+                'GUIDED_NOGPS', 'SMART_RTL', 'FLOWHOLD', 'FOLLOW', 'ZIGZAG', 'SYSTEMID', 'AUTOROTATE', 'AUTO_RTL']
+        '''
+        self.connection.set_mode(mode)
+
+    def mode_land(self):
+        self._set_mode('LAND')
+
+    def mode_alt_hold(self):
+        self._set_mode('ALT_HOLD')
+
+    def mode_brake(self):
+        self._set_mode('BRAKE')
+
+    def emergency_stop(self):
+        self._set_mode('BRAKE')
+
+    def pitch(self, pitch):
+        self.attitude_command_queue.put({'pitch': pitch})
+
+    def roll(self, roll):
+        self.attitude_command_queue.put({'roll': roll})
+
+    def thrust(self, thrust):
+        self.attitude_command_queue.put({'thrust': thrust})
+
+    def yaw(self, yaw):
+        self.attitude_command_queue.put({'yaw': yaw})
+
+
+
+class AttitudeControlThread(threading.Thread):
+    def __init__(self, queue, connection, delay=0.05):
+        super().__init__()
+        self.queue = queue
+        self.connection = connection
+        self.delay = delay
+
+        # Initialize initial values
+        self.pitch = 0
+        self.roll = 0
+        self.thrust = 500
+        self.yaw = 0
+
+    def run(self):
+        while True:
+            # Check for new attitude command in the queue
+            if not self.queue.empty():
+                command = self.queue.get()
+
+                # Update attitude values from the command
+                self.thrust = command.get('thrust', self.thrust)
+                self.pitch = command.get('pitch', self.pitch)
+                self.roll = command.get('roll', self.roll)
+                self.yaw = command.get('yaw', self.yaw)
+
+            # Send the current attitude command to the drone
+            self.connection.mav.manual_control_send(
+                self.connection.target_system,
+                self.pitch,
+                self.roll,
+                self.thrust,
+                self.yaw,
+                0)
+
+            sleep(self.delay)
+
+    def stop(self):
+        self.queue.put({'thrust': 0})  # 500 neutral
+        self.queue.put({'pitch': 0})
+        self.queue.put({'roll': 0})
+        self.queue.put({'yaw': 0})
+        # Wait for the thread to finish (if needed)
+        self.join(timeout=3)
+
+
+if __name__ == "__main__":
+    # # Replace with your actual connection method
+    # connection = mavutil.mavlink.MAVLinkConnection('udp://:14550')
+    #
+    # # Create a shared queue to pass attitude commands
+    # attitude_command_queue = queue.Queue()
+    #
+    # # Create and start the attitude control thread
+    # attitude_control_thread = AttitudeControlThread(attitude_command_queue, connection)
+    # attitude_control_thread.start()
+    #
+    # # Example usage: Send some attitude commands to the queue
+    # attitude_command_queue.put({'thrust': 0.5})  # Set thrust to 50%
+    # attitude_command_queue.put({'pitch': -0.1})  # Tilt nose down slightly
+    # attitude_command_queue.put({'yaw': 0.1})  # Yaw right slightly
+    pass
