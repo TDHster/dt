@@ -116,6 +116,7 @@ class AttitudeControlThread(threading.Thread):
                 self.pitch = command.get('pitch', self.pitch)
                 self.roll = command.get('roll', self.roll)
                 self.yaw = command.get('yaw', self.yaw)
+                print(f'{self.thrust=}\t{self.pitch=}\t{self.roll=}\t{self.yaw}')
 
             # Send the current attitude command to the drone
             self.connection.mav.manual_control_send(
