@@ -46,7 +46,7 @@ def ask_dictstyle(**kwargs):
 
 if __name__ == "__main__":
     EXPOSURE_TIME = 3
-    EXPOSURE_XY_VALUE = 400
+    EXPOSURE_XY_VALUE = 0.4
     #working config:
     # udpin:127.0.0.1:14550 =  udpin:127.0.0.1:14550
     # pi@raspberrypi:~ $ mavproxy.py --master=/dev/ttyACM0 --out=udpout:0.0.0.0:14550
@@ -77,17 +77,17 @@ if __name__ == "__main__":
                 drone.disarm()
 
             case "attitude takeoff":
-                drone.thrust(500)
+                drone.thrust(0.5)
                 sleep(EXPOSURE_TIME)
-                drone.thrust(600)
+                drone.thrust(0.6)
                 sleep(EXPOSURE_TIME)
-                drone.thrust(500)
+                drone.thrust(0.5)
             case "attitude yaw left":
-                drone.yaw(-300)
+                drone.yaw(-0.3)
                 sleep(EXPOSURE_TIME)
                 drone.yaw(0)
             case "attitude yaw right":
-                drone.yaw(300)
+                drone.yaw(0.3)
                 sleep(EXPOSURE_TIME)
                 drone.yaw(0)
             case "attitude roll left":
@@ -107,11 +107,11 @@ if __name__ == "__main__":
                 sleep(EXPOSURE_TIME)
                 drone.pitch(0)
             case "attitude land":
-                drone.thrust(400)
+                drone.thrust(0.4)
                 sleep(EXPOSURE_TIME)
-                drone.thrust(300)
+                drone.thrust(0.3)
                 sleep(EXPOSURE_TIME)
-                drone.thrust(200)
+                drone.thrust(0.2)
                 sleep(EXPOSURE_TIME)
                 drone.thrust(0)
 

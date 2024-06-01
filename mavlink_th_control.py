@@ -5,6 +5,26 @@ import threading
 import queue
 
 
+def normalize_value(value: float, min_norm=-1000, max_norm=1000):
+    """
+    Normalizes a value between -1 and 1 to a specified range.
+
+    Args:
+        value (float): The input value between -1 and 1.
+        min_norm (float): The minimum value of the normalized range.
+        max_norm (float): The maximum value of the normalized range.
+
+    Returns:
+        float: The normalized value within the specified range.
+    """
+    if not (-1 <= value <= 1):
+        raise ValueError("Input value must be between -1 and 1")
+    # Normalize to range 0-1
+    normalized_value = (value + 1) / 2
+    # Scale to desired range
+    return int(min_norm + normalized_value * (max_norm - min_norm))
+
+
 class MavlinkDrone:
     def __init__(self, connection_string='udpin:localhost:14550'):
         '''
@@ -42,11 +62,11 @@ class MavlinkDrone:
         self.attitude_control_thread.start()
         print('Attitude command thread started.')
 
-
     def _arm(self, arm_command=1):
         self.connection.wait_heartbeat()
         self.connection.mav.command_long_send(self.connection.target_system, self.connection.target_component,
-                                         mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, arm_command, 0, 0, 0, 0, 0, 0)
+                                              mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, arm_command, 0, 0, 0, 0,
+                                              0, 0)
         msg = self.connection.recv_match(type='COMMAND_ACK', blocking=True)
         print(msg)
         return msg
@@ -64,11 +84,16 @@ class MavlinkDrone:
         Modes: ['STABILIZE', 'ACRO', 'ALT_HOLD', 'AUTO', 'GUIDED', 'LOITER', 'RTL', 'CIRCLE', 'POSITION', 'LAND',
                 'OF_LOITER', 'DRIFT', 'SPORT', 'FLIP', 'AUTOTUNE', 'POSHOLD', 'BRAKE', 'THROW', 'AVOID_ADSB',
                 'GUIDED_NOGPS', 'SMART_RTL', 'FLOWHOLD', 'FOLLOW', 'ZIGZAG', 'SYSTEMID', 'AUTOROTATE', 'AUTO_RTL']
+                https://ardupilot.org/copter/docs/flight-modes.html#flight-modes
         '''
         self.connection.set_mode(mode)
 
     def mode_land(self):
         self._set_mode('LAND')
+
+    def mode_return_to_land(self):
+        # self._set_mode('RTL')
+        self._set_mode('SMART_RTL')
 
     def mode_alt_hold(self):
         self._set_mode('ALT_HOLD')
@@ -79,22 +104,44 @@ class MavlinkDrone:
     def emergency_stop(self):
         self._set_mode('BRAKE')
 
-    def pitch(self, pitch):
+    def pitch(self, pitch: float):
+        pitch = normalize_value(pitch)
         self.attitude_command_queue.put({'pitch': pitch})
 
-    def roll(self, roll):
+    def roll(self, roll: float):
+        roll = normalize_value(roll)
         self.attitude_command_queue.put({'roll': roll})
 
-    def thrust(self, thrust):
-        self.attitude_command_queue.put({'thrust': thrust})
-
-    def yaw(self, yaw):
+    def yaw(self, yaw: float):
+        yaw = normalize_value(yaw)
         self.attitude_command_queue.put({'yaw': yaw})
 
+    def thrust(self, thrust: float):
+        thrust = normalize_value(thrust, min_norm=0, max_norm=1000)
+        self.attitude_command_queue.put({'thrust': thrust})
+
+    def _manual_thurst_series(self, thrust_pairs):
+        """
+
+        Args:
+            thrust_pairs: (thurst: float 0..1, time_in_sec)
+
+        Returns:
+
+        """
+        for thrust, duration in thrust_pairs:
+            self.thrust(thrust)
+            sleep(duration)
+
+    def manual_takeoff(self, thrust_pairs=((0.5, 1), (0.6, 1), (0.5, 0)) ):
+        self._manual_thurst_series(thrust_pairs)
+
+    def manual_land(self, thrust_pairs=((0.5, 1), (0.4, 3), (0, 0))):
+        self._manual_thurst_series(thrust_pairs)
 
 
 class AttitudeControlThread(threading.Thread):
-    def __init__(self, queue, connection, delay=0.05):
+    def __init__(self, queue, connection, delay=1/20):
         super().__init__()
         self.queue = queue
         self.connection = connection
@@ -118,13 +165,13 @@ class AttitudeControlThread(threading.Thread):
                 self.pitch = command.get('pitch', self.pitch)
                 self.roll = command.get('roll', self.roll)
                 self.yaw = command.get('yaw', self.yaw)
-                print(f'{self.thrust=}\t{self.pitch=}\t{self.roll=}\t{self.yaw=}')
+                # print(f'{self.thrust=}\t{self.pitch=}\t{self.roll=}\t{self.yaw=}')
 
             # Send the current attitude command to the drone
             self.connection.mav.manual_control_send(
                 self.connection.target_system,
                 self.pitch,
-                self.roll,
+                -self.roll,  # inversed
                 self.thrust,
                 self.yaw,
                 0)
@@ -133,9 +180,9 @@ class AttitudeControlThread(threading.Thread):
 
     def stop(self):
         self.queue.put({'thrust': 0})  # 500 neutral
-        self.queue.put({'pitch': 0})
-        self.queue.put({'roll': 0})
-        self.queue.put({'yaw': 0})
+        # self.queue.put({'pitch': 0})
+        # self.queue.put({'roll': 0})
+        # self.queue.put({'yaw': 0})
         # Wait for the thread to finish (if needed)
         self.join(timeout=3)
 
