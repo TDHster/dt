@@ -7,52 +7,71 @@ from math import pi, sqrt
 import heapq
 from video_send import NetworkConnection, get_key_from_byte
 # from control_drone import MavlinkJoystickControl as MavlinkControl
-from mavlink_control import MavlinkDrone as MavlinkControl
+# from mavlink_control import MavlinkDrone as MavlinkControl
+from mavlink_th_control import MavlinkDrone as Drone
 # from object_detector import NeuroNetObjectDetector
 from object_detector import filter_by_target_class_id
 import argparse
 
-PID_X = 0.1
-PID_Z = 0.1
-PID_YAW = 0.5
-
-ground_receiver_ip = "192.168.0.169"
-ground_server_port = 5000
-
-mavproxy_connect_string = 'udpout:127.0.0.1:14550'
-
-
-detection_threshold = 0.45  # Threshold to detect object
-# detection_threshold = 0.3  # Threshold to detect object
 
 # INPUT_VIDEO_WIDTH = 320
 # INPUT_VIDEO_HEIGHT = 200
 INPUT_VIDEO_WIDTH = 640
 INPUT_VIDEO_HEIGHT = 480
-INPUT_VIDEO_FPS = 15
 
 
-# Create the parser object
 parser = argparse.ArgumentParser(description="Main drone script")
 
-# Add an argument for the camera type with a default value
 parser.add_argument(
-    "-c",
-    "--camera",
-    type=str,
-    default="0",
+    "-c", "--camera", type=str, default="0",
     help="Specify path for camera connection ex: 0 for opencv device, for RTSP: rtsp://localhost:8554/cam",
 )
+parser.add_argument(
+    "-fps", type=int, default=15,
+    help="FPS for drone camera."
+)
+parser.add_argument(
+    "-m", "--mavlink", type=str, default="udpout:127.0.0.1:14550",
+    help="Specify path for mavlink/mavproxy connection.",
+)
+parser.add_argument(
+    "-g", "--groundstation_connection_string", type=str, default="192.168.0.169:5000",
+    help="Specify path for mavlink/mavproxy connection.",
+)
+parser.add_argument(
+    "-pidx", type=float, default=0.1, help="PID_X for drone control.", metavar='VALUE'
+)
+parser.add_argument(
+    "-pidz", type=float, default=0.1, help="PID_Z (throttle) for drone control.", metavar='VALUE'
+)
+parser.add_argument(
+    "-pidyaw", type=float, default=0.1, help="PID_YAW for drone control.", metavar='VALUE'
+)
+parser.add_argument(
+    "-dt", type=float, default=0.45, help="detection_threshold for drone control.", metavar='VALUE'
+)
+parser.add_argument(
+    "-dt", "--detection_threshold", type=float, default=0.45,
+    help="detection_threshold for objects recognition.", metavar='VALUE'
+)
+
 args = parser.parse_args()
 
-# Get the camera type from the parsed arguments
 opencv_device = args.camera
+INPUT_VIDEO_FPS = args.fps
+mavproxy_connect_string = args.mavlink
+gs_connection_string = args.groundstation_connection_string
+PID_X = args.pidx
+PID_YAW = args.pidz
+PID_Z = args.pidyaw
+detection_threshold = args.detection_threshold  # 0.3, 0.45
+
 
 print('Starting.')
 print(f"Installed OpenCV version: {cv2.__version__}")
 
 print(f'Starting connection to mavlink.')
-dron = MavlinkControl(mavproxy_connect_string)
+drone = Drone(mavproxy_connect_string)
 # dron.arm()
 
 # video_path = 'test_videos/6387-191695740.mp4'  # Commercial from top
@@ -84,6 +103,7 @@ print(f'Video device {opencv_device} opened.')
 # Dictionary mapping keys to commands
 key_to_command = {
     't': "Takeoff",
+    'g': "Land",
     'w': "Move forward",
     's': "Move backward",
     'a': "Move left",
@@ -131,13 +151,15 @@ net.setInputSize(320, 320)
 net.setInputScale(1.0 / 127.5)
 net.setInputMean((127.5, 127.5, 127.5))
 net.setInputSwapRB(True)
-# enf of object_detector = NeuroNetObjectDetector
 print(f'Object NN detector configured.')
+# enf of object_detector = NeuroNetObjectDetector
 
 object_tracker = CentroidTracker(max_disappeared_frames=50, distance_threshold=50)
 
-print(f'Trying connect with {ground_receiver_ip}:{ground_server_port}.')
-netconnection = NetworkConnection(receiver_ip=ground_receiver_ip, server_port=ground_server_port)
+ground_receiver_ip, ground_receiver_port = gs_connection_string.split(':')
+ground_receiver_port = int(ground_receiver_port)
+print(f'Trying connect with {ground_receiver_ip}:{ground_receiver_ip}.')
+netconnection = NetworkConnection(receiver_ip=ground_receiver_ip, server_port=ground_receiver_port)
 print(f'Network connection established.')
 
 target_object_id = None
@@ -151,9 +173,7 @@ while True:
     if not success:  # Check success flag
         continue
     # frame = cv2.resize(frame, (INPUT_VIDEO_WIDTH, INPUT_VIDEO_HEIGHT), interpolation=cv2.INTER_AREA)
-
     # print(f'{frame.shape=}')
-
     classIds, confs, bbox = net.detect(frame, confThreshold=detection_threshold)
     # print(f'classIds={classIds}, bbox={bbox}')
 
@@ -181,12 +201,11 @@ while True:
                 target_object_current_diagonal = sqrt(w*w + h*h)
                 if not target_object_diagonal:
                     target_object_diagonal = target_object_current_diagonal
-                dx =  (target_object_diagonal - target_object_current_diagonal) / INPUT_VIDEO_WIDTH * PID_X
-                # dron.move(dx, 0, 0)
-                dron.yaw = yaw_pixels/INPUT_VIDEO_WIDTH / 2 * pi/180 * PID_YAW
+                dx = (target_object_diagonal - target_object_current_diagonal) * PID_X
+                # drone.pitch(dx * PID_X)
+                drone.yaw(yaw_pixels / INPUT_VIDEO_WIDTH / 2 * PID_YAW)
                 dz = elevation_pixels/INPUT_VIDEO_HEIGHT * PID_Z
-                # dron.move(0, 0, dz * 0.1)
-                dron.move(dx, 0, dz)
+                drone.thrust(dz)
 
             elif object_id == object_id_near_center:
                 # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
@@ -224,19 +243,25 @@ while True:
                 print(f'Select target: {target_object_id}')
                 target_object_diagonal = None
             elif command == 'To target':
-                dron.to_target()
+                drone.to_target()
             elif command == "Clear target":
                 target_object_id = None
             elif command == "Yaw left":
-                dron.yaw = -5
+                drone.yaw(-0.2)
             elif command == "Yaw right":
-                dron.yaw = 5
+                drone.yaw(0.2)
             elif command == "Move up":
-                dron.move(0,0, -0.1)
+                drone.thrust(0.1)
             elif command == "Move down":
-                dron.move(0,0, 0.1)
+                drone.thrust(-0.1)
+            elif command == "Land":
+                drone.manual_land()
+                drone.mode_land()
+            elif command == "Takeoff":
+                drone.mode_alt_hold()
+                drone.manual_takeoff()
             else:
-                print(f'{command}')
+                print(f'{command=} not known')
 
         except netconnection.key_queue.Empty:
             pass  # No data in queue, continue the loop
@@ -246,3 +271,6 @@ while True:
 
 cap.release()
 netconnection.close()
+drone.emergency_stop()
+# drone.manual_land()
+# drone.mode_land()

@@ -117,14 +117,14 @@ class MavlinkDrone:
         self.attitude_command_queue.put({'yaw': yaw})
 
     def thrust(self, thrust: float):
-        thrust = normalize_value(thrust, min_norm=0, max_norm=1000)
+        thrust = normalize_value(thrust, min_norm=0, max_norm=1000)  # thrust 0..1000, 500 neutral
         self.attitude_command_queue.put({'thrust': thrust})
 
-    def _manual_thurst_series(self, thrust_pairs):
+    def _manual_thrust_series(self, thrust_pairs):
         """
 
         Args:
-            thrust_pairs: (thurst: float 0..1, time_in_sec)
+            thrust_pairs: ((thrust, time),(thrust,time),(etc...)) (thurst: float 0..1, time_in_sec)
 
         Returns:
 
@@ -133,15 +133,21 @@ class MavlinkDrone:
             self.thrust(thrust)
             sleep(duration)
 
-    def manual_takeoff(self, thrust_pairs=((0.5, 1), (0.6, 1), (0.5, 0)) ):
-        self._manual_thurst_series(thrust_pairs)
+    def manual_takeoff(self, thrust_pairs=((0.5, 1), (0.6, 1), (0.5, 0))):
+        self._manual_thrust_series(thrust_pairs)
 
     def manual_land(self, thrust_pairs=((0.5, 1), (0.4, 3), (0, 0))):
-        self._manual_thurst_series(thrust_pairs)
+        self._manual_thrust_series(thrust_pairs)
+
+    def to_target(self, safety=True):
+        self.pitch(1)
+        if safety:
+            sleep(1)  # for safety
+            self.pitch(0)  # for safety
 
 
 class AttitudeControlThread(threading.Thread):
-    def __init__(self, queue, connection, delay=1/20):
+    def __init__(self, queue, connection, delay=1 / 20):
         super().__init__()
         self.queue = queue
         self.connection = connection

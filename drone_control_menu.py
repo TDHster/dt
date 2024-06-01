@@ -77,6 +77,7 @@ if __name__ == "__main__":
                 drone.disarm()
 
             case "attitude takeoff":
+                # drone.manual_takeoff()
                 drone.thrust(0.5)
                 sleep(EXPOSURE_TIME)
                 drone.thrust(0.6)
@@ -107,6 +108,7 @@ if __name__ == "__main__":
                 sleep(EXPOSURE_TIME)
                 drone.pitch(0)
             case "attitude land":
+                # drone.manual_land()
                 drone.thrust(0.4)
                 sleep(EXPOSURE_TIME)
                 drone.thrust(0.3)
