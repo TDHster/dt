@@ -77,12 +77,12 @@ if __name__ == "__main__":
                 drone.disarm()
 
             case "attitude takeoff":
-                # drone.manual_takeoff()
-                drone.thrust(0.5)
-                sleep(EXPOSURE_TIME)
-                drone.thrust(0.6)
-                sleep(EXPOSURE_TIME)
-                drone.thrust(0.5)
+                drone.manual_takeoff()
+                # drone.thrust(0.5)
+                # sleep(EXPOSURE_TIME)
+                # drone.thrust(0.6)
+                # sleep(EXPOSURE_TIME)
+                # drone.thrust(0.5)
             case "attitude yaw left":
                 drone.yaw(-0.3)
                 sleep(EXPOSURE_TIME)
