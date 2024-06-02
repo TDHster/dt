@@ -205,7 +205,7 @@ while True:
                 # drone.pitch(dx * PID_X)
                 drone.yaw(yaw_pixels / INPUT_VIDEO_WIDTH / 2 * PID_YAW)
                 dz = elevation_pixels/INPUT_VIDEO_HEIGHT * PID_Z
-                drone.thrust(dz)
+                # drone.thrust(dz)
 
             elif object_id == object_id_near_center:
                 # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
