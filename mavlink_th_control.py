@@ -31,6 +31,7 @@ def normalize_value(value: float, min_norm=-1000, max_norm=1000):
 
 
 class MavlinkDrone:
+    _pitch, _roll, _yaw, _thrust = 0, 0, 0, 0
     def __init__(self, connection_string='udpin:localhost:14550'):
         '''
           Args:
@@ -109,20 +110,43 @@ class MavlinkDrone:
     def emergency_stop(self):
         self.disarm()
         self.mode_land()
-        self._set_mode('BRAKE')
+        self.mode_brake()
 
+    @property
+    def pitch(self):
+        return self._pitch
+
+    @pitch.setter
     def pitch(self, pitch: float):
-        pitch = normalize_value(pitch)
-        self.attitude_command_queue.put({'pitch': pitch})
+        self._pitch = pitch
+        normalized_pitch = normalize_value(pitch, min_norm=-1000, max_norm=1000)
+        self.attitude_command_queue.put({'pitch': normalized_pitch})
 
+    @property
+    def roll(self):
+        return self._roll
+
+    @roll.setter
     def roll(self, roll: float):
-        roll = normalize_value(roll)
-        self.attitude_command_queue.put({'roll': roll})
+        self._roll = roll
+        norm_roll = normalize_value(roll, min_norm=-1000, max_norm=1000)
+        self.attitude_command_queue.put({'roll': norm_roll})
 
+    @property
+    def yaw(self):
+        return self._yaw
+
+    @yaw.setter
     def yaw(self, yaw: float):
-        yaw = normalize_value(yaw)
-        self.attitude_command_queue.put({'yaw': yaw})
+        self._yaw = yaw
+        norm_yaw = normalize_value(yaw, min_norm=-1000, max_norm=1000)
+        self.attitude_command_queue.put({'yaw': norm_yaw})
 
+    @property
+    def thrust(self):
+        return self._thrust
+
+    @thrust.setter
     def thrust(self, thrust: float):
         thrust_normalized = normalize_value(thrust, min_norm=0, max_norm=1000)  # thrust 0..1000, 500 neutral
         # print(f'Set thrust: {thrust=}\t{thrust_normalized}')
@@ -143,10 +167,16 @@ class MavlinkDrone:
             sleep(duration)
 
     def manual_takeoff(self, thrust_pairs=((0.25, 1), (0.17, 0))):
+        self.mode_alt_hold()
+        sleep(1)
+        self.arm()
+        sleep(3)
         self._manual_thrust_series(thrust_pairs)
 
     def manual_land(self, thrust_pairs=((-0.1, 1), (-0.2, 0.5), (-1, 0))):
         self._manual_thrust_series(thrust_pairs)
+        self.disarm()
+        self.mode_land()
 
     def to_target(self, safety=True):
         self.pitch(1)

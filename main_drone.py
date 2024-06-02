@@ -208,7 +208,7 @@ while True:
     objects = object_tracker.update(bbox)
 
     if (target_object_id not in objects) and not need_reset_yaw:
-        drone.yaw(0)
+        drone.yaw = 0
         need_reset_yaw = False
         print(f'Yaw 0, because object lost')
 
@@ -235,11 +235,11 @@ while True:
                 if not target_object_diagonal:
                     target_object_diagonal = target_object_current_diagonal
                 dx = (target_object_diagonal - target_object_current_diagonal) * PID_X
-                # drone.pitch(dx * PID_X)
+                # drone.pitch = dx * PID_X
                 print(f'Sending yaw: {yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW}')
-                drone.yaw(yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW)
+                drone.yaw = yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW
                 dz = elevation_pixels/INPUT_VIDEO_HEIGHT * PID_Z
-                # drone.thrust(dz)
+                # drone.thrust = dz
 
             elif object_id == object_id_near_center:
                 # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
@@ -252,9 +252,6 @@ while True:
 
             # cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), -1)
 
-        # if not target_found:  # if loose object stop yaw
-        #     drone.yaw(0)
-        #     # drone.thrust()
 
     # cv2.imshow("Output", frame)
     netconnection.send_frame(frame)
@@ -285,24 +282,24 @@ while True:
             elif command == "Clear target":
                 target_object_id = None
             elif command == "Yaw left":
-                drone.yaw(-0.1)
+                drone.yaw = drone.yaw - 0.1
             elif command == "Yaw right":
-                drone.yaw(0.1)
+                drone.yaw = drone.yaw + 0.1
             elif command == "Move up":
-                drone.thrust(0.2)
+                drone.thrust = drone.thrust + 0.1
             elif command == "Move down":
-                drone.thrust(-0.3)
+                drone.thrust = drone.thrust - 0.1
+            elif command == "Move forward":
+                drone.pitch = drone.pitch + 0.1
+            elif command == "Move backward":
+                drone.pitch = drone.pitch + 0.1
+            elif command == "Move left":
+                drone.roll = drone.roll - 0.1
+            elif command == "Move right":
+                drone.roll = drone.roll + 0.1
             elif command == "Land":
                 drone.manual_land()
-                sleep(0.5)
-                drone.disarm()
-                sleep(0.5)
-                drone.mode_land()
             elif command == "Takeoff":
-                drone.mode_alt_hold()
-                sleep(0.5)
-                drone.arm()
-                sleep(2)
                 drone.manual_takeoff()
             else:
                 print(f'{command=} not known')
