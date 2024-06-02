@@ -31,7 +31,7 @@ parser.add_argument(
     help="FPS for drone camera."
 )
 parser.add_argument(
-    "-m", "--mavlink", type=str, default="udpin:127.0.0.1:14550",
+    "-m", "--mavlink", type=str, default="udpout:127.0.0.1:14550",
     help="Specify path for mavlink/mavproxy connection.",
 )
 parser.add_argument(
