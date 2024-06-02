@@ -102,6 +102,8 @@ class MavlinkDrone:
         self._set_mode('BRAKE')
 
     def emergency_stop(self):
+        self.disarm()
+        self.mode_land()
         self._set_mode('BRAKE')
 
     def pitch(self, pitch: float):
