@@ -59,8 +59,8 @@ INPUT_VIDEO_FPS = args.fps
 mavproxy_connect_string = args.mavlink
 gs_connection_string = args.groundstation_connection_string
 PID_X = args.pidx
-PID_YAW = args.pidz
-PID_Z = args.pidyaw
+PID_YAW = args.pidyaw
+PID_Z = args.pidz
 detection_threshold = args.detection_threshold  # 0.3, 0.45
 
 
