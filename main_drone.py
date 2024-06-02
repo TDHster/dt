@@ -272,13 +272,15 @@ while True:
                 drone.thrust(-0.2)
             elif command == "Land":
                 drone.manual_land()
+                sleep(0.5)
                 drone.disarm()
+                sleep(0.5)
                 drone.mode_land()
             elif command == "Takeoff":
                 drone.mode_alt_hold()
-                sleep(0.1)
+                sleep(0.5)
                 drone.arm()
-                sleep(0.1)
+                sleep(0.5)
                 drone.manual_takeoff()
             else:
                 print(f'{command=} not known')
