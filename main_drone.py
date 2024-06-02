@@ -173,6 +173,10 @@ while True:
     # print(f'{frame.shape=}')
     classIds, confs, bbox = net.detect(frame, confThreshold=detection_threshold)
     # print(f'classIds={classIds}, bbox={bbox}')
+    if classIds is None:
+        # Handle the case where no target class IDs were found
+        print("No target class IDs detected")
+        continue
 
     classIds, bbox = filter_by_target_class_id(classIds, bbox,
                                                names_list=object_class_names,
