@@ -36,5 +36,5 @@ def filter_by_target_class_id(classIds, bbox, names_list, target_class_name='per
         classIds = classIds[keep_indices]
         bbox = bbox[keep_indices]
         return classIds, bbox
-    return ()
+    return ((),())
 
