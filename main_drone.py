@@ -59,7 +59,7 @@ INPUT_VIDEO_FPS = args.fps
 mavproxy_connect_string = args.mavlink
 gs_connection_string = args.groundstation_connection_string
 PID_X = args.pidx
-PID_YAW = -args.pidyaw
+PID_YAW = args.pidyaw
 PID_Z = args.pidz
 detection_threshold = args.detection_threshold  # 0.3, 0.45
 
@@ -263,9 +263,9 @@ while True:
             elif command == "Clear target":
                 target_object_id = None
             elif command == "Yaw left":
-                drone.yaw(-0.05)
+                drone.yaw(-0.1)
             elif command == "Yaw right":
-                drone.yaw(0.05)
+                drone.yaw(0.1)
             elif command == "Move up":
                 drone.thrust(0.2)
             elif command == "Move down":
