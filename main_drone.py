@@ -48,7 +48,7 @@ parser.add_argument(
     "-pidyaw", type=float, default=0.1, help="PID_YAW for drone control.", metavar='VALUE'
 )
 parser.add_argument(
-    "-dt", type=float, default=0.45, help="detection_threshold for drone control.", metavar='VALUE'
+    "-dt", "--detection_threshold", type=float, default=0.45, help="detection_threshold for drone control.", metavar='VALUE'
 )
 
 
