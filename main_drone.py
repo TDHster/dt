@@ -50,10 +50,7 @@ parser.add_argument(
 parser.add_argument(
     "-dt", type=float, default=0.45, help="detection_threshold for drone control.", metavar='VALUE'
 )
-parser.add_argument(
-    "-dt", "--detection_threshold", type=float, default=0.45,
-    help="detection_threshold for objects recognition.", metavar='VALUE'
-)
+
 
 args = parser.parse_args()
 
