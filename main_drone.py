@@ -45,7 +45,7 @@ parser.add_argument(
     "-pidz", type=float, default=0.1, help="PID_Z (throttle) for drone control.", metavar='VALUE'
 )
 parser.add_argument(
-    "-pidyaw", type=float, default=0.1, help="PID_YAW for drone control.", metavar='VALUE'
+    "-pidyaw", type=float, default=0.2, help="PID_YAW for drone control.", metavar='VALUE'
 )
 parser.add_argument(
     "-dt", "--detection_threshold", type=float, default=0.45, help="detection_threshold for drone control.", metavar='VALUE'
@@ -162,6 +162,7 @@ print(f'Network connection established.')
 target_object_id = None
 object_id_near_center = None
 target_object_diagonal = None
+target_found = False
 
 print('Starting program main loop.')
 while True:
@@ -187,11 +188,15 @@ while True:
     # print(f'objects={objects}')
     if objects:
         object_id_near_center = find_nearest_object_id(objects)
+        target_found = False
+
         for object_id, (x, y, w, h) in objects.items():
             # print(f'{object_id, (x, y, w, h)}')
             rect_top_left = (int(x - w / 2), int(y - h / 2))
             rect_bottom_right = (int(x + w / 2), int(y + h / 2))
             if object_id == target_object_id:
+                target_found = True
+
                 cv2.line(frame, (int(INPUT_VIDEO_WIDTH / 2), int(INPUT_VIDEO_HEIGHT / 2)),
                          (x, y), (0, 0, 255), thickness=2)
                 yaw_pixels = INPUT_VIDEO_WIDTH/2 + x
@@ -219,6 +224,10 @@ while True:
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 255, 0), 1)
 
             # cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), -1)
+
+        if not target_found:  # if loose object stop yaw
+            drone.yaw(0)
+            # drone.thrust()
 
     # cv2.imshow("Output", frame)
     netconnection.send_frame(frame)
