@@ -188,6 +188,7 @@ while True:
     if (target_object_id not in objects) and not need_reset_yaw:
         drone.yaw(0)
         need_reset_yaw = False
+        print(f'Yaw 0, because object lost')
 
     # print(f'objects={objects}')
     if objects:
