@@ -62,7 +62,8 @@ PID_X = args.pidx
 PID_YAW = args.pidyaw
 PID_Z = args.pidz
 detection_threshold = args.detection_threshold  # 0.3, 0.45
-
+tracker_max_disappeared_frames=50
+tracker_distance_threshold=50
 
 print('Starting.')
 print(f"Installed OpenCV version: {cv2.__version__}")
@@ -157,22 +158,22 @@ class ObjectDetector:
         classIds, confs, bbox = self.net.detect(frame, confThreshold=detection_threshold)
         return classIds, confs, bbox
 
-    def filter(self, classIds, bbox, target_class_name='person'):
-        if len(classIds):
+    def filter(self, class_ids, bbox, target_class_name='person'):
+        if len(class_ids):
             # Efficient filtering using boolean indexing
             # keep_indices = classIds == object_class_names.index(target_class_name) + 1  # Indices where specified class ID (1 is person)
-            keep_indices = classIds == self.object_class_names.index(
+            keep_indices = class_ids == self.object_class_names.index(
                 target_class_name) + 1  # Indices where specified class ID (1 is person)
             # keep_indices = classIds == 1  # Indices where specified class ID (1 is person)
-            classIds = classIds[keep_indices]
+            class_ids = class_ids[keep_indices]
             bbox = bbox[keep_indices]
-            return classIds, bbox
+            return class_ids, bbox
         return (), ()
 
 
 object_detector = ObjectDetector
 
-object_tracker = CentroidTracker(max_disappeared_frames=50, distance_threshold=50)
+object_tracker = CentroidTracker(max_disappeared_frames=tracker_max_disappeared_frames, distance_threshold=tracker_distance_threshold)
 
 print(f'Trying connect with ground station {gs_connection_string}.')
 netconnection = NetworkConnection(gs_connection_string=gs_connection_string)
@@ -237,7 +238,7 @@ while True:
                 dx = (target_object_diagonal - target_object_current_diagonal) * PID_X
                 # drone.pitch = dx * PID_X
                 print(f'Sending yaw: {yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW}')
-                drone.yaw = yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW
+                drone.yaw = yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW  # need correction factor  *diagonal/image_diagonal
                 dz = elevation_pixels/INPUT_VIDEO_HEIGHT * PID_Z
                 # drone.thrust = dz
 
