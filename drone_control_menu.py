@@ -108,12 +108,6 @@ if __name__ == "__main__":
                 sleep(EXPOSURE_TIME)
                 drone.pitch(0)
             case "attitude land":
-                # drone.manual_land()
-                drone.thrust(0.4)
-                sleep(EXPOSURE_TIME)
-                drone.thrust(0.3)
-                sleep(EXPOSURE_TIME)
-                drone.thrust(0.2)
-                sleep(EXPOSURE_TIME)
-                drone.thrust(0)
+                drone.manual_land()
+
 
