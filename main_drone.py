@@ -2,7 +2,6 @@
 
 import cv2
 from object_tracker import CentroidTracker
-# import math
 from math import pi, sqrt
 import heapq
 from video_send import NetworkConnection, get_key_from_byte
@@ -12,13 +11,14 @@ from mavlink_th_control import MavlinkDrone as Drone
 # from object_detector import NeuroNetObjectDetector
 from object_detector import filter_by_target_class_id
 import argparse
+from time import sleep
 
 
-# INPUT_VIDEO_WIDTH = 320
-# INPUT_VIDEO_HEIGHT = 200
-INPUT_VIDEO_WIDTH = 640
-INPUT_VIDEO_HEIGHT = 480
-
+INPUT_VIDEO_WIDTH = 320
+INPUT_VIDEO_HEIGHT = 200
+# INPUT_VIDEO_WIDTH = 640
+# INPUT_VIDEO_HEIGHT = 480
+#
 
 parser = argparse.ArgumentParser(description="Main drone script")
 
@@ -45,7 +45,7 @@ parser.add_argument(
     "-pidz", type=float, default=0.1, help="PID_Z (throttle) for drone control.", metavar='VALUE'
 )
 parser.add_argument(
-    "-pidyaw", type=float, default=0.15, help="PID_YAW for drone control.", metavar='VALUE'
+    "-pidyaw", type=float, default=0.18, help="PID_YAW for drone control.", metavar='VALUE'
 )
 parser.add_argument(
     "-dt", "--detection_threshold", type=float, default=0.45, help="detection_threshold for drone control.", metavar='VALUE'
@@ -162,6 +162,7 @@ print(f'Network connection established.')
 target_object_id = None
 object_id_near_center = None
 target_object_diagonal = None
+need_reset_yaw = True
 
 print('Starting program main loop.')
 while True:
@@ -184,6 +185,10 @@ while True:
 
     objects = object_tracker.update(bbox)
 
+    if (target_object_id not in objects) and not need_reset_yaw:
+        drone.yaw(0)
+        need_reset_yaw = False
+
     # print(f'objects={objects}')
     if objects:
         object_id_near_center = find_nearest_object_id(objects)
@@ -194,7 +199,7 @@ while True:
             rect_top_left = (int(x - w / 2), int(y - h / 2))
             rect_bottom_right = (int(x + w / 2), int(y + h / 2))
             if object_id == target_object_id:
-                # target_found = True
+                need_reset_yaw = True
 
                 cv2.line(frame, (int(INPUT_VIDEO_WIDTH / 2), int(INPUT_VIDEO_HEIGHT / 2)),
                          (x, y), (0, 0, 255), thickness=2)
@@ -270,7 +275,9 @@ while True:
                 drone.mode_land()
             elif command == "Takeoff":
                 drone.mode_alt_hold()
+                sleep(0.1)
                 drone.arm()
+                sleep(0.1)
                 drone.manual_takeoff()
             else:
                 print(f'{command=} not known')

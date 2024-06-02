@@ -145,13 +145,15 @@ class MavlinkDrone:
     def manual_takeoff(self, thrust_pairs=((0.3, 1), (0.17, 0))):
         self._manual_thrust_series(thrust_pairs)
 
-    def manual_land(self, thrust_pairs=((-0.1, 1), (-0.2, 3), (-1, 0))):
+    def manual_land(self, thrust_pairs=((-0.1, 1), (-0.2, 0.5), (-1, 0))):
         self._manual_thrust_series(thrust_pairs)
 
     def to_target(self, safety=True):
         self.pitch(1)
         if safety:
-            sleep(1)  # for safety
+            sleep(0.5)  # for safety
+            self.pitch(-1)  # for safety
+            sleep(0.2)  # for safety
             self.pitch(0)  # for safety
 
 
