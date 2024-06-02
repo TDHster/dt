@@ -269,7 +269,7 @@ while True:
             elif command == "Move up":
                 drone.thrust(0.2)
             elif command == "Move down":
-                drone.thrust(-0.2)
+                drone.thrust(-0.3)
             elif command == "Land":
                 drone.manual_land()
                 sleep(0.5)
