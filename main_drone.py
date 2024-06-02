@@ -249,9 +249,9 @@ while True:
             elif command == "Clear target":
                 target_object_id = None
             elif command == "Yaw left":
-                drone.yaw(-0.2)
+                drone.yaw(-0.05)
             elif command == "Yaw right":
-                drone.yaw(0.2)
+                drone.yaw(0.05)
             elif command == "Move up":
                 drone.thrust(0.1)
             elif command == "Move down":
