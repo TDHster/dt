@@ -194,7 +194,7 @@ while True:
             if object_id == target_object_id:
                 cv2.line(frame, (int(INPUT_VIDEO_WIDTH / 2), int(INPUT_VIDEO_HEIGHT / 2)),
                          (x, y), (0, 0, 255), thickness=2)
-                yaw_pixels = INPUT_VIDEO_WIDTH/2 - x
+                yaw_pixels = INPUT_VIDEO_WIDTH/2 + x
                 elevation_pixels = INPUT_VIDEO_HEIGHT/2 - y
                 cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
@@ -204,7 +204,8 @@ while True:
                     target_object_diagonal = target_object_current_diagonal
                 dx = (target_object_diagonal - target_object_current_diagonal) * PID_X
                 # drone.pitch(dx * PID_X)
-                drone.yaw(yaw_pixels / INPUT_VIDEO_WIDTH / 2 * PID_YAW)
+                print(f'Sending yaw: {yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW}')
+                drone.yaw(yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW)
                 dz = elevation_pixels/INPUT_VIDEO_HEIGHT * PID_Z
                 # drone.thrust(dz)
 
