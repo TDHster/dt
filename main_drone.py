@@ -138,14 +138,14 @@ def find_nearest_object_id(objects):
 class ObjectDetector:
     def __init__(self):
         # object_detector = NeuroNetObjectDetector
-        classFile = 'neuronet/coco.names'
-        with open(classFile, 'rt') as f:
+        objects_class_names = 'neuronet/coco.names'
+        with open(objects_class_names, 'rt') as f:
             self.object_class_names = f.read().rstrip('\n').split('\n')
 
-        configPath = 'neuronet/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt'
-        weightsPath = 'neuronet/frozen_inference_graph.pb'
+        config_path = 'neuronet/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt'
+        weights_path = 'neuronet/frozen_inference_graph.pb'
 
-        self.net = cv2.dnn_DetectionModel(weightsPath, configPath)
+        self.net = cv2.dnn_DetectionModel(weights_path, config_path)
         self.net.setInputSize(320, 320)
         self.net.setInputScale(1.0 / 127.5)
         self.net.setInputMean((127.5, 127.5, 127.5))
