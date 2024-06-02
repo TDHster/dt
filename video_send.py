@@ -41,7 +41,9 @@ def get_key_from_byte(key_code):
 
 
 class NetworkConnection:
-    def __init__(self, receiver_ip="192.168.0.169", server_port=5000):
+    def __init__(self, gs_connection_string="192.168.0.169:5000"):
+        receiver_ip, server_port = gs_connection_string.split(':')
+        receiver_ip = int(receiver_ip)
         # queue for receiving data
         self.key_queue = queue.Queue()
 

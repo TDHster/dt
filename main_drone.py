@@ -45,7 +45,7 @@ parser.add_argument(
     "-pidz", type=float, default=0.1, help="PID_Z (throttle) for drone control.", metavar='VALUE'
 )
 parser.add_argument(
-    "-pidyaw", type=float, default=0.6, help="PID_YAW for drone control.", metavar='VALUE'
+    "-pidyaw", type=float, default=0.5, help="PID_YAW for drone control.", metavar='VALUE'
 )
 parser.add_argument(
     "-dt", "--detection_threshold", type=float, default=0.45, help="detection_threshold for drone control.", metavar='VALUE'
@@ -134,6 +134,15 @@ def find_nearest_object_id(objects):
 
     return nearest_object_id
 
+class ObjectDetector:
+    def __init__(self):
+        pass
+
+    def find(self):
+        pass
+
+    def filter(self):
+        pass
 
 # object_detector = NeuroNetObjectDetector
 classFile='neuronet/coco.names'
@@ -153,10 +162,8 @@ print(f'Object NN detector configured.')
 
 object_tracker = CentroidTracker(max_disappeared_frames=50, distance_threshold=50)
 
-ground_receiver_ip, ground_receiver_port = gs_connection_string.split(':')
-ground_receiver_port = int(ground_receiver_port)
-print(f'Trying connect with {ground_receiver_ip}:{ground_receiver_ip}.')
-netconnection = NetworkConnection(receiver_ip=ground_receiver_ip, server_port=ground_receiver_port)
+print(f'Trying connect with ground station {gs_connection_string}.')
+netconnection = NetworkConnection(gs_connection_string=gs_connection_string)
 print(f'Network connection established.')
 
 target_object_id = None
