@@ -118,8 +118,8 @@ class MavlinkDrone:
 
     def thrust(self, thrust: float):
         thrust_normalized = normalize_value(thrust, min_norm=0, max_norm=1000)  # thrust 0..1000, 500 neutral
-        print(f'Set thrust: {thrust=}\t{thrust_normalized}')
-        # self.attitude_command_queue.put({'thrust': thrust_normalized})
+        # print(f'Set thrust: {thrust=}\t{thrust_normalized}')
+        self.attitude_command_queue.put({'thrust': thrust_normalized})
 
     def _manual_thrust_series(self, thrust_pairs):
         """
@@ -131,15 +131,15 @@ class MavlinkDrone:
 
         """
         for thrust, duration in thrust_pairs:
-            print(f'_manual_thrust_series: {thrust}\t{duration}')
+            # print(f'_manual_thrust_series: {thrust}\t{duration}')
             self.thrust(thrust)
             sleep(duration)
 
     # def manual_takeoff(self, thrust_pairs=((0.5, 1), (0.6, 1), (0.5, 0))):
-    def manual_takeoff(self, thrust_pairs=( (0.6, 0.5), (0.5, 0))):
+    def manual_takeoff(self, thrust_pairs=((0.1, 0.5), (0, 0))):
         self._manual_thrust_series(thrust_pairs)
 
-    def manual_land(self, thrust_pairs=((0.5, 1), (0.4, 3), (0, 0))):
+    def manual_land(self, thrust_pairs=((-0.1, 1), (-0.2, 3), (0, 0))):
         self._manual_thrust_series(thrust_pairs)
 
     def to_target(self, safety=True):
@@ -212,3 +212,7 @@ if __name__ == "__main__":
     # attitude_command_queue.put({'pitch': -0.1})  # Tilt nose down slightly
     # attitude_command_queue.put({'yaw': 0.1})  # Yaw right slightly
     pass
+    print(f'{normalize_value(0)=}')
+    print(f'{normalize_value(1)=}')
+    print(f'{normalize_value(-2)=}')
+    print(f'{normalize_value(-2)=}')
