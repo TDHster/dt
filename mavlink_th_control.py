@@ -18,7 +18,12 @@ def normalize_value(value: float, min_norm=-1000, max_norm=1000):
         float: The normalized value within the specified range.
     """
     if not (-1 <= value <= 1):
-        raise ValueError("Input value must be between -1 and 1")
+        # raise ValueError("Input value must be between -1 and 1")
+        print("normalize_value: Input value must be between -1 and 1")
+    if value >= 1:
+        value = 1
+    if value <= -1:
+        value = -1
     # Normalize to range 0-1
     normalized_value = (value + 1) / 2
     # Scale to desired range
