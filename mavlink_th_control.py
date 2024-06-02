@@ -117,8 +117,9 @@ class MavlinkDrone:
         self.attitude_command_queue.put({'yaw': yaw})
 
     def thrust(self, thrust: float):
-        thrust = normalize_value(thrust, min_norm=0, max_norm=1000)  # thrust 0..1000, 500 neutral
-        self.attitude_command_queue.put({'thrust': thrust})
+        thrust_normalized = normalize_value(thrust, min_norm=0, max_norm=1000)  # thrust 0..1000, 500 neutral
+        print(f'Set thrust: {thrust=}\t{thrust_normalized}')
+        # self.attitude_command_queue.put({'thrust': thrust_normalized})
 
     def _manual_thrust_series(self, thrust_pairs):
         """
@@ -130,6 +131,7 @@ class MavlinkDrone:
 
         """
         for thrust, duration in thrust_pairs:
+            print(f'_manual_thrust_series: {thrust}\t{duration}')
             self.thrust(thrust)
             sleep(duration)
 
