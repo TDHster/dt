@@ -273,6 +273,9 @@ while True:
 
 cap.release()
 netconnection.close()
+drone.manual_land()
+drone.mode_land()
+drone.disarm()
 drone.emergency_stop()
 # drone.manual_land()
 # drone.mode_land()
