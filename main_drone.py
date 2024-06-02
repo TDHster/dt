@@ -280,7 +280,7 @@ while True:
                 drone.mode_alt_hold()
                 sleep(0.5)
                 drone.arm()
-                sleep(0.5)
+                sleep(2)
                 drone.manual_takeoff()
             else:
                 print(f'{command=} not known')
