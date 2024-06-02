@@ -28,6 +28,8 @@ class NeuroNetObjectDetector:
 
 
 def filter_by_target_class_id(classIds, bbox, names_list, target_class_name='person'):
+    #moved to separete class, may be removed
+    raise RuntimeWarning('Code moved to separate class, end should not be used')
     if len(classIds):
         # Efficient filtering using boolean indexing
         # keep_indices = classIds == object_class_names.index(target_class_name) + 1  # Indices where specified class ID (1 is person)
