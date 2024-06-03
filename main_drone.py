@@ -294,7 +294,7 @@ while True:
             elif command == "Move forward":
                 drone.pitch = drone.pitch + 0.1
             elif command == "Move backward":
-                drone.pitch = drone.pitch + 0.1
+                drone.pitch = drone.pitch - 0.1
             elif command == "Move left":
                 drone.roll = drone.roll - 0.1
             elif command == "Move right":
@@ -308,7 +308,7 @@ while True:
 
         except netconnection.key_queue.Empty:
             pass  # No data in queue, continue the loop
-    print(f'{drone.thrust=}\t{drone.pitch=}\t{drone.roll}\t{drone.yaw}')
+    print(f'{drone.thrust=}\t{drone.pitch=}\t{drone.roll=}\t{drone.yaw=}')
     if cv2.waitKey(1) == 27:  # Esc key
         break
 
