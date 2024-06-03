@@ -2,8 +2,7 @@ from pymavlink import mavutil
 from pymavlink_iq_utilites import *
 from time import sleep
 import threading
-import queue
-
+from bcolors import bcolors
 
 def normalize_value(value: float, min_norm=-1000, max_norm=1000):
     raise Warning('Sholudn be used in this module')
@@ -114,6 +113,7 @@ class MavlinkDrone:
             self.connection.target_system,  # target_system
             self.connection.target_component,  # target_component
             *rc_channel_values)  # RC channel list, in microseconds.
+        print(f'{bcolors.WARNING}\tSended PWM:\t{channel_id=}\t{pwm=} {bcolors.ENDC}')
 
     def _arm(self, arm_command=1):
         self.connection.wait_heartbeat()
@@ -200,6 +200,7 @@ class MavlinkDrone:
     def thrust(self, thrust: float):
         thrust_normalized = normalize_PWM_range(thrust)  # thrust 0..1000, 500 neutral
         # print(f'Set thrust: {thrust=}\t{thrust_normalized}')
+        self._thrust = thrust_normalized
         self.set_rc_channel_pwm(self.CHANNEL_THROTTLE, thrust_normalized)
 
     def _manual_thrust_series(self, thrust_pairs):
@@ -217,8 +218,8 @@ class MavlinkDrone:
             sleep(duration)
 
     def manual_takeoff(self, thrust_pairs=((0.25, 1), (0, 0))):
-        self.mode_alt_hold()
-        # self.mode_guided()
+        # self.mode_alt_hold()
+        self.mode_guided()
         sleep(1)
         self.arm()
         sleep(3)
