@@ -44,7 +44,7 @@ class CentroidTracker:
             new_objects[object_id] = centroid
 
         self.objects = new_objects
-        print(f'new_objects={new_objects}')
+        # print(f'new_objects={new_objects}')
         return new_objects
 
 
