@@ -163,7 +163,7 @@ class MavlinkDrone:
         """
         for thrust, duration in thrust_pairs:
             # print(f'_manual_thrust_series: {thrust}\t{duration}')
-            self.thrust(thrust)
+            self.thrust = thrust
             sleep(duration)
 
     def manual_takeoff(self, thrust_pairs=((0.25, 1), (0.17, 0))):
@@ -179,12 +179,12 @@ class MavlinkDrone:
         self.mode_land()
 
     def to_target(self, safety=True):
-        self.pitch(1)
+        self.pitch = 1
         if safety:
             sleep(0.5)  # for safety
-            self.pitch(-1)  # for safety
+            self.pitch = -1  # for safety
             sleep(0.2)  # for safety
-            self.pitch(0)  # for safety
+            self.pitch = 0  # for safety
 
 
 class AttitudeControlThread(threading.Thread):
