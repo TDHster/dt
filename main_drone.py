@@ -232,7 +232,7 @@ while True:
                 need_reset_yaw = True
 
                 cv2.line(frame, (int(INPUT_VIDEO_WIDTH / 2), int(INPUT_VIDEO_HEIGHT / 2)),
-                         (x, y - INPUT_VIDEO_HEIGHT/4), (0, 0, 255), thickness=2)
+                         (x, y), (0, 0, 255), thickness=2)
                 yaw_pixels = x - INPUT_VIDEO_WIDTH/2
                 elevation_pixels = INPUT_VIDEO_HEIGHT/2 - (y - INPUT_VIDEO_HEIGHT/4)
                 cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
