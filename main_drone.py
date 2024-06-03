@@ -188,10 +188,10 @@ need_reset_yaw = True
 print('Starting program main loop.')
 while True:
     success, frame = cap.read()
-    # Resize the frame to 320x200 while maintaining aspect ratio
     if not success:  # Check success flag
         continue
-    # frame = cv2.resize(frame, (INPUT_VIDEO_WIDTH, INPUT_VIDEO_HEIGHT), interpolation=cv2.INTER_AREA)
+    frame = cv2.resize(frame, (INPUT_VIDEO_WIDTH, INPUT_VIDEO_HEIGHT), interpolation=cv2.INTER_AREA)
+    # Resize the frame to 320x200 while maintaining aspect ratio
     # print(f'{frame.shape=}')
     # classIds, confs, bbox = net.detect(frame, confThreshold=detection_threshold)  # moved to class
     classIds, confs, bbox = object_detector.detect(frame, detection_threshold=detection_threshold)
