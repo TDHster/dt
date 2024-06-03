@@ -154,8 +154,8 @@ class ObjectDetector:
         print(f'Object NN detector configured.')
         # enf of object_detector = NeuroNetObjectDetector
 
-    def detect(self, frame, confThreshold=detection_threshold):
-        classIds, confs, bbox = self.net.detect(self, frame, confThreshold=detection_threshold)
+    def detect(self, frame, detection_threshold=detection_threshold):
+        classIds, confs, bbox = self.net.detect(frame, confThreshold=detection_threshold)
         return classIds, confs, bbox
 
     def filter(self, class_ids, bbox, target_class_name='person'):
