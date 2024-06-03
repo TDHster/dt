@@ -201,6 +201,12 @@ class MavlinkDrone:
 
     @thrust.setter
     def thrust(self, thrust: float):
+        # Outside of the mid-throttle deadzone (i.e. below 40% or above 60%) the vehicle will descend or climb
+        # depending upon the deflection of the stick.
+        if thrust > 0:
+            thrust += 0.1
+        elif thrust < 0:
+            thrust -= 0.1
         self._thrust = thrust
         thrust_normalized = normalize_PWM_range(thrust)
         print(f'{bcolors.OKBLUE}Set thrust: {thrust=}\t{thrust_normalized}{bcolors.ENDC}')
