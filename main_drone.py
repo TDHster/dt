@@ -15,7 +15,7 @@ import argparse
 from time import sleep
 
 CONTROL_STEP = 0.02
-CONTROL_STEP_THRUST = 0.005
+CONTROL_STEP_THRUST = 0.02
 
 INPUT_VIDEO_WIDTH = 320
 INPUT_VIDEO_HEIGHT = 200
@@ -48,7 +48,7 @@ parser.add_argument(
     "-pidz", type=float, default=0.1, help="PID_Z (throttle) for drone control.", metavar='VALUE'
 )
 parser.add_argument(
-    "-pidyaw", type=float, default=0.35, help="PID_YAW for drone control.", metavar='VALUE'
+    "-pidyaw", type=float, default=0.45, help="PID_YAW for drone control.", metavar='VALUE'
 )
 parser.add_argument(
     "-dt", "--detection_threshold", type=float, default=0.45, help="detection_threshold for drone control.", metavar='VALUE'
