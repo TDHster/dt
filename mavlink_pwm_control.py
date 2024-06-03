@@ -30,7 +30,7 @@ def normalize_value(value: float, min_norm=-1000, max_norm=1000):
     return int(min_norm + normalized_value * (max_norm - min_norm))
 
 
-def normalize_PWM_range(value):
+def normalize_PWM_range(value: float):
     """Normalizes a value from -1 to 1 to a servo control range of 1100 to 1900.
 
     Args:

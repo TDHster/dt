@@ -17,7 +17,7 @@ from time import sleep
 from bcolors import bcolors
 
 CONTROL_STEP = 0.1
-CONTROL_STEP_THRUST = 0.15
+CONTROL_STEP_THRUST = 0.125
 
 INPUT_VIDEO_WIDTH = 320
 INPUT_VIDEO_HEIGHT = 200
@@ -50,9 +50,9 @@ parser.add_argument(
 parser.add_argument(
     "-pidz", type=float, default=0.8, help="PID_Z (throttle) for drone control.", metavar='VALUE'
 )
-# 0.45 0.48 0.5 0.55
+# 0.45 0.48 0.5 0.55 #correction formula
 parser.add_argument(
-    "-pidyaw", type=float, default=0.6, help="PID_YAW for drone control.", metavar='VALUE'
+    "-pidyaw", type=float, default=0.9, help="PID_YAW for drone control.", metavar='VALUE'
 )
 parser.add_argument(
     "-dt", "--detection_threshold", type=float, default=0.45, help="detection_threshold for drone control.", metavar='VALUE'
@@ -200,7 +200,7 @@ while True:
                 cv2.line(frame, (int(INPUT_VIDEO_WIDTH / 2), int(INPUT_VIDEO_HEIGHT / 2)),
                          (x, y), (0, 0, 255), thickness=2)
                 yaw_pixels = x - INPUT_VIDEO_WIDTH/2
-                elevation_pixels = y - INPUT_VIDEO_HEIGHT/2
+                elevation_pixels = INPUT_VIDEO_HEIGHT/2 - y
                 cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 0, 255), 2)
@@ -210,8 +210,8 @@ while True:
                 dx = (target_object_diagonal - target_object_current_diagonal) * PID_X
                 # drone.pitch = dx * PID_X
                 # print(f'Sending yaw: {yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW}')
-                drone.yaw = yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW  # need correction factor  *diagonal/image_diagonal
-                dz = elevation_pixels/INPUT_VIDEO_HEIGHT * PID_Z
+                drone.yaw = yaw_pixels/(INPUT_VIDEO_WIDTH/2) * PID_YAW  # need correction factor  *diagonal/image_diagonal
+                dz = elevation_pixels/(INPUT_VIDEO_HEIGHT/2) * PID_Z
                 print(f'{bcolors.WARNING}{y=}\t{elevation_pixels=}\t{dz}{bcolors.ENDC}')
                 drone.thrust = dz
 
