@@ -15,7 +15,7 @@ import argparse
 from time import sleep
 
 CONTROL_STEP = 0.1
-CONTROL_STEP_THRUST = 0.3
+CONTROL_STEP_THRUST = 0.15
 
 INPUT_VIDEO_WIDTH = 320
 INPUT_VIDEO_HEIGHT = 200
@@ -234,7 +234,7 @@ while True:
                 cv2.line(frame, (int(INPUT_VIDEO_WIDTH / 2), int(INPUT_VIDEO_HEIGHT / 2)),
                          (x, y), (0, 0, 255), thickness=2)
                 yaw_pixels = x - INPUT_VIDEO_WIDTH/2
-                elevation_pixels = INPUT_VIDEO_HEIGHT/2 - (y-100)
+                elevation_pixels = INPUT_VIDEO_HEIGHT/2 - (y+100)
                 cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 0, 255), 2)
