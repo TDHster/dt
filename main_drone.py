@@ -193,7 +193,7 @@ while True:
     # frame = cv2.resize(frame, (INPUT_VIDEO_WIDTH, INPUT_VIDEO_HEIGHT), interpolation=cv2.INTER_AREA)
     # print(f'{frame.shape=}')
     # classIds, confs, bbox = net.detect(frame, confThreshold=detection_threshold)  # moved to class
-    classIds, confs, bbox = object_detector.detect(frame, confThreshold=detection_threshold)
+    classIds, confs, bbox = object_detector.detect(frame, detection_threshold=detection_threshold)
 
     # print(f'classIds={classIds}, bbox={bbox}')
     if classIds is None:
