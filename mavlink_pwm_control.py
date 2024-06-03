@@ -224,7 +224,7 @@ class MavlinkDrone:
         self.mode_alt_hold()
         # self.mode_guided()
         # self.mode_stabilize()
-        sleep(0.5)
+        sleep(0.2)
         self.arm()
         sleep(2)
         self._manual_thrust_series(thrust_pairs)
@@ -236,7 +236,7 @@ class MavlinkDrone:
 
     def to_target(self, safety=True):
         self.pitch = 1
-        if safety:
+        if safety==True:
             sleep(0.5)  # for safety
             self.pitch = -1  # for safety
             sleep(0.2)  # for safety
