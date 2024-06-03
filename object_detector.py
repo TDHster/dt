@@ -1,42 +1,36 @@
 import cv2
 
-
-class NeuroNetObjectDetector:
+class ObjectDetector:
     def __init__(self):
-        self._load_object_class_names()
-        configPath = 'neuronet/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt'
-        weightsPath = 'neuronet/frozen_inference_graph.pb'
+        # object_detector = NeuroNetObjectDetector
+        objects_class_names = 'neuronet/coco.names'
+        with open(objects_class_names, 'rt') as f:
+            self.object_class_names = f.read().rstrip('\n').split('\n')
 
-        self.net = cv2.dnn_DetectionModel(weightsPath, configPath)
+        config_path = 'neuronet/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt'
+        weights_path = 'neuronet/frozen_inference_graph.pb'
+
+        self.net = cv2.dnn_DetectionModel(weights_path, config_path)
         self.net.setInputSize(320, 320)
         self.net.setInputScale(1.0 / 127.5)
         self.net.setInputMean((127.5, 127.5, 127.5))
         self.net.setInputSwapRB(True)
+        print(f'Object NN detector configured.')
+        # enf of object_detector = NeuroNetObjectDetector
 
-    def _load_object_class_names(self, classFile='neuronet/coco.names'):
-        self._object_class_names = []
-        with open(classFile, 'rt') as f:
-            self._object_class_names = f.read().rstrip('\n').split('\n')
-
-    def detect_objects(self, frame, confThreshold=0.3):
-        classIds, confs, bbox = self.net.detect(frame, confThreshold=confThreshold)
+    def detect(self, frame, detection_threshold=0.5):
+        classIds, confs, bbox = self.net.detect(frame, confThreshold=detection_threshold)
         return classIds, confs, bbox
 
-    @property
-    def object_class_names(self):
-        return self._object_class_name
 
-
-def filter_by_target_class_id(classIds, bbox, names_list, target_class_name='person'):
-    #moved to separete class, may be removed
-    raise RuntimeWarning('Code moved to separate class, end should not be used')
-    if len(classIds):
-        # Efficient filtering using boolean indexing
-        # keep_indices = classIds == object_class_names.index(target_class_name) + 1  # Indices where specified class ID (1 is person)
-        keep_indices = classIds == names_list.index(target_class_name) + 1  # Indices where specified class ID (1 is person)
-        # keep_indices = classIds == 1  # Indices where specified class ID (1 is person)
-        classIds = classIds[keep_indices]
-        bbox = bbox[keep_indices]
-        return classIds, bbox
-    return ((),())
-
+    def filter(self, class_ids, bbox, target_class_name='person'):
+        if len(class_ids):
+            # Efficient filtering using boolean indexing
+            # keep_indices = classIds == object_class_names.index(target_class_name) + 1  # Indices where specified class ID (1 is person)
+            keep_indices = class_ids == self.object_class_names.index(
+                target_class_name) + 1  # Indices where specified class ID (1 is person)
+            # keep_indices = classIds == 1  # Indices where specified class ID (1 is person)
+            class_ids = class_ids[keep_indices]
+            bbox = bbox[keep_indices]
+            return class_ids, bbox
+        return (), ()

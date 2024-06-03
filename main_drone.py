@@ -10,7 +10,8 @@ from video_send import NetworkConnection, get_key_from_byte
 # from mavlink_th_control import MavlinkDrone as Drone
 from mavlink_pwm_control import MavlinkDrone as Drone
 # from object_detector import NeuroNetObjectDetector
-from object_detector import filter_by_target_class_id
+# from object_detector import filter_by_target_class_id
+from object_detector import ObjectDetector
 import argparse
 from time import sleep
 from bcolors import bcolors
@@ -45,7 +46,7 @@ parser.add_argument(
 parser.add_argument(
     "-pidx", type=float, default=0.1, help="PID_X for drone control.", metavar='VALUE'
 )
-# 0.1 0.3 0.4 0.6 0.7
+# 0.1 0.3 0.4 0.6 0.7 0.8
 parser.add_argument(
     "-pidz", type=float, default=0.8, help="PID_Z (throttle) for drone control.", metavar='VALUE'
 )
@@ -142,42 +143,6 @@ def find_nearest_object_id(objects):
     return nearest_object_id
 
 
-class ObjectDetector:
-    def __init__(self):
-        # object_detector = NeuroNetObjectDetector
-        objects_class_names = 'neuronet/coco.names'
-        with open(objects_class_names, 'rt') as f:
-            self.object_class_names = f.read().rstrip('\n').split('\n')
-
-        config_path = 'neuronet/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt'
-        weights_path = 'neuronet/frozen_inference_graph.pb'
-
-        self.net = cv2.dnn_DetectionModel(weights_path, config_path)
-        self.net.setInputSize(320, 320)
-        self.net.setInputScale(1.0 / 127.5)
-        self.net.setInputMean((127.5, 127.5, 127.5))
-        self.net.setInputSwapRB(True)
-        print(f'Object NN detector configured.')
-        # enf of object_detector = NeuroNetObjectDetector
-
-    def detect(self, frame, detection_threshold=0.5):
-        classIds, confs, bbox = self.net.detect(frame, confThreshold=detection_threshold)
-        return classIds, confs, bbox
-
-
-    def filter(self, class_ids, bbox, target_class_name='person'):
-        if len(class_ids):
-            # Efficient filtering using boolean indexing
-            # keep_indices = classIds == object_class_names.index(target_class_name) + 1  # Indices where specified class ID (1 is person)
-            keep_indices = class_ids == self.object_class_names.index(
-                target_class_name) + 1  # Indices where specified class ID (1 is person)
-            # keep_indices = classIds == 1  # Indices where specified class ID (1 is person)
-            class_ids = class_ids[keep_indices]
-            bbox = bbox[keep_indices]
-            return class_ids, bbox
-        return (), ()
-
-
 object_detector = ObjectDetector()
 
 object_tracker = CentroidTracker(max_disappeared_frames=tracker_max_disappeared_frames, distance_threshold=tracker_distance_threshold)
@@ -235,7 +200,7 @@ while True:
                 cv2.line(frame, (int(INPUT_VIDEO_WIDTH / 2), int(INPUT_VIDEO_HEIGHT / 2)),
                          (x, y), (0, 0, 255), thickness=2)
                 yaw_pixels = x - INPUT_VIDEO_WIDTH/2
-                elevation_pixels = INPUT_VIDEO_HEIGHT/2 - y
+                elevation_pixels = y - INPUT_VIDEO_HEIGHT/2
                 cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 0, 255), 2)
@@ -247,7 +212,7 @@ while True:
                 # print(f'Sending yaw: {yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW}')
                 drone.yaw = yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW  # need correction factor  *diagonal/image_diagonal
                 dz = elevation_pixels/INPUT_VIDEO_HEIGHT * PID_Z
-                print(f'{bcolors.WARNING}{elevation_pixels=}\t{dz}{bcolors.ENDC}')
+                print(f'{bcolors.WARNING}{y=}\t{elevation_pixels=}\t{dz}{bcolors.ENDC}')
                 drone.thrust = dz
 
             elif object_id == object_id_near_center:
