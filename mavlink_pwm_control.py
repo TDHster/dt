@@ -201,7 +201,7 @@ class MavlinkDrone:
 
     @thrust.setter
     def thrust(self, thrust: float):
-        thrust_normalized = normalize_PWM_range(thrust)  # thrust 0..1000, 500 neutral
+        thrust_normalized = normalize_PWM_range(thrust)
         # print(f'Set thrust: {thrust=}\t{thrust_normalized}')
         self._thrust = thrust_normalized
         self.set_rc_channel_pwm(self.CHANNEL_THROTTLE, thrust_normalized)
@@ -220,7 +220,7 @@ class MavlinkDrone:
             self.thrust = thrust
             sleep(duration)
 
-    def manual_takeoff(self, thrust_pairs=((0.5, 1), (0, 0.1))):
+    def manual_takeoff(self, thrust_pairs=((0.5, 2), (0, 0.1))):
         self.mode_alt_hold()
         # self.mode_guided()
         # self.mode_stabilize()
