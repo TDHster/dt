@@ -113,7 +113,7 @@ class MavlinkDrone:
             self.connection.target_system,  # target_system
             self.connection.target_component,  # target_component
             *rc_channel_values)  # RC channel list, in microseconds.
-        print(f'{bcolors.WARNING}\tSended PWM:\t{channel_id=}\t{pwm=} {bcolors.ENDC}')
+        # print(f'{bcolors.WARNING}\tSended PWM:\t{channel_id=}\t{pwm=} {bcolors.ENDC}')
 
     def _arm(self, arm_command=1):
         self.connection.wait_heartbeat()

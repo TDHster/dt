@@ -13,6 +13,7 @@ from mavlink_pwm_control import MavlinkDrone as Drone
 from object_detector import filter_by_target_class_id
 import argparse
 from time import sleep
+from bcolors import bcolors
 
 CONTROL_STEP = 0.1
 CONTROL_STEP_THRUST = 0.15
@@ -243,9 +244,10 @@ while True:
                     target_object_diagonal = target_object_current_diagonal
                 dx = (target_object_diagonal - target_object_current_diagonal) * PID_X
                 # drone.pitch = dx * PID_X
-                print(f'Sending yaw: {yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW}')
+                # print(f'Sending yaw: {yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW}')
                 drone.yaw = yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW  # need correction factor  *diagonal/image_diagonal
                 dz = elevation_pixels/INPUT_VIDEO_HEIGHT * PID_Z
+                print(f'{bcolors.WARNING}{elevation_pixels=}\t{dz}{bcolors.ENDC}')
                 drone.thrust = dz
 
             elif object_id == object_id_near_center:
