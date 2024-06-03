@@ -151,6 +151,9 @@ class MavlinkDrone:
     def mode_alt_hold(self):
         self._set_mode('ALT_HOLD')
 
+    def mode_guided(self):
+        self._set_mode('GUIDED')
+
     def mode_brake(self):
         self._set_mode('BRAKE')
 
@@ -215,6 +218,7 @@ class MavlinkDrone:
 
     def manual_takeoff(self, thrust_pairs=((0.25, 1), (0, 0))):
         self.mode_alt_hold()
+        # self.mode_guided()
         sleep(1)
         self.arm()
         sleep(3)
