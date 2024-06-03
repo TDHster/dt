@@ -45,9 +45,9 @@ parser.add_argument(
 parser.add_argument(
     "-pidx", type=float, default=0.1, help="PID_X for drone control.", metavar='VALUE'
 )
-# 0.1 0.3 0.4 0.6
+# 0.1 0.3 0.4 0.6 0.7
 parser.add_argument(
-    "-pidz", type=float, default=0.7, help="PID_Z (throttle) for drone control.", metavar='VALUE'
+    "-pidz", type=float, default=0.8, help="PID_Z (throttle) for drone control.", metavar='VALUE'
 )
 # 0.45 0.48 0.5 0.55
 parser.add_argument(
@@ -248,7 +248,7 @@ while True:
                 drone.yaw = yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW  # need correction factor  *diagonal/image_diagonal
                 dz = elevation_pixels/INPUT_VIDEO_HEIGHT * PID_Z
                 print(f'{bcolors.WARNING}{elevation_pixels=}\t{dz}{bcolors.ENDC}')
-                drone.thrust = dz
+                drone.thrust = -dz
 
             elif object_id == object_id_near_center:
                 # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
