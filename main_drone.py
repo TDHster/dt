@@ -158,6 +158,7 @@ class ObjectDetector:
         classIds, confs, bbox = self.net.detect(frame, confThreshold=detection_threshold)
         return classIds, confs, bbox
 
+
     def filter(self, class_ids, bbox, target_class_name='person'):
         if len(class_ids):
             # Efficient filtering using boolean indexing
@@ -171,7 +172,7 @@ class ObjectDetector:
         return (), ()
 
 
-object_detector = ObjectDetector
+object_detector = ObjectDetector()
 
 object_tracker = CentroidTracker(max_disappeared_frames=tracker_max_disappeared_frames, distance_threshold=tracker_distance_threshold)
 
