@@ -7,7 +7,8 @@ import heapq
 from video_send import NetworkConnection, get_key_from_byte
 # from control_drone import MavlinkJoystickControl as MavlinkControl
 # from mavlink_control import MavlinkDrone as MavlinkControl
-from mavlink_th_control import MavlinkDrone as Drone
+# from mavlink_th_control import MavlinkDrone as Drone
+from mavlink_pwm_control import MavlinkDrone as Drone
 # from object_detector import NeuroNetObjectDetector
 from object_detector import filter_by_target_class_id
 import argparse
