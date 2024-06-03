@@ -248,7 +248,7 @@ while True:
                 drone.yaw = yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW  # need correction factor  *diagonal/image_diagonal
                 dz = elevation_pixels/INPUT_VIDEO_HEIGHT * PID_Z
                 print(f'{bcolors.WARNING}{elevation_pixels=}\t{dz}{bcolors.ENDC}')
-                drone.thrust = -dz
+                drone.thrust = dz
 
             elif object_id == object_id_near_center:
                 # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
