@@ -188,7 +188,7 @@ class MavlinkDrone:
 
 
 class AttitudeControlThread(threading.Thread):
-    def __init__(self, queue, connection, delay=1 / 20):
+    def __init__(self, queue, connection, delay=1/20):
         super().__init__()
         self.queue = queue
         self.connection = connection
