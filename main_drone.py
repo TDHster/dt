@@ -14,6 +14,7 @@ from object_detector import filter_by_target_class_id
 import argparse
 from time import sleep
 
+CONTROL_STEP = 0.02
 
 INPUT_VIDEO_WIDTH = 320
 INPUT_VIDEO_HEIGHT = 200
@@ -288,21 +289,21 @@ while True:
             elif command == "Clear target":
                 target_object_id = None
             elif command == "Yaw left":
-                drone.yaw = drone.yaw - 0.1
+                drone.yaw = drone.yaw - CONTROL_STEP
             elif command == "Yaw right":
-                drone.yaw = drone.yaw + 0.1
+                drone.yaw = drone.yaw + CONTROL_STEP
             elif command == "Move up":
-                drone.thrust = drone.thrust + 0.1
+                drone.thrust = drone.thrust + CONTROL_STEP
             elif command == "Move down":
-                drone.thrust = drone.thrust - 0.1
+                drone.thrust = drone.thrust - CONTROL_STEP
             elif command == "Move forward":
-                drone.pitch = drone.pitch + 0.1
+                drone.pitch = drone.pitch + CONTROL_STEP
             elif command == "Move backward":
-                drone.pitch = drone.pitch - 0.1
+                drone.pitch = drone.pitch - CONTROL_STEP
             elif command == "Move left":
-                drone.roll = drone.roll - 0.1
+                drone.roll = drone.roll - CONTROL_STEP
             elif command == "Move right":
-                drone.roll = drone.roll + 0.1
+                drone.roll = drone.roll + CONTROL_STEP
             elif command == "Land":
                 drone.manual_land()
             elif command == "Takeoff":
