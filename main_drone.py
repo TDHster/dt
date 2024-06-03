@@ -257,7 +257,10 @@ while True:
 
 
     # cv2.imshow("Output", frame)
-    netconnection.send_frame(frame)
+    try:
+        netconnection.send_frame(frame)
+    except BrokenPipeError as e:
+        print(f'Error sending frame to ground station {e} (receiver program running?)')
     # video_stream_sender.make_time_delay(0.05)  # Adjust as needed
     # try:
     #     received_key = netconnection.key_queue.get(timeout=0.1)
