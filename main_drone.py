@@ -318,7 +318,7 @@ while True:
 
         except netconnection.key_queue.Empty:
             pass  # No data in queue, continue the loop
-    print(f'{drone.thrust=}\t{drone.pitch=}\t{drone.roll=}\t{drone.yaw=}')
+    # print(f'{drone.thrust=:0.1f}\t{drone.pitch=:0.1f}\t{drone.roll=:0.1f}\t{drone.yaw=:0.1f}')
     if cv2.waitKey(1) == 27:  # Esc key
         break
 
