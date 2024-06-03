@@ -44,9 +44,9 @@ parser.add_argument(
 parser.add_argument(
     "-pidx", type=float, default=0.1, help="PID_X for drone control.", metavar='VALUE'
 )
-# 0.1 0.4
+# 0.1 0.3 0.4
 parser.add_argument(
-    "-pidz", type=float, default=0.3, help="PID_Z (throttle) for drone control.", metavar='VALUE'
+    "-pidz", type=float, default=0.4, help="PID_Z (throttle) for drone control.", metavar='VALUE'
 )
 # 0.45 0.48 0.5 0.55
 parser.add_argument(
@@ -234,7 +234,7 @@ while True:
                 cv2.line(frame, (int(INPUT_VIDEO_WIDTH / 2), int(INPUT_VIDEO_HEIGHT / 2)),
                          (x, y), (0, 0, 255), thickness=2)
                 yaw_pixels = x - INPUT_VIDEO_WIDTH/2
-                elevation_pixels = INPUT_VIDEO_HEIGHT/2 - (y+100)
+                elevation_pixels = INPUT_VIDEO_HEIGHT/2 - (y+200)
                 cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 0, 255), 2)
