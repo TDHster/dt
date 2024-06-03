@@ -203,7 +203,7 @@ class MavlinkDrone:
     def thrust(self, thrust: float):
         self._thrust = thrust
         thrust_normalized = normalize_PWM_range(thrust)
-        # print(f'Set thrust: {thrust=}\t{thrust_normalized}')
+        print(f'{bcolors.OKBLUE}Set thrust: {thrust=}\t{thrust_normalized}{bcolors.ENDC}')
         self.set_rc_channel_pwm(self.CHANNEL_THROTTLE, thrust_normalized)
 
     def _manual_thrust_series(self, thrust_pairs):
