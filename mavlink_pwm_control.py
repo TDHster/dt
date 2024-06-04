@@ -272,8 +272,8 @@ class MavlinkDrone:
         # self.mode
         # self._set_mode('GUIDED_NOGPS')
         # self._set_mode('AUTO')
-        # self.mode_guided()
-        self.mode_position_hold()
+        self.mode_guided()
+        # self.mode_position_hold()
         sleep(0.5)
         self.arm()
         sleep(2)
@@ -288,7 +288,7 @@ class MavlinkDrone:
             takeoff_params[4], takeoff_params[5], takeoff_params[6])
 
 
-        self.move_NED(1,0, -1)
+        self.move_NED(0,0, -1)
 
     def manual_land(self, thrust_pairs=((-0.1, 1), (-0.2, 0.5), (-1, 0))):
         self.mode_land()
