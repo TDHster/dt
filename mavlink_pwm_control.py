@@ -166,6 +166,7 @@ class MavlinkDrone:
     def mode_guided(self):
         """
         Navigates to single points commanded by GCS
+        in test: only rotation via RC
         """
         self._set_mode('GUIDED')
 
