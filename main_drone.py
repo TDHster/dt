@@ -48,7 +48,7 @@ parser.add_argument(
 )
 # 0.1 0.3 0.4 0.6 0.7 0.8
 parser.add_argument(
-    "-pidz", type=float, default=0.8, help="PID_Z (throttle) for drone control.", metavar='VALUE'
+    "-pidz", type=float, default=0.9, help="PID_Z (throttle) for drone control.", metavar='VALUE'
 )
 # 0.45 0.48 0.5 0.55 #correction formula
 parser.add_argument(
