@@ -55,6 +55,7 @@ def normalize_PWM_range(value: float):
 
 class MavlinkDrone:
     _pitch, _roll, _yaw, _thrust = 0, 0, 0, 0
+    _mode = ''
     CHANNEL_PITCH = 1
     CHANNEL_ROLL = 2
     CHANNEL_THROTTLE = 3
@@ -139,6 +140,7 @@ class MavlinkDrone:
                 'GUIDED_NOGPS', 'SMART_RTL', 'FLOWHOLD', 'FOLLOW', 'ZIGZAG', 'SYSTEMID', 'AUTOROTATE', 'AUTO_RTL']
                 https://ardupilot.org/copter/docs/flight-modes.html#flight-modes
         '''
+        self._mode = mode
         self.connection.set_mode(mode)
 
     def mode_land(self):
@@ -201,13 +203,15 @@ class MavlinkDrone:
 
     @thrust.setter
     def thrust(self, thrust: float):
-        # Outside of the mid-throttle deadzone (i.e. below 40% or above 60%) the vehicle will descend or climb
-        # depending upon the deflection of the stick.
-        if thrust > 0:
-            thrust += 0.1
-        elif thrust < 0:
-            thrust -= 0.1
         self._thrust = thrust
+        if self._mode == 'ALT_HOLD':
+            # Outside of the mid-throttle deadzone (i.e. below 40% or above 60%) the vehicle will descend or climb
+            # depending upon the deflection of the stick.
+            thrust = thrust * 0.9
+            if thrust > 0:
+                thrust += 0.1
+            elif thrust < 0:
+                thrust -= 0.1
         thrust_normalized = normalize_PWM_range(thrust)
         print(f'{bcolors.OKBLUE}Set thrust: {thrust=}\t{thrust_normalized}{bcolors.ENDC}')
         self.set_rc_channel_pwm(self.CHANNEL_THROTTLE, thrust_normalized)
