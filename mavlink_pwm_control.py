@@ -144,27 +144,52 @@ class MavlinkDrone:
         self.connection.set_mode(mode)
 
     def mode_land(self):
+        """
+        Reduces altitude to ground level, attempts to go straight down
+        """
         self._set_mode('LAND')
 
     def mode_return_to_land(self):
+        """
+        Returns above takeoff location, may also include landing
+        """
         # self._set_mode('RTL')
         self._set_mode('SMART_RTL')
 
     def mode_alt_hold(self):
+        """
+        Holds altitude and self-levels the roll & pitch
+        """
+        self._mode = 'ALT_HOLD'  # need for correct thrust
         self._set_mode('ALT_HOLD')
 
     def mode_guided(self):
+        """
+        Navigates to single points commanded by GCS
+        """
         self._set_mode('GUIDED')
 
     def mode_stabilize(self):
+        """
+        Self-levels the roll and pitch axis
+        """
         self._set_mode('STABILIZE')
 
     def mode_brake(self):
+        """
+        Brings copter to an immediate stop (don't work at test)
+        """
         self._set_mode('BRAKE')
 
+    def mode_position(self):
+        """
+        Like loiter, but manual roll and pitch when sticks not centered
+        """
+        self._set_mode('POSITION')
+
     def emergency_stop(self):
-        self.disarm()
         self.mode_land()
+        self.disarm()
         self.mode_brake()
 
     @property
@@ -241,9 +266,10 @@ class MavlinkDrone:
         self._manual_thrust_series(thrust_pairs)
 
     def takeoff_via_mavlink(self, takeoff_altitude):
-        # self.mode_alt_hold()
+        self.mode_alt_hold()
+        # self.mode
         # self._set_mode('GUIDED_NOGPS')
-        self._set_mode('AUTO')
+        # self._set_mode('AUTO')
         sleep(0.5)
         self.arm()
         sleep(2)
