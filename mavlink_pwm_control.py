@@ -286,6 +286,10 @@ class MavlinkDrone:
             mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0,
             takeoff_params[0], takeoff_params[1], takeoff_params[2], takeoff_params[3],
             takeoff_params[4], takeoff_params[5], takeoff_params[6])
+
+
+        self.move_NED(1,0, -1)
+
     def manual_land(self, thrust_pairs=((-0.1, 1), (-0.2, 0.5), (-1, 0))):
         self.mode_land()
         # self._manual_thrust_series(thrust_pairs)
@@ -298,6 +302,28 @@ class MavlinkDrone:
             self.pitch = -1  # for safety
             sleep(0.2)  # for safety
             self.pitch = 0  # for safety
+
+    def move_NED(self, rel_x, rel_y, rel_z):
+        time_boot_ms = 10  # ms
+        type_mask = int(0b010111111000)
+        # x, y, z = 0, 0, -1
+        velocity_x, velocity_y, velocity_z = 0, 0, 0
+        axel_x, axel_y, axel_z = 0, 0, 0
+        yaw = 0  # radians
+        yaw_rate = 0
+        self.connection.mav.send(
+            mavutil.mavlink.MAVLink_set_position_target_local_ned_message(
+                time_boot_ms, self.connection.target_system,
+                self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_NED, # seems to be working
+                # self.connection.target_component, mavutil.mavlink.MAV_FRAME_BODY_OFFSET_NED, # best
+                # self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_OFFSET_NED,
+                type_mask,
+                rel_x, rel_y, rel_z,
+                velocity_x, velocity_y, velocity_z,
+                axel_x, axel_y, axel_z,
+                yaw, yaw_rate
+            )
+        )
 
 
 class AttitudeControlThread(threading.Thread):
