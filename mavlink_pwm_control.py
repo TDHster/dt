@@ -266,10 +266,11 @@ class MavlinkDrone:
         self._manual_thrust_series(thrust_pairs)
 
     def takeoff_via_mavlink(self, takeoff_altitude):
-        self.mode_alt_hold()
+        # self.mode_alt_hold()
         # self.mode
         # self._set_mode('GUIDED_NOGPS')
         # self._set_mode('AUTO')
+        self.mode_guided()
         sleep(0.5)
         self.arm()
         sleep(2)
