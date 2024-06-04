@@ -182,11 +182,11 @@ class MavlinkDrone:
         """
         self._set_mode('BRAKE')
 
-    def mode_position(self):
+    def mode_position_hold(self):
         """
         Like loiter, but manual roll and pitch when sticks not centered
         """
-        self._set_mode('POSITION')
+        self._set_mode('POSHOLD')
 
     def emergency_stop(self):
         self.mode_land()
@@ -259,7 +259,7 @@ class MavlinkDrone:
     def takeoff_manual(self, thrust_pairs=((0.7, 2), (0, 0.1))):
         # self.mode_alt_hold()
         # self.mode_guided()
-        self.mode_position()
+        self.mode_position_hold()
         # self.mode_stabilize()
 
         sleep(0.2)
