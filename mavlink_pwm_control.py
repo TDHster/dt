@@ -230,7 +230,7 @@ class MavlinkDrone:
             self.thrust = thrust
             sleep(duration)
 
-    def manual_takeoff(self, thrust_pairs=((0.7, 2), (0, 0.1))):
+    def takeoff_manual(self, thrust_pairs=((0.7, 2), (0, 0.1))):
         self.mode_alt_hold()
         # self.mode_guided()
         # self.mode_stabilize()
@@ -239,6 +239,16 @@ class MavlinkDrone:
         sleep(2)
         self._manual_thrust_series(thrust_pairs)
 
+    def takeoff_via_mavlink(self, takeoff_altitude):
+        # Command Takeoff
+        takeoff_params = [0, 0, 0, 0, 0, 0, takeoff_altitude]
+
+        self.connection.mav.command_long_send(
+            self.connection.target_system,  # target_system
+            self.connection.target_component,
+            mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0,
+            takeoff_params[0], takeoff_params[1], takeoff_params[2], takeoff_params[3],
+            takeoff_params[4], takeoff_params[5], takeoff_params[6])
     def manual_land(self, thrust_pairs=((-0.1, 1), (-0.2, 0.5), (-1, 0))):
         self.mode_land()
         # self._manual_thrust_series(thrust_pairs)

@@ -46,7 +46,7 @@ parser.add_argument(
 parser.add_argument(
     "-pidx", type=float, default=0.1, help="PID_X for drone control.", metavar='VALUE'
 )
-# 0.1 0.3 0.4 0.6 0.7 0.8
+# 0.1 0.3 0.4 0.6 0.7 0.8 0.9
 parser.add_argument(
     "-pidz", type=float, default=0.9, help="PID_Z (throttle) for drone control.", metavar='VALUE'
 )
@@ -277,7 +277,8 @@ while True:
             elif command == "Land":
                 drone.manual_land()
             elif command == "Takeoff":
-                drone.manual_takeoff()
+                # drone.takeoff_manual()
+                drone.takeoff_via_mavlink(2)
             else:
                 print(f'{command=} not known')
 
