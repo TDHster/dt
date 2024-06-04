@@ -48,7 +48,7 @@ parser.add_argument(
 )
 # 0.1 0.3 0.4 0.6 0.7 0.8 0.9
 parser.add_argument(
-    "-pidz", type=float, default=0.9, help="PID_Z (throttle) for drone control.", metavar='VALUE'
+    "-pidz", type=float, default=0.7, help="PID_Z (throttle) for drone control.", metavar='VALUE'
 )
 # 0.45 0.48 0.5 0.55 #correction formula
 parser.add_argument(
@@ -180,10 +180,11 @@ while True:
 
     objects = object_tracker.update(bbox)
 
-    if (target_object_id not in objects) and not need_reset_yaw:
+    if (target_object_id not in objects) and need_reset_yaw:
         drone.yaw = 0
+        drone.thrust = 0
         need_reset_yaw = False
-        print(f'Yaw 0, because object lost')
+        print(f'{bcolors.FAIL}Yaw=0, thrust=0, object lost{bcolors.ENDC}')
 
     # print(f'objects={objects}')
     if objects:
@@ -257,7 +258,7 @@ while True:
             elif command == 'To target':
                 drone.to_target()
             elif command == "Clear target":
-                target_object_id = None
+                target_object_id = -1
             elif command == "Yaw left":
                 drone.yaw = drone.yaw - CONTROL_STEP
             elif command == "Yaw right":
