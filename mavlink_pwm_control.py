@@ -272,7 +272,8 @@ class MavlinkDrone:
         # self.mode
         # self._set_mode('GUIDED_NOGPS')
         # self._set_mode('AUTO')
-        self.mode_guided()
+        # self.mode_guided()
+        self.mode_position_hold()
         sleep(0.5)
         self.arm()
         sleep(2)
