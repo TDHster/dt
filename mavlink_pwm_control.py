@@ -96,6 +96,9 @@ class MavlinkDrone:
         # self.attitude_control_thread.start()
         # print('Attitude command thread started.')
 
+    def wait_heartbeat(self):
+        self.connection.wait_heartbeat()
+
     def set_rc_channel_pwm(self, channel_id, pwm=1500):
         """ Set RC channel pwm value
         Args:
@@ -195,7 +198,7 @@ class MavlinkDrone:
         self.disarm()
         self.mode_brake()
 
-    def set_yaw(self, yaw: float, yaw_rate: float, direction: int = -1, abs_rel_flag: int = 0,):
+    def set_yaw_mavlink(self, yaw: float, yaw_rate: float, direction: int = -1, abs_rel_flag: int = 0,):
         """Set yaw of MAVLink client.
 
         Args:
@@ -211,6 +214,50 @@ class MavlinkDrone:
         set_yaw_ack = self.connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
         print(f"Set Yaw ACK:  {set_yaw_ack}")
         return set_yaw_ack.result
+
+    def make_movement_mavlink(self, rel_x=0, rel_y=0, rel_z=0):
+
+        # from mavlink_iq
+        # self.connection.mav.send(
+        #     mavutil.mavlink.MAVLink_set_position_target_local_ned_message(
+        #         10, self.connection.target_system,
+        #         self.connection.target_component,
+        #         mavutil.mavlink.MAV_FRAME_LOCAL_NED,
+        #         int(0b010111111000), 40, 0, -10, 0, 0, 0, 0,
+        #         0, 0, 1.57, 0.5))
+
+        type_mask = int(0b010111111000)
+        # x, y, z = 0, 0, -1
+        time_boot_ms = 10  # just for definition
+        velocity_x, velocity_y, velocity_z = 0, 0, 0
+        axel_x, axel_y, axel_z = 0, 0, 0
+        yaw = 0  # radians
+        yaw_rate = 0
+
+        # from mavlink_iq
+        self.connection.mav.send(
+            mavutil.mavlink.MAVLink_set_position_target_local_ned_message(
+                time_boot_ms, self.connection.target_system,
+                self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_NED, # seems to be working
+                # self.connection.target_component, mavutil.mavlink.MAV_FRAME_BODY_OFFSET_NED, # best
+                # self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_OFFSET_NED,
+                type_mask,
+                rel_x, rel_y, rel_z,
+                velocity_x, velocity_y, velocity_z,
+                axel_x, axel_y, axel_z,
+                yaw, yaw_rate
+            )
+        )
+
+    # self.connection.mav.send(
+        #     mavutil.mavlink.MAVLink_set_position_target_global_int_message(
+        #         10, self.connection.target_system,
+        #         self.connection.target_component,
+        #         mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
+        #         int(0b110111111000),
+        #         int(-35.3629849 * 10 ** 7),
+        #         int(149.1649185 * 10 ** 7), 10, 0, 0, 0, 0,
+        #         0, 0, 1.57, 0.5))
 
     @property
     def pitch(self):
