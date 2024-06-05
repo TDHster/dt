@@ -217,7 +217,7 @@ class MavlinkDrone:
             mavutil.mavlink.MAV_CMD_CONDITION_YAW, 0, yaw, yaw_rate, direction, abs_rel_flag, 0, 0, 0)
         set_yaw_ack = self.connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
         print(f"Set Yaw ACK:  {set_yaw_ack}")
-        return set_yaw_ack.result
+        # return set_yaw_ack.result
 
     def make_movement_mavlink(self, rel_x=0, rel_y=0, rel_z=0):
 
