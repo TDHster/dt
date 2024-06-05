@@ -121,9 +121,9 @@ class MavlinkDrone:
         self.connection.mav.command_long_send(self.connection.target_system, self.connection.target_component,
                                               mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, arm_command, 0, 0, 0, 0,
                                               0, 0)
-        msg = self.connection.recv_match(type='COMMAND_ACK', blocking=True)
-        print(msg)
-        return msg
+        arm_msg = self.connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
+        print(f"Arm ACK:  {arm_msg}")
+        return arm_msg
 
     def arm(self):
         print('Arming')
@@ -142,6 +142,8 @@ class MavlinkDrone:
         '''
         self._mode = mode
         self.connection.set_mode(mode)
+        ack_msg = self.connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
+        print(f"Change Mode ACK:  {ack_msg}")
 
     def mode_land(self):
         """
@@ -192,6 +194,23 @@ class MavlinkDrone:
         self.mode_land()
         self.disarm()
         self.mode_brake()
+
+    def set_yaw(self, yaw: float, yaw_rate: float, direction: int = -1, abs_rel_flag: int = 0,):
+        """Set yaw of MAVLink client.
+
+        Args:
+            yaw: The yaw angle to set.
+            yaw_rate: The yaw rate to set.
+            direction: The direction to set. -1 for left, 1 for right.
+            abs_rel_flag: The absolute/relative flag to set. 0 for absolute, 1 for relative.
+        """
+        self.connection.mav.command_long_send(
+            self.connection.target_system,
+            self.connection.target_component,
+            mavutil.mavlink.MAV_CMD_CONDITION_YAW,0,yaw,yaw_rate,direction,abs_rel_flag,0,0,0)
+        set_yaw_ack = self.connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
+        print(f"Set Yaw ACK:  {set_yaw_ack}")
+        return set_yaw_ack.result
 
     @property
     def pitch(self):
@@ -268,14 +287,12 @@ class MavlinkDrone:
         self._manual_thrust_series(thrust_pairs)
 
     def takeoff_via_mavlink(self, takeoff_altitude):
-        self.mode_alt_hold()
+        # self.mode_alt_hold()
         # self._set_mode('GUIDED_NOGPS')
         # self._set_mode('AUTO')
-        # self.mode_guided()
+        self.mode_guided()
         # self.mode_position_hold()
-        sleep(0.5)
         self.arm()
-        sleep(2)
         # Command Takeoff
         takeoff_params = [0, 0, 0, 0, 0, 0, takeoff_altitude]
 
@@ -286,8 +303,10 @@ class MavlinkDrone:
             takeoff_params[0], takeoff_params[1], takeoff_params[2], takeoff_params[3],
             takeoff_params[4], takeoff_params[5], takeoff_params[6])
 
+        takeoff_msg = self.connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
+        print(f"Takeoff ACK:  {takeoff_msg}")
 
-        self.move_NED(0,0, -1)
+        # self.move_NED(0,0, -1)
 
     def manual_land(self, thrust_pairs=((-0.1, 1), (-0.2, 0.5), (-1, 0))):
         self.mode_land()
