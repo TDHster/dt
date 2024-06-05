@@ -198,7 +198,7 @@ class MavlinkDrone:
         self.disarm()
         self.mode_brake()
 
-    def set_yaw_mavlink(self, yaw: float, yaw_rate: float, direction: int = -1, abs_rel_flag: int = 0,):
+    def set_yaw_mavlink(self, yaw: float, yaw_rate: float = 15, abs_rel_flag: int = 1,):
         """Set yaw of MAVLink client.
 
         Args:
@@ -207,10 +207,14 @@ class MavlinkDrone:
             direction: The direction to set. -1 for left, 1 for right.
             abs_rel_flag: The absolute/relative flag to set. 0 for absolute, 1 for relative.
         """
+        if yaw >= 0:
+            direction = 1
+        else:
+            direction = -1
         self.connection.mav.command_long_send(
             self.connection.target_system,
             self.connection.target_component,
-            mavutil.mavlink.MAV_CMD_CONDITION_YAW,0,yaw,yaw_rate,direction,abs_rel_flag,0,0,0)
+            mavutil.mavlink.MAV_CMD_CONDITION_YAW, 0, yaw, yaw_rate, direction, abs_rel_flag, 0, 0, 0)
         set_yaw_ack = self.connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
         print(f"Set Yaw ACK:  {set_yaw_ack}")
         return set_yaw_ack.result
@@ -286,8 +290,9 @@ class MavlinkDrone:
     @yaw.setter
     def yaw(self, yaw: float):
         self._yaw = yaw
-        norm_yaw = normalize_PWM_range(yaw)
-        self.set_rc_channel_pwm(self.CHANNEL_YAW, norm_yaw)
+        # norm_yaw = normalize_PWM_range(yaw)
+        # self.set_rc_channel_pwm(self.CHANNEL_YAW, norm_yaw)
+        self.set_yaw_mavlink(yaw)
 
     @property
     def thrust(self):
