@@ -358,7 +358,7 @@ class MavlinkDrone:
         takeoff_msg = self.connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
         print(f"Takeoff ACK:  {takeoff_msg}")
 
-        # self.move_NED(0,0, -1)
+        self.move_NED(0,0, -1)
 
     def manual_land(self, thrust_pairs=((-0.1, 1), (-0.2, 0.5), (-1, 0))):
         self.mode_land()

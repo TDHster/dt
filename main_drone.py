@@ -279,7 +279,7 @@ while True:
                 drone.manual_land()
             elif command == "Takeoff":
                 # drone.takeoff_manual()
-                drone.takeoff_via_mavlink(3)
+                drone.takeoff_via_mavlink(1)
             else:
                 print(f'{command=} not known')
 
