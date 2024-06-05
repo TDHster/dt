@@ -342,9 +342,9 @@ class MavlinkDrone:
         # self.mode_alt_hold()
         # self._set_mode('GUIDED_NOGPS')
         # self._set_mode('AUTO')
-        self.mode_guided()
+        # self.mode_guided()
         # self.mode_position_hold()
-        self.arm()
+        # self.arm()
         # Command Takeoff
         takeoff_params = [0, 0, 0, 0, 0, 0, takeoff_altitude]
 
@@ -357,8 +357,6 @@ class MavlinkDrone:
 
         takeoff_msg = self.connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
         print(f"Takeoff ACK:  {takeoff_msg}")
-
-        self.move_NED(0,0, -1)
 
     def manual_land(self, thrust_pairs=((-0.1, 1), (-0.2, 0.5), (-1, 0))):
         self.mode_land()
@@ -385,6 +383,7 @@ class MavlinkDrone:
             mavutil.mavlink.MAVLink_set_position_target_local_ned_message(
                 time_boot_ms, self.connection.target_system,
                 self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_NED, # seems to be working
+                # self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_NED, # seems to be working
                 # self.connection.target_component, mavutil.mavlink.MAV_FRAME_BODY_OFFSET_NED, # best
                 # self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_OFFSET_NED,
                 type_mask,
