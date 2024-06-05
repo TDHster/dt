@@ -288,11 +288,11 @@ class MavlinkDrone:
         return self._yaw
 
     @yaw.setter
-    def yaw(self, yaw: float):
-        self._yaw = yaw
+    def yaw(self, yaw_angle: float):
+        self._yaw = yaw_angle
         # norm_yaw = normalize_PWM_range(yaw)
         # self.set_rc_channel_pwm(self.CHANNEL_YAW, norm_yaw)
-        self.set_yaw_mavlink(yaw)
+        self.set_yaw_mavlink(yaw_angle)
 
     @property
     def thrust(self):
