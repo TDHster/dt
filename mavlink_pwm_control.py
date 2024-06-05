@@ -371,7 +371,7 @@ class MavlinkDrone:
             sleep(0.2)  # for safety
             self.pitch = 0  # for safety
 
-    def move_NED(self, rel_x, rel_y, rel_z):
+    def move_NED(self, rel_x=0, rel_y=0, rel_z=0):
         time_boot_ms = 10  # ms
         type_mask = int(0b010111111000)
         # x, y, z = 0, 0, -1
