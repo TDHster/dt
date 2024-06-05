@@ -279,7 +279,8 @@ while True:
                 drone.manual_land()
             elif command == "Takeoff":
                 # drone.takeoff_manual()
-                drone.mode_guided()
+                # drone.mode_guided()
+                drone.mode_auto()
                 drone.arm()
                 drone.takeoff_via_mavlink(2)
                 drone.move_NED(rel_z=-2)

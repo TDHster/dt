@@ -193,6 +193,9 @@ class MavlinkDrone:
         """
         self._set_mode('POSHOLD')
 
+    def mode_auto(self):
+        self._set_mode('AUTO')
+
     def emergency_stop(self):
         self.mode_land()
         self.disarm()
