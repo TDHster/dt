@@ -18,7 +18,7 @@ from mavsdk import System
 
 # Test set of manual inputs. Format: [roll, pitch, throttle, yaw]
 value = 0.5
-throttle_value = 0.6
+throttle_value = 1
 manual_inputs = [
     [0, 0, throttle_value, 0],  # no movement
     [-value, 0, throttle_value, 0],  # minimum roll
