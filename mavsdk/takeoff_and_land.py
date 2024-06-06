@@ -7,8 +7,8 @@ from mavsdk import System
 async def run():
 
     drone = System()
-    await drone.connect(system_address="udpin:127.0.0.1:14550")
-
+    print('Trying to connect...')
+    await drone.connect(system_address="udpin://127.0.0.1:14550")
     status_text_task = asyncio.ensure_future(print_status_text(drone))
 
     print("Waiting for drone to connect...")
