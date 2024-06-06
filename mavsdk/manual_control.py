@@ -26,8 +26,10 @@ manual_inputs = [
     [0, value, 0.5, 0],  # maximum pitch
     [0, 0, 0.5, -value],  # minimum yaw
     [0, 0, 0.5, value],  # maximum yaw
-    [0, 0, value, 0],  # max throttle
-    [0, 0, 0, 0],  # minimum throttle
+    [0, 0, 0.5, 0],  # max throttle
+    [0, 0, 0.5, 0],  # minimum throttle
+    # [0, 0, value, 0],  # max throttle
+    # [0, 0, 0, 0],  # minimum throttle
 ]
 
 
