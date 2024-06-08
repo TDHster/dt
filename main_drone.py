@@ -289,7 +289,7 @@ while True:
                 drone.takeoff_via_mavlink(2)
                 drone.move_NED(rel_z=-2)
                 #---mavsdk
-                drone.takeoff_mavsdk()
+                # drone.takeoff_mavsdk()
             else:
                 print(f'{command=} not known')
 
