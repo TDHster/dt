@@ -286,8 +286,11 @@ while True:
                 # drone.mode_position_hold()
                 drone.mode_alt_hold()
                 drone.arm()
-                drone.takeoff_via_mavlink(2)
+                # drone.takeoff_via_mavlink(2)
+                drone.takeoff_manual()
                 drone.move_NED(rel_z=-2)
+
+
                 #---mavsdk
                 # drone.takeoff_mavsdk()
             else:

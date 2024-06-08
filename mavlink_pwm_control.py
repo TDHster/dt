@@ -109,7 +109,7 @@ class MavlinkDrone:
         """ Set RC channel pwm value
         Args:
             channel_id (TYPE): Channel ID
-            pwm (int, optional): Channel pwm value 1100-1900
+            pwm (int, optional): Channel pwm value 1100-1900, 1500 neutral
         """
         if channel_id < 1 or channel_id > 18:
             print("Channel does not exist.")
@@ -131,7 +131,7 @@ class MavlinkDrone:
                                               mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, arm_command, 0, 0, 0, 0,
                                               0, 0)
         arm_msg = self.connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
-        print(f"Arm ACK:  {arm_msg}")
+        print(f"Arm ACK: {arm_msg}")
         return arm_msg
 
     def arm(self):
@@ -414,6 +414,7 @@ class AttitudePWMControlThread(threading.Thread):
     CHANNEL_ROLL = 2
     CHANNEL_THROTTLE = 3
     CHANNEL_YAW = 4
+
     def __init__(self, queue, connection, delay=1/10):
         super().__init__()
         self.queue = queue
