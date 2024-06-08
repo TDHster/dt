@@ -45,13 +45,13 @@ parser.add_argument(
     "-g", "--groundstation_connection_string", type=str, default="192.168.0.169:5000",
     help="Specify path for mavlink/mavproxy connection.",
 )
-# 0.3 0.1 0.05
+# 0.3 0.1 0.05 new formula
 parser.add_argument(
     "-pidx", type=float, default=0.2, help="PID_X for drone control.", metavar='VALUE'
 )
-# 0.1 0.3 0.4 0.6 0.7 0.8 0.9
+# 0.1 0.3 0.4 0.6 0.7 0.8 0.9 0.7
 parser.add_argument(
-    "-pidz", type=float, default=0.7, help="PID_Z (throttle) for drone control.", metavar='VALUE'
+    "-pidz", type=float, default=0.6, help="PID_Z (throttle) for drone control.", metavar='VALUE'
 )
 # 0.45 0.48 0.5 0.55 #correction formula 0.8, 0.5, 0.4, 0.3
 parser.add_argument(
@@ -210,15 +210,16 @@ while True:
                 target_object_current_diagonal = sqrt(w*w + h*h)
                 if not target_object_diagonal:
                     target_object_diagonal = target_object_current_diagonal
-                dx = (target_object_diagonal - target_object_current_diagonal) * PID_X
+                # dx = (target_object_diagonal - target_object_current_diagonal) * PID_X
+                dx = ((target_object_diagonal/target_object_current_diagonal) - 1) * PID_X
                 # drone.pitch = dx * PID_X #  controller axis switched - not normal
-                # drone.roll = dx * PID_X
+                drone.roll = dx * PID_X
                 # print(f'Sending yaw: {yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW}')
                 dyaw = yaw_pixels/(INPUT_VIDEO_WIDTH/2) * PID_YAW
                 # drone.yaw = dyaw  # need correction factor  *diagonal/image_diagonal
                 dz = elevation_pixels/(INPUT_VIDEO_HEIGHT/2) * PID_Z
                 # print(f'{bcolors.WARNING}{y=}\t{elevation_pixels=}\t{dz}{bcolors.ENDC}')
-                drone.thrust = dz
+                # drone.thrust = dz
                 print(f'{dx=:.2f}\t{dz=:.2f}\t{dyaw=:.2f}')
 
             elif object_id == object_id_near_center:
