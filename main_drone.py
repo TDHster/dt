@@ -55,7 +55,7 @@ parser.add_argument(
 )
 # 0.45 0.48 0.5 0.55 #correction formula 0.8, 0.5, 0.4, 0.3
 parser.add_argument(
-    "-pidyaw", type=float, default=0.23, help="PID_YAW for drone control.", metavar='VALUE'
+    "-pidyaw", type=float, default=0.3, help="PID_YAW for drone control.", metavar='VALUE'
 )
 parser.add_argument(
     "-dt", "--detection_threshold", type=float, default=0.45, help="detection_threshold for drone control.", metavar='VALUE'
@@ -80,12 +80,6 @@ print(f"Installed OpenCV version: {cv2.__version__}")
 
 print(f'Starting connection to mavlink.')
 drone = Drone(mavproxy_connect_string)
-# dron.arm()
-
-# video_path = 'test_videos/6387-191695740.mp4'  # Commercial from top
-# video_path = 'test_videos/188778-883818276_small.mp4' # Two womans
-# video_path = 'test_videos/10831-226624994.mp4'  # Square
-# cap = cv2.VideoCapture(video_path)
 
 # rtsp_url = "rtsp://localhost:8554/cam"
 # opencv_device = rtsp_url
