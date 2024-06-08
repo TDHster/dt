@@ -18,7 +18,7 @@ import argparse
 from time import sleep
 from bcolors import bcolors
 
-CONTROL_STEP = 0.1
+CONTROL_STEP = 0.05
 CONTROL_STEP_THRUST = 0.125
 
 INPUT_VIDEO_WIDTH = 320
