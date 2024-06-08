@@ -83,8 +83,8 @@ async def manual_controls():
         while True:
             # grabs a random input from the test list
             # WARNING - your simulation vehicle may crash if its unlucky enough
-            input_index = random.randint(0, len(manual_inputs) - 1)
-            input_list = manual_inputs[input_index]
+            # input_index = random.randint(0, len(manual_inputs) - 1)
+            # input_list = manual_inputs[input_index]
 
             # # get current state of roll axis (between -1 and 1)
             # roll = float(input_list[0])
@@ -97,7 +97,7 @@ async def manual_controls():
             # yaw = float(input_list[3])
 
             # await drone.manual_control.set_manual_control_input(pitch, roll, throttle, yaw)
-            pitch, roll, throttle, yaw = 0, 0, 0.6, 1
+            pitch, roll, throttle, yaw = 0, 0, 0.6, 0
             await drone.manual_control.set_manual_control_input(pitch, roll, throttle_value, yaw)
 
             await asyncio.sleep(0.1)
