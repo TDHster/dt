@@ -342,9 +342,9 @@ class MavlinkDrone:
             sleep(duration)
 
     def takeoff_manual(self, thrust_pairs=((0.7, 3.5), (0.1, 0.1))):
-        # self.mode_alt_hold()
         # self.mode_guided()
-        self.mode_position_hold()
+        # self.mode_position_hold() # working, go to near ground.
+        self.mode_alt_hold()
         # self.mode_stabilize()
 
         sleep(0.2)
