@@ -52,9 +52,9 @@ parser.add_argument(
 parser.add_argument(
     "-pidz", type=float, default=0.7, help="PID_Z (throttle) for drone control.", metavar='VALUE'
 )
-# 0.45 0.48 0.5 0.55 #correction formula 0.8, 0.5
+# 0.45 0.48 0.5 0.55 #correction formula 0.8, 0.5, 0.4
 parser.add_argument(
-    "-pidyaw", type=float, default=0.4, help="PID_YAW for drone control.", metavar='VALUE'
+    "-pidyaw", type=float, default=0.3, help="PID_YAW for drone control.", metavar='VALUE'
 )
 parser.add_argument(
     "-dt", "--detection_threshold", type=float, default=0.45, help="detection_threshold for drone control.", metavar='VALUE'
@@ -71,8 +71,8 @@ PID_X = args.pidx
 PID_YAW = args.pidyaw
 PID_Z = args.pidz
 detection_threshold = args.detection_threshold  # 0.3, 0.45
-tracker_max_disappeared_frames=50
-tracker_distance_threshold=50
+tracker_max_disappeared_frames = 50
+tracker_distance_threshold = 80
 
 print('Starting.')
 print(f"Installed OpenCV version: {cv2.__version__}")
@@ -147,7 +147,10 @@ def find_nearest_object_id(objects):
 
 object_detector = ObjectDetector()
 
-object_tracker = CentroidTracker(max_disappeared_frames=tracker_max_disappeared_frames, distance_threshold=tracker_distance_threshold)
+object_tracker = CentroidTracker(
+    max_disappeared_frames=tracker_max_disappeared_frames,
+    distance_threshold=tracker_distance_threshold
+)
 
 print(f'Trying connect with ground station {gs_connection_string}.')
 netconnection = NetworkConnection(gs_connection_string=gs_connection_string)
