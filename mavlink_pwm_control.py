@@ -323,7 +323,7 @@ class MavlinkDrone:
             elif thrust < 0:
                 thrust -= 0.1
         thrust_normalized = normalize_PWM_range(thrust)
-        print(f'{bcolors.OKBLUE}Set thrust: {thrust=}\t{thrust_normalized}{bcolors.ENDC}')
+        # print(f'{bcolors.OKBLUE}Set thrust: {thrust=}\t{thrust_normalized}{bcolors.ENDC}')
         # self.set_rc_channel_pwm(self.CHANNEL_THROTTLE, thrust_normalized)
         self.attitude_command_queue.put({'thrust': thrust_normalized})
 

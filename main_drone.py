@@ -47,15 +47,15 @@ parser.add_argument(
 )
 # 0.3 0.1 0.05
 parser.add_argument(
-    "-pidx", type=float, default=0.05, help="PID_X for drone control.", metavar='VALUE'
+    "-pidx", type=float, default=0.2, help="PID_X for drone control.", metavar='VALUE'
 )
 # 0.1 0.3 0.4 0.6 0.7 0.8 0.9
 parser.add_argument(
     "-pidz", type=float, default=0.7, help="PID_Z (throttle) for drone control.", metavar='VALUE'
 )
-# 0.45 0.48 0.5 0.55 #correction formula 0.8, 0.5, 0.4
+# 0.45 0.48 0.5 0.55 #correction formula 0.8, 0.5, 0.4, 0.3
 parser.add_argument(
-    "-pidyaw", type=float, default=0.3, help="PID_YAW for drone control.", metavar='VALUE'
+    "-pidyaw", type=float, default=0.23, help="PID_YAW for drone control.", metavar='VALUE'
 )
 parser.add_argument(
     "-dt", "--detection_threshold", type=float, default=0.45, help="detection_threshold for drone control.", metavar='VALUE'
@@ -225,7 +225,7 @@ while True:
                 dz = elevation_pixels/(INPUT_VIDEO_HEIGHT/2) * PID_Z
                 # print(f'{bcolors.WARNING}{y=}\t{elevation_pixels=}\t{dz}{bcolors.ENDC}')
                 drone.thrust = dz
-                print(f'{dx:.2f} {drone.roll:.2f}\t{dz:.2f} {drone.thrust:.2f}\t{dyaw:.2f} {drone.yaw:.2f}')
+                print(f'{dx=:.2f} {drone.roll=:.2f}\t{dz=:.2f} {drone.thrust=:.2f}\t{dyaw=:.2f} {drone.yaw=:.2f}')
 
             elif object_id == object_id_near_center:
                 # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
