@@ -47,7 +47,7 @@ parser.add_argument(
 )
 # 0.3
 parser.add_argument(
-    "-pidx", type=float, default=0.2, help="PID_X for drone control.", metavar='VALUE'
+    "-pidx", type=float, default=0.1, help="PID_X for drone control.", metavar='VALUE'
 )
 # 0.1 0.3 0.4 0.6 0.7 0.8 0.9
 parser.add_argument(
@@ -216,7 +216,8 @@ while True:
                     target_object_diagonal = target_object_current_diagonal
                 dx = (target_object_diagonal - target_object_current_diagonal) * PID_X
                 print(f'{dx}')
-                drone.pitch = dx * PID_X
+                # drone.pitch = dx * PID_X
+                drone.roll = dx * PID_X
                 # print(f'Sending yaw: {yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW}')
                 drone.yaw = yaw_pixels/(INPUT_VIDEO_WIDTH/2) * PID_YAW  # need correction factor  *diagonal/image_diagonal
                 dz = elevation_pixels/(INPUT_VIDEO_HEIGHT/2) * PID_Z
