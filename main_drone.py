@@ -207,7 +207,8 @@ while True:
                 cv2.line(frame, (int(INPUT_VIDEO_WIDTH / 2), int(INPUT_VIDEO_HEIGHT / 2)),
                          (x, y), (0, 0, 255), thickness=2)
                 yaw_pixels = x - INPUT_VIDEO_WIDTH/2
-                elevation_pixels = INPUT_VIDEO_HEIGHT/2 - y
+                # elevation_pixels = INPUT_VIDEO_HEIGHT/2 - y # center point
+                elevation_pixels = 2*INPUT_VIDEO_HEIGHT/3 - y  # add shift up
                 cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 0, 255), 2)
@@ -215,16 +216,15 @@ while True:
                 if not target_object_diagonal:
                     target_object_diagonal = target_object_current_diagonal
                 dx = (target_object_diagonal - target_object_current_diagonal) * PID_X
-                print(f'{dx}')
                 # drone.pitch = dx * PID_X #  controller axis switched - not normal
                 drone.roll = -dx * PID_X
                 # print(f'Sending yaw: {yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW}')
                 dyaw = yaw_pixels/(INPUT_VIDEO_WIDTH/2) * PID_YAW
                 drone.yaw = dyaw  # need correction factor  *diagonal/image_diagonal
                 dz = elevation_pixels/(INPUT_VIDEO_HEIGHT/2) * PID_Z
-                print(f'{bcolors.WARNING}{y=}\t{elevation_pixels=}\t{dz}{bcolors.ENDC}')
+                # print(f'{bcolors.WARNING}{y=}\t{elevation_pixels=}\t{dz}{bcolors.ENDC}')
                 drone.thrust = dz
-                print(f'{dx=} {drone.roll}\t{dz=} {drone.thrust}\t{dyaw=} {drone.yaw}')
+                print(f'{dx=} {drone.roll=}\t{dz=} {drone.thrust=}\t{dyaw=} {drone.yaw=}')
 
             elif object_id == object_id_near_center:
                 # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),

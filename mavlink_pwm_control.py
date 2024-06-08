@@ -432,7 +432,7 @@ class AttitudePWMControlThread(threading.Thread):
             # Check for new attitude command in the queue
             if not self.queue.empty():
                 command = self.queue.get()
-                print(f'{command=}')
+                # print(f'{command=}')
 
                 # Update attitude values from the command
                 self.thrust = command.get('thrust', self.thrust)
