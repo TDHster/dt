@@ -97,7 +97,7 @@ async def manual_controls():
             # yaw = float(input_list[3])
 
             # await drone.manual_control.set_manual_control_input(pitch, roll, throttle, yaw)
-            pitch, roll, throttle, yaw = 0, 0, 0.6, -1
+            pitch, roll, throttle, yaw = 1, 0, 0.6, 0
             await drone.manual_control.set_manual_control_input(pitch, roll, throttle_value, yaw)
 
             await asyncio.sleep(0.1)
@@ -111,8 +111,8 @@ async def manual_controls():
             # await drone.manual_control.set_manual_control_input(pitch, roll, throttle, yaw)
             # await asyncio.sleep(3)
 
-    except KeyboardInterrupt:
-        print(f'Interrupt by user keyboard')
+    except Exception as e:
+        print(f'Interrupt by user keyboard {e}')
 
     print("-- Landing")
     await drone.action.land()
