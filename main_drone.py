@@ -9,6 +9,8 @@ from video_send import NetworkConnection, get_key_from_byte
 # from mavlink_control import MavlinkDrone as MavlinkControl
 # from mavlink_th_control import MavlinkDrone as Drone
 from mavlink_pwm_control import MavlinkDrone as Drone
+# from mavsdk_control import MavlinkDrone as Drone
+
 # from object_detector import NeuroNetObjectDetector
 # from object_detector import filter_by_target_class_id
 from object_detector import ObjectDetector
@@ -286,6 +288,8 @@ while True:
                 drone.arm()
                 drone.takeoff_via_mavlink(2)
                 drone.move_NED(rel_z=-2)
+                #---mavsdk
+                drone.takeoff_mavsdk()
             else:
                 print(f'{command=} not known')
 

@@ -2,10 +2,11 @@ from pymavlink import mavutil
 from pymavlink_iq_utilites import *
 from time import sleep
 import threading
+import queue
 from bcolors import bcolors
 
 def normalize_value(value: float, min_norm=-1000, max_norm=1000):
-    raise Warning('Sholudn be used in this module')
+    raise Warning('Sholud not be used in this module')
     """
     Normalizes a value between -1 and 1 to a specified range.
 
@@ -96,6 +97,11 @@ class MavlinkDrone:
         # self.attitude_control_thread.start()
         # print('Attitude command thread started.')
 
+        self.attitude_command_queue = queue.Queue()
+        self.attitude_control_thread = AttitudePWMControlThread(self.attitude_command_queue, self.connection)
+        self.attitude_control_thread.start()
+        print('Attitude command thread started.')
+
     def wait_heartbeat(self):
         self.connection.wait_heartbeat()
 
@@ -114,9 +120,9 @@ class MavlinkDrone:
         rc_channel_values = [65535 for _ in range(18)]
         rc_channel_values[channel_id - 1] = pwm
         self.connection.mav.rc_channels_override_send(
-            self.connection.target_system,  # target_system
-            self.connection.target_component,  # target_component
-            *rc_channel_values)  # RC channel list, in microseconds.
+            self.connection.target_system,
+            self.connection.target_component,
+            *rc_channel_values)
         # print(f'{bcolors.WARNING}\tSended PWM:\t{channel_id=}\t{pwm=} {bcolors.ENDC}')
 
     def _arm(self, arm_command=1):
@@ -274,7 +280,9 @@ class MavlinkDrone:
     def pitch(self, pitch: float):
         self._pitch = pitch
         normalized_pitch = normalize_PWM_range(pitch)
-        self.set_rc_channel_pwm(self.CHANNEL_PITCH, normalized_pitch)
+        # self.set_rc_channel_pwm(self.CHANNEL_PITCH, normalized_pitch)
+        self.attitude_command_queue.put({'pitch': normalized_pitch})
+
 
     @property
     def roll(self):
@@ -284,7 +292,8 @@ class MavlinkDrone:
     def roll(self, roll: float):
         self._roll = roll
         norm_roll = normalize_PWM_range(roll)
-        self.set_rc_channel_pwm(self.CHANNEL_ROLL, norm_roll)
+        # self.set_rc_channel_pwm(self.CHANNEL_ROLL, norm_roll)
+        self.attitude_command_queue.put({'roll': norm_roll})
 
     @property
     def yaw(self):
@@ -293,9 +302,10 @@ class MavlinkDrone:
     @yaw.setter
     def yaw(self, yaw_angle: float):
         self._yaw = yaw_angle
-        # norm_yaw = normalize_PWM_range(yaw)
+        norm_yaw = normalize_PWM_range(yaw_angle)
         # self.set_rc_channel_pwm(self.CHANNEL_YAW, norm_yaw)
-        self.set_yaw_mavlink(yaw_angle)
+        # self.set_yaw_mavlink(yaw_angle)
+        self.attitude_command_queue.put({'yaw': norm_yaw})
 
     @property
     def thrust(self):
@@ -314,7 +324,8 @@ class MavlinkDrone:
                 thrust -= 0.1
         thrust_normalized = normalize_PWM_range(thrust)
         print(f'{bcolors.OKBLUE}Set thrust: {thrust=}\t{thrust_normalized}{bcolors.ENDC}')
-        self.set_rc_channel_pwm(self.CHANNEL_THROTTLE, thrust_normalized)
+        # self.set_rc_channel_pwm(self.CHANNEL_THROTTLE, thrust_normalized)
+        self.attitude_command_queue.put({'thrust': thrust_normalized})
 
     def _manual_thrust_series(self, thrust_pairs):
         """
@@ -398,8 +409,12 @@ class MavlinkDrone:
         )
 
 
-class AttitudeControlThread(threading.Thread):
-    def __init__(self, queue, connection, delay=1/20):
+class AttitudePWMControlThread(threading.Thread):
+    CHANNEL_PITCH = 1
+    CHANNEL_ROLL = 2
+    CHANNEL_THROTTLE = 3
+    CHANNEL_YAW = 4
+    def __init__(self, queue, connection, delay=1/10):
         super().__init__()
         self.queue = queue
         self.connection = connection
@@ -408,7 +423,7 @@ class AttitudeControlThread(threading.Thread):
         # Initialize initial values
         self.pitch = 0
         self.roll = 0
-        self.thrust = 500
+        self.thrust = 0.5
         self.yaw = 0
 
     def run(self):
@@ -423,16 +438,17 @@ class AttitudeControlThread(threading.Thread):
                 self.pitch = command.get('pitch', self.pitch)
                 self.roll = command.get('roll', self.roll)
                 self.yaw = command.get('yaw', self.yaw)
-                # print(f'{self.thrust=}\t{self.pitch=}\t{self.roll=}\t{self.yaw=}')
+                print(f'{bcolors.OKBLUE}Thread:{bcolors.ENDC} {self.thrust=}\t{self.pitch=}\t{self.roll=}\t{self.yaw=}')
 
             # Send the current attitude command to the drone
-            self.connection.mav.manual_control_send(
-                self.connection.target_system,
-                self.pitch,
-                -self.roll,  # inversed
-                self.thrust,
-                self.yaw,
-                0)
+            rc_channel_values = [65535 for _ in range(18)]
+            rc_channel_values[self.CHANNEL_PITCH - 1] = self.pitch
+            rc_channel_values[self.CHANNEL_ROLL - 1] = self.roll
+            rc_channel_values[self.CHANNEL_THROTTLE - 1] = self.thrust
+            rc_channel_values[self.CHANNEL_YAW - 1] = self.yaw
+            self.connection.mav.rc_channels_override_send(
+                self.connection.target_system, self.connection.target_component,
+                *rc_channel_values)
 
             sleep(self.delay)
 
