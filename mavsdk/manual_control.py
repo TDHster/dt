@@ -66,7 +66,7 @@ async def manual_controls():
     # Takeoff the vehicle
     print("-- Taking off")
     # await drone.action.takeoff()
-    await asyncio.sleep(5)
+    # await asyncio.sleep(5)
 
     # set the manual control input after arming
     await drone.manual_control.set_manual_control_input(
@@ -97,7 +97,7 @@ async def manual_controls():
             # yaw = float(input_list[3])
 
             # await drone.manual_control.set_manual_control_input(pitch, roll, throttle, yaw)
-            pitch, roll, throttle, yaw = 0, 0, 0.6, 0.5
+            pitch, roll, throttle, yaw = 0, 0, 0.6, -1
             await drone.manual_control.set_manual_control_input(pitch, roll, throttle_value, yaw)
 
             await asyncio.sleep(0.1)
