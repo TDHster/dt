@@ -218,14 +218,14 @@ while True:
                     target_object_diagonal = target_object_current_diagonal
                 dx = (target_object_diagonal - target_object_current_diagonal) * PID_X
                 # drone.pitch = dx * PID_X #  controller axis switched - not normal
-                drone.roll = dx * PID_X
+                # drone.roll = dx * PID_X
                 # print(f'Sending yaw: {yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW}')
                 dyaw = yaw_pixels/(INPUT_VIDEO_WIDTH/2) * PID_YAW
                 drone.yaw = dyaw  # need correction factor  *diagonal/image_diagonal
                 dz = elevation_pixels/(INPUT_VIDEO_HEIGHT/2) * PID_Z
                 # print(f'{bcolors.WARNING}{y=}\t{elevation_pixels=}\t{dz}{bcolors.ENDC}')
-                drone.thrust = dz
-                print(f'{dx=:.2f} {drone.roll=:.2f}\t{dz=:.2f} {drone.thrust=:.2f}\t{dyaw=:.2f} {drone.yaw=:.2f}')
+                # drone.thrust = dz
+                print(f'{dx=:.2f}\t{dz=:.2f}\t{dyaw=:.2f}')
 
             elif object_id == object_id_near_center:
                 # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
