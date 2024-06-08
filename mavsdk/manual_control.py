@@ -97,7 +97,7 @@ async def manual_controls():
             # yaw = float(input_list[3])
 
             # await drone.manual_control.set_manual_control_input(pitch, roll, throttle, yaw)
-            pitch, roll, throttle, yaw = 1, 0, 0.6, 0
+            pitch, roll, throttle, yaw = -1, 0, 0.6, 0
             await drone.manual_control.set_manual_control_input(pitch, roll, throttle_value, yaw)
 
             await asyncio.sleep(0.1)
