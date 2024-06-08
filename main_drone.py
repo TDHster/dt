@@ -284,11 +284,11 @@ while True:
                 # drone.mode_guided()
                 # drone.mode_auto()  # no
                 # drone.mode_position_hold()
-                drone.mode_alt_hold()
-                drone.arm()
-                # drone.takeoff_via_mavlink(2)
+                # drone.mode_alt_hold()
+                # drone.arm()
+                # drone.takeoff_via_mavlink(2) # not working
                 drone.takeoff_manual()
-                drone.move_NED(rel_z=-2)
+                # drone.move_NED(rel_z=-2)  # seems to be working
 
 
                 #---mavsdk
