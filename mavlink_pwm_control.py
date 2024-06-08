@@ -421,10 +421,10 @@ class AttitudePWMControlThread(threading.Thread):
         self.delay = delay
 
         # Initialize initial values
-        self.pitch = 0
-        self.roll = 0
-        self.thrust = 0.5
-        self.yaw = 0
+        self.pitch = normalize_PWM_range(0)
+        self.roll = normalize_PWM_range(0)
+        self.thrust = normalize_PWM_range(0)
+        self.yaw = normalize_PWM_range(0)
 
     def run(self):
         while True:

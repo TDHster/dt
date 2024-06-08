@@ -77,36 +77,55 @@ async def manual_controls():
     print("-- Starting manual control")
     await drone.manual_control.start_position_control()
 
-    while True:
-        # grabs a random input from the test list
-        # WARNING - your simulation vehicle may crash if its unlucky enough
-        input_index = random.randint(0, len(manual_inputs) - 1)
-        input_list = manual_inputs[input_index]
+    status_text_task = asyncio.ensure_future(print_status_text(drone))
 
-        # # get current state of roll axis (between -1 and 1)
-        # roll = float(input_list[0])
-        # # get current state of pitch axis (between -1 and 1)
-        # pitch = float(input_list[1])
-        # # get current state of throttle axis
-        # # (between -1 and 1, but between 0 and 1 is expected)
-        # throttle = float(input_list[2])
-        # # get current state of yaw axis (between -1 and 1)
-        # yaw = float(input_list[3])
+    try:
+        while True:
+            # grabs a random input from the test list
+            # WARNING - your simulation vehicle may crash if its unlucky enough
+            input_index = random.randint(0, len(manual_inputs) - 1)
+            input_list = manual_inputs[input_index]
 
-        # await drone.manual_control.set_manual_control_input(pitch, roll, throttle, yaw)
-        pitch, roll, throttle, yaw = 0, 0, 0.5, 1
-        await drone.manual_control.set_manual_control_input(pitch, roll, throttle_value, yaw)
+            # # get current state of roll axis (between -1 and 1)
+            # roll = float(input_list[0])
+            # # get current state of pitch axis (between -1 and 1)
+            # pitch = float(input_list[1])
+            # # get current state of throttle axis
+            # # (between -1 and 1, but between 0 and 1 is expected)
+            # throttle = float(input_list[2])
+            # # get current state of yaw axis (between -1 and 1)
+            # yaw = float(input_list[3])
 
-        await asyncio.sleep(0.1)
-        # pitch, roll, throttle, yaw = 0, 0, 0.5, 0
-        # await drone.manual_control.set_manual_control_input(pitch, roll, throttle, yaw)
-        # await asyncio.sleep(2)
-        # pitch, roll, throttle, yaw = 0, 0, 0.5, 0.5
-        # await drone.manual_control.set_manual_control_input(pitch, roll, throttle, yaw)
-        # await asyncio.sleep(3)
-        # pitch, roll, throttle, yaw = 0, 0, 0.5, -0.5
-        # await drone.manual_control.set_manual_control_input(pitch, roll, throttle, yaw)
-        # await asyncio.sleep(3)
+            # await drone.manual_control.set_manual_control_input(pitch, roll, throttle, yaw)
+            pitch, roll, throttle, yaw = 0, 0, 0.6, 1
+            await drone.manual_control.set_manual_control_input(pitch, roll, throttle_value, yaw)
+
+            await asyncio.sleep(0.1)
+            # pitch, roll, throttle, yaw = 0, 0, 0.5, 0
+            # await drone.manual_control.set_manual_control_input(pitch, roll, throttle, yaw)
+            # await asyncio.sleep(2)
+            # pitch, roll, throttle, yaw = 0, 0, 0.5, 0.5
+            # await drone.manual_control.set_manual_control_input(pitch, roll, throttle, yaw)
+            # await asyncio.sleep(3)
+            # pitch, roll, throttle, yaw = 0, 0, 0.5, -0.5
+            # await drone.manual_control.set_manual_control_input(pitch, roll, throttle, yaw)
+            # await asyncio.sleep(3)
+
+    except KeyboardInterrupt:
+        print(f'Interrupt by user keyboard')
+
+    print("-- Landing")
+    await drone.action.land()
+    status_text_task.cancel()
+
+
+async def print_status_text(drone):
+    try:
+        async for status_text in drone.telemetry.status_text():
+            print(f"Status: {status_text.type}: {status_text.text}")
+    except asyncio.CancelledError:
+        return
+
 
 if __name__ == "__main__":
     # Run the asyncio loop
