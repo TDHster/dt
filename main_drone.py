@@ -217,7 +217,7 @@ while True:
                 dx = (target_object_diagonal - target_object_current_diagonal) * PID_X
                 print(f'{dx}')
                 # drone.pitch = dx * PID_X
-                drone.roll = dx * PID_X
+                drone.roll = -dx * PID_X
                 # print(f'Sending yaw: {yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW}')
                 drone.yaw = yaw_pixels/(INPUT_VIDEO_WIDTH/2) * PID_YAW  # need correction factor  *diagonal/image_diagonal
                 dz = elevation_pixels/(INPUT_VIDEO_HEIGHT/2) * PID_Z
