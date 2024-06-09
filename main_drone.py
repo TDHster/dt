@@ -45,9 +45,9 @@ parser.add_argument(
     "-g", "--groundstation_connection_string", type=str, default="192.168.0.169:5000",
     help="Specify path for mavlink/mavproxy connection.",
 )
-# 0.3 0.1 0.05 new formula 0.2
+# 0.3 0.1 0.05 new formula 0.2 0.6
 parser.add_argument(
-    "-pidx", type=float, default=0.6, help="PID_X for drone control.", metavar='VALUE'
+    "-pidx", type=float, default=0.4, help="PID_X for drone control.", metavar='VALUE'
 )
 # 0.1 0.3 0.4 0.6 0.7 0.8 0.9 0.7 0.6 0.5 0.7
 parser.add_argument(
