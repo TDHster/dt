@@ -58,26 +58,26 @@ async def run():
         await drone.action.disarm()
         return
 
-    print(f"-- Go 0m North, 0m East, {move_distance}m Down within local coordinate system")
+    # print(f"-- Go 0m North, 0m East, {move_distance}m Down within local coordinate system")
+    # await drone.offboard.set_position_ned(
+    #         PositionNedYaw(0.0, 0.0, -move_distance, 0.0))
+    # await asyncio.sleep(10)
+
+    print(f"-- Go {move_distance}m North, 0m East, 0m Down within local coordinate system, turn to face East")
     await drone.offboard.set_position_ned(
-            PositionNedYaw(0.0, 0.0, -move_distance, 0.0))
+            PositionNedYaw(move_distance, 0.0, 0, 90.0))
     await asyncio.sleep(10)
 
-    print(f"-- Go {move_distance}m North, 0m East, -{move_distance}m Down within local coordinate system, turn to face East")
+    print(f"-- Go 0m North, {move_distance}m East, 0m Down within local coordinate system")
     await drone.offboard.set_position_ned(
-            PositionNedYaw(move_distance, 0.0, -move_distance, 90.0))
-    await asyncio.sleep(10)
+            PositionNedYaw(0, move_distance, 0, 90.0))
+    await asyncio.sleep(5)
 
-    print(f"-- Go {move_distance}m North, 10m East, -{move_distance*2}m Down within local coordinate system")
-    await drone.offboard.set_position_ned(
-            PositionNedYaw(move_distance, move_distance, -move_distance, 90.0))
-    await asyncio.sleep(15)
-
-    print(f"-- Go 0m North, {move_distance*2}m East, 0m Down \
+    print(f"-- Go 0m North, -{move_distance}m East, 0m Down \
             within local coordinate system, turn to face South")
     await drone.offboard.set_position_ned(
-            PositionNedYaw(0.0, move_distance*2, 0.0, 180.0))
-    await asyncio.sleep(10)
+            PositionNedYaw(0.0, move_distance, 0.0, 180.0))
+    await asyncio.sleep(5)
 
     print("-- Stopping offboard")
     try:
