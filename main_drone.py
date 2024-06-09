@@ -219,7 +219,7 @@ while True:
                 drone.yaw = dyaw  # need correction factor  *diagonal/image_diagonal
                 dz = elevation_pixels/(INPUT_VIDEO_HEIGHT/2) * PID_Z
                 # print(f'{bcolors.WARNING}{y=}\t{elevation_pixels=}\t{dz}{bcolors.ENDC}')
-                # drone.thrust = dz
+                drone.thrust = dz
                 print(f'{dx=:.2f}\t{dz=:.2f}\t{dyaw=:.2f}')
 
             elif object_id == object_id_near_center:
