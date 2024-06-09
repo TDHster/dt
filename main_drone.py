@@ -2,7 +2,7 @@
 
 import cv2
 from object_tracker import CentroidTracker
-from math import pi, sqrt
+from math import pi, sqrt, cos
 import heapq
 from video_send import NetworkConnection, get_key_from_byte
 # from control_drone import MavlinkJoystickControl as MavlinkControl
@@ -25,7 +25,9 @@ INPUT_VIDEO_WIDTH = 320
 INPUT_VIDEO_HEIGHT = 200
 # INPUT_VIDEO_WIDTH = 640
 # INPUT_VIDEO_HEIGHT = 480
-#
+
+TARGET_OBJECT_SIZE_PERCENT_OF_IMAGE_HEIGHT = 0.3
+TARGET_OBJECT_DIAGONAL = INPUT_VIDEO_HEIGHT * TARGET_OBJECT_SIZE_PERCENT_OF_IMAGE_HEIGHT * cos(30 * (pi /180) )
 
 parser = argparse.ArgumentParser(description="Main drone script")
 
@@ -211,7 +213,8 @@ while True:
                 if not target_object_diagonal:
                     target_object_diagonal = target_object_current_diagonal
                 # dx = (target_object_diagonal - target_object_current_diagonal) * PID_X
-                dx = ((target_object_diagonal/target_object_current_diagonal) - 1) * PID_X
+                # dx = ((target_object_diagonal/target_object_current_diagonal) - 1) * PID_X  # target when fixed
+                dx = ((TARGET_OBJECT_DIAGONAL/target_object_current_diagonal) - 1) * PID_X
                 # drone.pitch = dx * PID_X #  controller axis switched - not normal
                 drone.roll = dx * PID_X
                 # print(f'Sending yaw: {yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW}')
