@@ -38,7 +38,7 @@ async def run():
     await drone.action.arm()
 
     print("-- Setting initial setpoint")
-    await drone.offboard.set_position_ned(PositionNedYaw(0.0, 0.0, 0.0, 0.0))
+    await drone.offboard.set_position_ned(PositionNedYaw(0.0, 0.0, -2.0, 0.0))
 
     print("-- Starting offboard")
     try:

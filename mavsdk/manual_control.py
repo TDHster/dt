@@ -63,6 +63,8 @@ async def manual_controls():
     print("-- Arming")
     await drone.action.arm()
 
+    await asyncio.sleep(1)
+    await drone.action.set_takeoff_altitude(2)
     # Takeoff the vehicle
     print("-- Taking off")
     await drone.action.takeoff()

@@ -23,13 +23,23 @@ async def run():
             print("-- Global position estimate OK")
             break
 
+    await drone.action.set_takeoff_altitude(3)
+    await asyncio.sleep(1)
+
     print("-- Arming")
     await drone.action.arm()
+    await asyncio.sleep(1)
+
+    await drone.action.set_takeoff_altitude(2)
 
     print("-- Taking off")
     await drone.action.takeoff()
 
     await asyncio.sleep(10)
+
+    print("-- Hold")
+    await drone.action.hold()
+    await asyncio.sleep(20)
 
     print("-- Landing")
     await drone.action.land()
