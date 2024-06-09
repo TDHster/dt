@@ -187,8 +187,8 @@ while True:
         drone.pitch = 0
         drone.yaw = 0
         drone.thrust = 0
-        need_reset_yaw = False
         drone.mode_position_hold()
+        need_reset_yaw = False
         print(f'{bcolors.FAIL}All sticks to zero, object lost{bcolors.ENDC}')
 
     # print(f'objects={objects}')

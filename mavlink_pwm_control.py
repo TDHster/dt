@@ -152,7 +152,7 @@ class MavlinkDrone:
         self._mode = mode
         self.connection.set_mode(mode)
         ack_msg = self.connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
-        print(f"Change Mode ACK:  {ack_msg}")
+        print(f"Change Mode to {mode} ACK:  {ack_msg}")
 
     def mode_land(self):
         """
