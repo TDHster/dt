@@ -115,7 +115,7 @@ if __name__ == '__main__':
     print("Heartbeat from system (system %u component %u)" %
           (mav_connection.target_system, mav_connection.target_component))
 
-    mav_connection.set_mode('POSHOLD')
+    # mav_connection.set_mode('POSHOLD')
     takeoff(mav_connection, 1)
 
     time_between_wpts = 4

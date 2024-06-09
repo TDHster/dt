@@ -1,6 +1,7 @@
 from questionary import Separator, prompt
 import argparse
-from mavlink_th_control import MavlinkDrone
+from mavlink_th_control import MavlinkDrone # was tested - ok
+from mavlink_pwm_control import MavlinkDrone
 from time import sleep
 
 
@@ -28,8 +29,15 @@ def ask_dictstyle(**kwargs):
                 "mode brake",
                 "mode land",
                 "mode alt_hold",
+                "mode pos_hold",
+                "mode guided",
                 "arm",
                 "disarm",
+                Separator(),
+                "nav left",
+                "nav right",
+                "nav forward",
+                "nav backward",
                 Separator(),
                 "attitude takeoff",
                 "attitude yaw left",
@@ -71,18 +79,24 @@ if __name__ == "__main__":
                 drone.mode_land()
             case "mode alt_hold":
                 drone.mode_alt_hold()
+            case "mode pos_hold":
+                drone.mode_position_hold()
+            case "mode guided":
+                drone.mode_guided()
             case "arm":
                 drone.arm()
             case "disarm":
                 drone.disarm()
 
             case "attitude takeoff":
-                drone.manual_takeoff()
+                drone.takeoff_manual()
+
                 # drone.thrust(0.5)
                 # sleep(EXPOSURE_TIME)
                 # drone.thrust(0.6)
                 # sleep(EXPOSURE_TIME)
                 # drone.thrust(0.5)
+
             case "attitude yaw left":
                 drone.yaw(-0.3)
                 sleep(EXPOSURE_TIME)
@@ -107,6 +121,20 @@ if __name__ == "__main__":
                 drone.pitch(EXPOSURE_XY_VALUE)
                 sleep(EXPOSURE_TIME)
                 drone.pitch(0)
+
+            case "nav left":
+                drone.move_NED(rel_y=-1)
+            case "nav right":
+                drone.move_NED(rel_y=1)
+            case "nav forward":
+                drone.move_NED(rel_x=1)
+            case "nav backward":
+                drone.move_NED(rel_x=-1)
+            case "nav rotate CW":
+                drone.move_NED(yaw=30)
+            case "nav rotate CCW":
+                drone.move_NED(yaw=-30)
+
             case "attitude land":
                 drone.manual_land()
 
