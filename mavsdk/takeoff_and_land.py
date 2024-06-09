@@ -23,7 +23,7 @@ async def run():
             print("-- Global position estimate OK")
             break
 
-    await drone.action.set_takeoff_altitude(3)
+    await drone.action.set_takeoff_altitude(6)
     await asyncio.sleep(1)
 
     print("-- Arming")
