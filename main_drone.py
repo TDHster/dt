@@ -201,8 +201,8 @@ while True:
                 cv2.line(frame, (int(INPUT_VIDEO_WIDTH / 2), int(INPUT_VIDEO_HEIGHT / 2)),
                          (x, y), (0, 0, 255), thickness=2)
                 yaw_pixels = x - INPUT_VIDEO_WIDTH/2
-                # elevation_pixels = INPUT_VIDEO_HEIGHT/2 - y # center point
-                elevation_pixels = INPUT_VIDEO_HEIGHT/2 - y + 100 # center point shift
+                elevation_pixels = INPUT_VIDEO_HEIGHT/2 - y  # center point
+                # elevation_pixels = INPUT_VIDEO_HEIGHT/2 - y + 100 # center point shift
                 # elevation_pixels = INPUT_VIDEO_HEIGHT;2/3 - y  # add shift up
                 cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
