@@ -62,6 +62,7 @@ if __name__ == "__main__":
 
     print(f'Trying to connect: {connection_string}')
     drone = MavlinkDrone(connection_string)
+    drone.get_connection_status()
     print('Connected.')
 
     while True:

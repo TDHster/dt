@@ -59,8 +59,10 @@ def normalize_PWM_range(value: float):
 
     return int(servo_value)
 
+
 class MavlinkDrone:
     _pitch, _roll, _yaw, _thrust = 0, 0, 0, 0
+
     def __init__(self, connection_string='udp://127.0.0.1:14550'):
         '''
           Args:
@@ -87,21 +89,20 @@ class MavlinkDrone:
         # await drone.connect(system_address=connection_string)
         self.drone.connect(system_address=connection_string)
 
-        # This waits till a mavlink based drone is connected
+        self.attitude_command_queue = queue.Queue()
+        self.attitude_control_thread = AttitudeMavSDKControlThread(self.attitude_command_queue, self.drone)
+
+    async def get_connection_status(self):
         print("Waiting for drone to connect...")
         async for state in self.drone.core.connection_state():
             if state.is_connected:
                 print(f"-- {bcolors.OKGREEN}Connected{bcolors.ENDC} to drone!")
                 break
 
-        # Checking if Global Position Estimate is ok
         async for health in self.drone.telemetry.health():
             if health.is_global_position_ok and health.is_home_position_ok:
                 print(f"-- {bcolors.OKGREEN}GPS{bcolors.ENDC} is good enough for flying.")
                 break
-        self.attitude_command_queue = queue.Queue()
-        self.attitude_control_thread = AttitudeMavSDKControlThread(self.attitude_command_queue, self.drone)
-
     def start_control_thread(self):
         self.attitude_control_thread.start()
         print('Attitude command thread started.')
