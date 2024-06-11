@@ -85,14 +85,15 @@ class MavlinkDrone:
 
         self.connection_string = connection_string
         print(f"Using mavlink connection string: {connection_string}")
-        self.drone = System()
+
 
         # await drone.connect(system_address=connection_string)
 
         self.attitude_command_queue = queue.Queue()
         self.attitude_control_thread = AttitudeMavSDKControlThread(self.attitude_command_queue, self.drone)
 
-    async def get_connection_status(self):
+    async def connect(self):
+        self.drone = System()
         await self.drone.connect(system_address=self.connection_string)
 
         print("Waiting for drone to connect...")
