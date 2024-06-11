@@ -104,6 +104,7 @@ class MavlinkDrone:
             if health.is_global_position_ok and health.is_home_position_ok:
                 print(f"-- {bcolors.OKGREEN}GPS{bcolors.ENDC} is good enough for flying.")
                 break
+
     def start_control_thread(self):
         self.attitude_control_thread.start()
         print('Attitude command thread started.')
