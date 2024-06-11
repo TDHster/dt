@@ -1,5 +1,6 @@
 from pymavlink import mavutil
 from pymavlink_iq_utilites import *
+import bcolors
 
 import asyncio
 from mavsdk import System
@@ -90,17 +91,18 @@ class MavlinkDrone:
         print("Waiting for drone to connect...")
         async for state in self.drone.core.connection_state():
             if state.is_connected:
-                print(f"-- Connected to drone!")
+                print(f"-- {bcolors.OKGREEN}Connected{bcolors.ENDC} to drone!")
                 break
 
         # Checking if Global Position Estimate is ok
         async for health in self.drone.telemetry.health():
             if health.is_global_position_ok and health.is_home_position_ok:
-                print("-- Global position state is good enough for flying.")
+                print(f"-- {bcolors.OKGREEN}GPS{bcolors.ENDC} is good enough for flying.")
                 break
-
         self.attitude_command_queue = queue.Queue()
         self.attitude_control_thread = AttitudeMavSDKControlThread(self.attitude_command_queue, self.drone)
+
+    def start_control_thread(self):
         self.attitude_control_thread.start()
         print('Attitude command thread started.')
 
@@ -110,6 +112,21 @@ class MavlinkDrone:
     async def arm(self):
         print("-- Arming")
         await self.drone.action.arm()
+        return True
+
+    async def arm_force(self):
+        print("-- Arming force")
+        await self.drone.action.arm_force()
+        return True
+
+    async def get_takeoff_altitude(self):
+        print("-- Arming force")
+        await self.drone.action.get_takeoff_altitude()
+        return True
+
+    async def set_takeoff_altitude(self, altitude=1):
+        print("-- Arming force")
+        await self.drone.action.set_takeoff_altitude(altitude)
         return True
 
     async def disarm(self):
@@ -164,23 +181,22 @@ class MavlinkDrone:
         thrust_normalized = thrust
         self.attitude_command_queue.put({'thrust': thrust_normalized})
 
-    async def takeoff_command_set(self):
-        await self.arm()
-        await self.takeoff_mavsdk()
-        await self.start_position_control()
-
-    async def takeoff_mavsdk(self):
-        print("-- Taking off")
+    async def takeoff(self):
         await self.drone.action.takeoff()
-        await asyncio.sleep(5)
 
     async def start_position_control(self):
-        # start manual control
-        print("-- Starting manual control (MavSDK)")
+        print("-- start_position_control")
         await self.drone.manual_control.start_position_control()
 
-    async def manual_land(self):
+    async def start_attitude_control(self):
+        print("-- start_position_control")
+        await self.drone.manual_control.start_altitude_control()
+
+    async def land(self):
         await self.drone.action.land()
+
+    async def kill(self):
+        await self.drone.action.kill()
 
     def to_target(self, safety=True):
         self.pitch = 1
