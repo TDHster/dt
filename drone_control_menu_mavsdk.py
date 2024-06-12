@@ -70,10 +70,12 @@ async def run():
 
     # await drone.offboard.set_position_ned(mavsdk.offboard.PositionNedYaw(north_m=0, east_m=-3, down_m=0, yaw_deg=0))
 
-    duration_seconds = 1
+    duration_seconds = 5
+    yaw = 1
     start_time = time()
     while time() - start_time < duration_seconds:
-        await drone.manual_control.set_manual_control_input(0, 0, 0, 1)
+        await drone.manual_control.set_manual_control_input(0, 0, 0, yaw)
+        print(f'Sent {yaw=}')
         sleep(1/10)
 
     await asyncio.sleep(10)
