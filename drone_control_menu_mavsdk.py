@@ -8,6 +8,8 @@ from time import sleep, time
 
 import asyncio
 from mavsdk import System
+from mavsdk.offboard import (OffboardError, PositionNedYaw)
+
 
 
 parser = argparse.ArgumentParser(description="Mavlink сontrol")
@@ -50,27 +52,38 @@ async def run():
     await drone.action.arm()
     # await drone.action.arm_force()
 
-    takeoff_altitude = await drone.action.get_takeoff_altitude()
-    print(f'Current setted takeoff altitude: {takeoff_altitude}')
-    takeoff_altitude = 10
-    await drone.action.set_takeoff_altitude(takeoff_altitude)
-    takeoff_altitude = await drone.action.get_takeoff_altitude()
-    print(f'Current setted takeoff altitude: {takeoff_altitude}')
+    # takeoff_altitude = await drone.action.get_takeoff_altitude()
+    # print(f'Current setted takeoff altitude: {takeoff_altitude}')
+    # takeoff_altitude = 10  # not in meters
+    # await drone.action.set_takeoff_altitude(takeoff_altitude)
+    # takeoff_altitude = await drone.action.get_takeoff_altitude()
+    # print(f'Current setted takeoff altitude: {takeoff_altitude}')
 
-    await drone.manual_control.set_manual_control_input(0,0,0,0)
-    await drone.manual_control.start_position_control()
+    # await drone.manual_control.set_manual_control_input(0,0,0,0)
+    # await drone.manual_control.start_position_control()
     # await drone.manual_control.start_altitude_control()
-    await asyncio.sleep(1)
 
-    print("-- Taking off")
-    await drone.action.takeoff()
+    print("-- Starting offboard")
+    try:
+        await drone.offboard.start()
+    except OffboardError as error:
+        print(f"Starting offboard mode failed \
+                    with error code: {error._result.result}")
+        print("-- Disarming")
+        await drone.action.disarm()
+        return
 
-    await asyncio.sleep(5)
+    print("-- Setting initial setpoint")
+    await drone.offboard.set_position_ned(PositionNedYaw(0.0, 0.0, 0.0, 0.0))
+    # print("-- Taking off")
+    # await drone.action.takeoff()
+    # await asyncio.sleep(5)
+
     # await drone.manual_control.set_manual_control_input(0,0,0,1)
 
-    # await drone.offboard.set_position_ned(mavsdk.offboard.PositionNedYaw(north_m=0, east_m=-3, down_m=0, yaw_deg=0)) # rotate CW 30 deg
+    # await drone.offb  oard.set_position_ned(mavsdk.offboard.PositionNedYaw(north_m=0, east_m=-3, down_m=0, yaw_deg=0)) # rotate CW 30 deg
 
-    await drone.offboard.set_position_ned(mavsdk.offboard.PositionNedYaw(north_m=0, east_m=1, down_m=-2, yaw_deg=0)) # rotate CW 30 deg
+    await drone.offboard.set_position_ned(mavsdk.offboard.PositionNedYaw(north_m=0, east_m=0, down_m=-2, yaw_deg=0)) # rotate CW 30 deg
     # await drone.offboard.set_attitude(mavsdk.offboard.Attitude(roll_deg=0, pitch_deg=0, yaw_deg=30,thrust_value=0.5))
 
     await asyncio.sleep(15)
@@ -85,6 +98,14 @@ async def run():
     #     sleep(1/10)
 
     # await asyncio.sleep(10)
+
+    # print("-- Stopping offboard")
+    # try:
+    #     await drone.offboard.stop()
+    # except OffboardError as error:
+    #     print(f"Stopping offboard mode failed \
+    #             with error code: {error._result.result}")
+
 
     print("-- Landing")
     await drone.action.land()
