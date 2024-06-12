@@ -125,11 +125,13 @@ class MavlinkDrone:
             *rc_channel_values)
         # print(f'{bcolors.WARNING}\tSended PWM:\t{channel_id=}\t{pwm=} {bcolors.ENDC}')
 
-    def _arm(self, arm_command=1):
+    def _arm(self, arm_command=1, force=False):
         self.connection.wait_heartbeat()
         self.connection.mav.command_long_send(self.connection.target_system, self.connection.target_component,
-                                              mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, arm_command, 0, 0, 0, 0,
-                                              0, 0)
+                                              mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+                                              0,
+                                              arm_command,
+                                              0, 0, 0, 0, 0, 0)
         arm_msg = self.connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
         print(f"Arm ACK: {arm_msg}")
         return arm_msg
@@ -223,7 +225,14 @@ class MavlinkDrone:
         self.connection.mav.command_long_send(
             self.connection.target_system,
             self.connection.target_component,
-            mavutil.mavlink.MAV_CMD_CONDITION_YAW, 0, yaw, yaw_rate, direction, abs_rel_flag, 0, 0, 0)
+            mavutil.mavlink.MAV_CMD_CONDITION_YAW,
+            0,
+            yaw,  # target angle [0-360]. Absolute angles: 0 is north. Relative angle: 0 is initial yaw. Direction set by param3.
+            yaw_rate,  # angular speed
+            direction,  # direction: -1: counter clockwise, 0: shortest direction, 1: clockwise
+            abs_rel_flag,  # 0: absolute angle, 1: relative offset
+            0, 0, 0
+        )
         set_yaw_ack = self.connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
         print(f"Set Yaw ACK:  {set_yaw_ack}")
         # return set_yaw_ack.result

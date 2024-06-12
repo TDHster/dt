@@ -183,7 +183,7 @@ while True:
 
     objects = object_tracker.update(bbox)
 
-    if (target_object_id not in objects) and need_reset_yaw:
+    if (target_object_id not in objects) and need_reset_yaw: #TODO add continue move forward if attack mode and target loss
         drone.roll = 0
         drone.pitch = 0
         drone.yaw = 0
