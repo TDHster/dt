@@ -52,7 +52,7 @@ async def run():
     takeoff_altitude = await drone.action.get_takeoff_altitude()
     print(f'Current setted takeoff altitude: {takeoff_altitude}')
 
-    takeoff_altitude = 3
+    takeoff_altitude = 6
     await drone.action.set_takeoff_altitude(takeoff_altitude)
 
     takeoff_altitude = await drone.action.get_takeoff_altitude()
@@ -61,7 +61,7 @@ async def run():
     print("-- Taking off")
     await drone.action.takeoff()
 
-    await asyncio.sleep(30)
+    await asyncio.sleep(10)
 
     print("-- Landing")
     await drone.action.land()
