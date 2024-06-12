@@ -1,9 +1,10 @@
+import mavsdk.offboard
 from questionary import Separator, prompt
 import argparse
 # from mavlink_th_control import MavlinkDrone # was tested - ok
 # from mavlink_pwm_control import MavlinkDrone
 # from mavsdk_control import MavlinkDrone
-from time import sleep
+from time import sleep, time
 
 import asyncio
 from mavsdk import System
@@ -51,23 +52,30 @@ async def run():
 
     takeoff_altitude = await drone.action.get_takeoff_altitude()
     print(f'Current setted takeoff altitude: {takeoff_altitude}')
-
     takeoff_altitude = 10
     await drone.action.set_takeoff_altitude(takeoff_altitude)
-
     takeoff_altitude = await drone.action.get_takeoff_altitude()
     print(f'Current setted takeoff altitude: {takeoff_altitude}')
 
     await drone.manual_control.set_manual_control_input(0,0,0,0)
     await drone.manual_control.start_position_control()
+    # await drone.manual_control.start_altitude_control()
     await asyncio.sleep(1)
 
     print("-- Taking off")
     await drone.action.takeoff()
 
     await asyncio.sleep(5)
+    await drone.manual_control.set_manual_control_input(0,0,0,1)
 
-    # await drone.manual_control.start_altitude_control()
+    # await drone.offboard.set_position_ned(mavsdk.offboard.PositionNedYaw(north_m=0, east_m=-3, down_m=0, yaw_deg=0))
+
+    # duration_seconds = 1
+    # start_time = time()
+    # while time() - start_time < duration_seconds:
+    #     await drone.manual_control.set_manual_control_input(0, 0, 0, 1)
+    #     time.sleep(1/10)
+
     await asyncio.sleep(20)
 
     print("-- Landing")
