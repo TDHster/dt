@@ -57,15 +57,15 @@ async def run():
 
     takeoff_altitude = await drone.action.get_takeoff_altitude()
     print(f'Current setted takeoff altitude: {takeoff_altitude}')
-    # print("-- Taking off")
-    # await drone.action.takeoff()
-    #
-    # await asyncio.sleep(10)
-    #
-    # print("-- Landing")
-    # await drone.action.land()
-    #
-    # status_text_task.cancel()
+    print("-- Taking off")
+    await drone.action.takeoff()
+
+    await asyncio.sleep(5)
+
+    print("-- Landing")
+    await drone.action.land()
+
+    status_text_task.cancel()
 
 
 async def print_status_text(drone):
