@@ -63,6 +63,9 @@ async def run():
     # await drone.manual_control.start_position_control()
     # await drone.manual_control.start_altitude_control()
 
+    print("-- Setting initial setpoint")
+    await drone.offboard.set_position_ned(PositionNedYaw(0.0, 0.0, 0.0, 0.0))
+
     print("-- Starting offboard")
     try:
         await drone.offboard.start()
@@ -73,8 +76,6 @@ async def run():
         await drone.action.disarm()
         return
 
-    print("-- Setting initial setpoint")
-    await drone.offboard.set_position_ned(PositionNedYaw(0.0, 0.0, 0.0, 0.0))
     # print("-- Taking off")
     # await drone.action.takeoff()
     # await asyncio.sleep(5)
@@ -83,7 +84,7 @@ async def run():
 
     # await drone.offb  oard.set_position_ned(mavsdk.offboard.PositionNedYaw(north_m=0, east_m=-3, down_m=0, yaw_deg=0)) # rotate CW 30 deg
 
-    await drone.offboard.set_position_ned(mavsdk.offboard.PositionNedYaw(north_m=0, east_m=0, down_m=-2, yaw_deg=0)) # rotate CW 30 deg
+    await drone.offboard.set_position_ned(mavsdk.offboard.PositionNedYaw(north_m=0, east_m=0, down_m=-2, yaw_deg=0))
     # await drone.offboard.set_attitude(mavsdk.offboard.Attitude(roll_deg=0, pitch_deg=0, yaw_deg=30,thrust_value=0.5))
 
     await asyncio.sleep(15)
