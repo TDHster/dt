@@ -58,16 +58,17 @@ async def run():
     takeoff_altitude = await drone.action.get_takeoff_altitude()
     print(f'Current setted takeoff altitude: {takeoff_altitude}')
 
+    await drone.manual_control.set_manual_control_input(0,0,0,0)
+    await asyncio.sleep(1)
+
     print("-- Taking off")
     await drone.action.takeoff()
 
     await asyncio.sleep(5)
-    await drone.manual_control.set_manual_control_input(0,0,0,0)
-    await asyncio.sleep(1)
 
-    # await drone.manual_control.start_position_control()
-    await drone.manual_control.start_altitude_control()
-    await asyncio.sleep(10)
+    await drone.manual_control.start_position_control()
+    # await drone.manual_control.start_altitude_control()
+    await asyncio.sleep(20)
 
     print("-- Landing")
     await drone.action.land()
