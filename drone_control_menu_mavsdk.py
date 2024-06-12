@@ -62,6 +62,9 @@ async def run():
     await drone.action.takeoff()
 
     await asyncio.sleep(5)
+    await drone.manual_control.set_manual_control_input(0,0,0,0)
+    await asyncio.sleep(1)
+
     await drone.manual_control.start_position_control()
     await asyncio.sleep(10)
 
