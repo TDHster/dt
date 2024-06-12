@@ -15,7 +15,7 @@ parser.add_argument(
     "-c",
     "--connectionstring",
     type=str,
-    default="udpin:127.0.0.1:14550",
+    default="udp://127.0.0.1:14550",
     help="Specify path for mavlink connection",
 )
 
@@ -52,8 +52,11 @@ async def run():
     takeoff_altitude = await drone.action.get_takeoff_altitude()
     print(f'Current setted takeoff altitude: {takeoff_altitude}')
 
-    await drone.action.set_takeoff_altitude(2)
+    takeoff_altitude = 1
+    await drone.action.set_takeoff_altitude(takeoff_altitude)
 
+    takeoff_altitude = await drone.action.get_takeoff_altitude()
+    print(f'Current setted takeoff altitude: {takeoff_altitude}')
     # print("-- Taking off")
     # await drone.action.takeoff()
     #
