@@ -45,8 +45,8 @@ async def run():
             print("-- Global position estimate OK")
             break
 
-    # print("-- Arming")
-    # await drone.action.arm()
+    print("-- Arming")
+    await drone.action.arm()
     # await drone.action.arm_force()
 
     takeoff_altitude = await drone.action.get_takeoff_altitude()
