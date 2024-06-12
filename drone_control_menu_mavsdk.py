@@ -66,15 +66,15 @@ async def run():
     await drone.action.takeoff()
 
     await asyncio.sleep(5)
-    await drone.manual_control.set_manual_control_input(0,0,0,1)
+    # await drone.manual_control.set_manual_control_input(0,0,0,1)
 
     # await drone.offboard.set_position_ned(mavsdk.offboard.PositionNedYaw(north_m=0, east_m=-3, down_m=0, yaw_deg=0))
 
-    # duration_seconds = 1
-    # start_time = time()
-    # while time() - start_time < duration_seconds:
-    #     await drone.manual_control.set_manual_control_input(0, 0, 0, 1)
-    #     time.sleep(1/10)
+    duration_seconds = 1
+    start_time = time()
+    while time() - start_time < duration_seconds:
+        await drone.manual_control.set_manual_control_input(0, 0, 0, 1)
+        sleep(1/10)
 
     await asyncio.sleep(20)
 
