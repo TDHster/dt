@@ -27,7 +27,7 @@ INPUT_VIDEO_HEIGHT = 200
 # INPUT_VIDEO_HEIGHT = 480
 
 TARGET_OBJECT_SIZE_PERCENT_OF_IMAGE_HEIGHT = 0.7
-TARGET_OBJECT_DIAGONAL = INPUT_VIDEO_HEIGHT * TARGET_OBJECT_SIZE_PERCENT_OF_IMAGE_HEIGHT * cos(30 * (pi /180) )
+TARGET_OBJECT_DIAGONAL = INPUT_VIDEO_HEIGHT * TARGET_OBJECT_SIZE_PERCENT_OF_IMAGE_HEIGHT * cos(30 * (pi / 180))
 
 parser = argparse.ArgumentParser(description="Main drone script")
 
@@ -60,9 +60,9 @@ parser.add_argument(
     "-pidyaw", type=float, default=0.325, help="PID_YAW for drone control.", metavar='VALUE'
 )
 parser.add_argument(
-    "-dt", "--detection_threshold", type=float, default=0.45, help="detection_threshold for drone control.", metavar='VALUE'
+    "-dt", "--detection_threshold", type=float, default=0.45, help="detection_threshold for drone control.",
+    metavar='VALUE'
 )
-
 
 args = parser.parse_args()
 
@@ -133,7 +133,7 @@ def find_nearest_object_id(objects):
     # Calculate distances and add them to the priority queue
     for object_id, object_data in objects.items():
         object_x, object_y = object_data[:2]
-        distance = sqrt((object_x - INPUT_VIDEO_WIDTH/2)**2 + (object_y - INPUT_VIDEO_HEIGHT/2)**2)
+        distance = sqrt((object_x - INPUT_VIDEO_WIDTH / 2) ** 2 + (object_y - INPUT_VIDEO_HEIGHT / 2) ** 2)
         heapq.heappush(pq, (distance, object_id))
 
     # Extract the nearest object ID from the priority queue (smallest distance)
@@ -157,6 +157,7 @@ target_object_id = None
 object_id_near_center = None
 target_object_diagonal = None
 need_reset_yaw = True
+mode_to_target = False
 
 print('Starting program main loop.')
 while True:
@@ -183,7 +184,9 @@ while True:
 
     objects = object_tracker.update(bbox)
 
-    if (target_object_id not in objects) and need_reset_yaw: #TODO add continue move forward if attack mode and target loss
+    if ((target_object_id not in objects) and
+            need_reset_yaw and
+            mode_to_target==False):
         drone.roll = 0
         drone.pitch = 0
         drone.yaw = 0
@@ -206,25 +209,25 @@ while True:
 
                 cv2.line(frame, (int(INPUT_VIDEO_WIDTH / 2), int(INPUT_VIDEO_HEIGHT / 2)),
                          (x, y), (0, 0, 255), thickness=2)
-                yaw_pixels = x - INPUT_VIDEO_WIDTH/2
-                elevation_pixels = INPUT_VIDEO_HEIGHT/2 - y  # center point
+                yaw_pixels = x - INPUT_VIDEO_WIDTH / 2
+                elevation_pixels = INPUT_VIDEO_HEIGHT / 2 - y  # center point
                 # elevation_pixels = INPUT_VIDEO_HEIGHT/2 - y + 100 # center point shift
                 # elevation_pixels = INPUT_VIDEO_HEIGHT;2/3 - y  # add shift up
                 cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 0, 255), 2)
-                target_object_current_diagonal = sqrt(w*w + h*h)
+                target_object_current_diagonal = sqrt(w * w + h * h)
                 if not target_object_diagonal:
                     target_object_diagonal = target_object_current_diagonal
                 # dx = (target_object_diagonal - target_object_current_diagonal) * PID_X
                 # dx = ((target_object_diagonal/target_object_current_diagonal) - 1) * PID_X  # target when fixed
-                dx = ((TARGET_OBJECT_DIAGONAL/target_object_current_diagonal) - 1) * PID_X
+                dx = ((TARGET_OBJECT_DIAGONAL / target_object_current_diagonal) - 1) * PID_X
                 # drone.pitch = dx * PID_X #  controller axis switched - not normal
                 drone.roll = dx * PID_X
                 # print(f'Sending yaw: {yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW}')
-                dyaw = yaw_pixels/(INPUT_VIDEO_WIDTH/2) * PID_YAW
+                dyaw = yaw_pixels / (INPUT_VIDEO_WIDTH / 2) * PID_YAW
                 drone.yaw = dyaw  # need correction factor  *diagonal/image_diagonal
-                dz = elevation_pixels/(INPUT_VIDEO_HEIGHT/2) * PID_Z
+                dz = elevation_pixels / (INPUT_VIDEO_HEIGHT / 2) * PID_Z
                 # print(f'{bcolors.WARNING}{y=}\t{elevation_pixels=}\t{dz}{bcolors.ENDC}')
                 drone.thrust = dz
                 print(f'{dx=:.2f}\t{dz=:.2f}\t{dyaw=:.2f}')
@@ -239,7 +242,6 @@ while True:
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 255, 0), 1)
 
             # cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), -1)
-
 
     # cv2.imshow("Output", frame)
     try:
@@ -269,9 +271,11 @@ while True:
                 print(f'Select target: {target_object_id}')
                 target_object_diagonal = None
             elif command == 'To target':
+                mode_to_target = True
                 drone.to_target()
             elif command == "Clear target":
                 target_object_id = -1
+                mode_to_target = False
             elif command == "Yaw left":
                 drone.yaw = drone.yaw - CONTROL_STEP
             elif command == "Yaw right":
@@ -301,7 +305,7 @@ while True:
                 drone.takeoff_manual()
                 # drone.move_NED(rel_z=-2)  # seems to be working
 
-                #---mavsdk
+                # ---mavsdk
                 # drone.takeoff_mavsdk()
             else:
                 print(f'{command=} not known')
@@ -312,7 +316,6 @@ while True:
     if cv2.waitKey(1) == 27:  # Esc key
         print('Exit main program loop.')
         break
-
 
 # drone.manual_land()
 drone.mode_land()
