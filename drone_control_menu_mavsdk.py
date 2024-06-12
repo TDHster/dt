@@ -73,7 +73,7 @@ async def run():
     await drone.offboard.set_position_ned(mavsdk.offboard.PositionNedYaw(north_m=0, east_m=1, down_m=-2, yaw_deg=0)) # rotate CW 30 deg
     # await drone.offboard.set_attitude(mavsdk.offboard.Attitude(roll_deg=0, pitch_deg=0, yaw_deg=30,thrust_value=0.5))
 
-    await asyncio.sleep(20)
+    await asyncio.sleep(15)
 
     # await drone.manual_control.start_position_control()
     # duration_seconds = 10
