@@ -70,7 +70,7 @@ async def run():
 
     # await drone.offboard.set_position_ned(mavsdk.offboard.PositionNedYaw(north_m=0, east_m=-3, down_m=0, yaw_deg=0))
 
-    # drone.manual_control.start_altitude_control()
+    drone.manual_control.start_position_control()
     duration_seconds = 10
     yaw = -1
     start_time = time()
