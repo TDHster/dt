@@ -29,7 +29,7 @@ print(f"Using mavlink connection string: {connection_string}")
 async def run():
 
     drone = System()
-    await drone.connect(system_address="udp://:14540")
+    await drone.connect(system_address="udp://127.0.0.1:14550")
 
     status_text_task = asyncio.ensure_future(print_status_text(drone))
 
