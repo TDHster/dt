@@ -4,7 +4,7 @@ from time import sleep, time
 import threading
 import queue
 from bcolors import bcolors
-from config import connection_string
+from config import connection_string  # for sim in mission planner
 from math import pi
 
 
@@ -260,22 +260,14 @@ class MavlinkDrone:
 if __name__ == '__main__':
     print('Pymavlink test file run.')
 
+    connection_string = 'udpin:127.0.0.1:14550'
     drone = MavlinkDrone(connection_string=connection_string)
 
     # drone.set_mode_return_to_land()
     drone.set_mode_guided()
     drone.arm()
-    drone.takeoff(2)
+    # drone.takeoff(2)
+    drone._takeoff(2)
+    sleep(10)
+    drone.set_mode_land()
 
-    # drone.set_mode('GUIDED')
-    # # arm(force=True)
-    # # takeoff(10)
-    # # set_position(z=-2)
-    # # set_position(y=5)
-    # # set_position( yaw=90, yaw_rate=15)
-    # drone.set_position(dy=5)
-    # drone.yaw_condition(yaw=30)
-    # drone.set_position(dy=-5)
-    # drone.yaw_condition(yaw=30)
-
-    # sleep(3)
