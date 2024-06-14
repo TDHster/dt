@@ -108,7 +108,7 @@ if __name__ == "__main__":
             case "nav rotate CW":
                 drone.yaw(yaw=YAW_VALUE)
             case "nav rotate CCW":
-                drone.yaw(yaw=YAW_VALUE)
+                drone.yaw(yaw=-YAW_VALUE)
 
             case "exit":
                 exit(0)
