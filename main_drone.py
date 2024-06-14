@@ -224,7 +224,7 @@ while True:
                 dz = elevation_pixels / (INPUT_VIDEO_HEIGHT / 2) * PID_Z
                 # print(f'{bcolors.WARNING}{y=}\t{elevation_pixels=}\t{dz}{bcolors.ENDC}')
                 print(f'{dx=:.2f}\t{dz=:.2f}\t{dyaw=:.2f}')
-                drone.change_position(0, 0, dz)
+                # drone.change_position(0, 0, dz)
                 drone.yaw(dyaw)
 
             elif object_id == object_id_near_center:
