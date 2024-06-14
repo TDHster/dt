@@ -36,6 +36,8 @@ def ask_dictstyle(**kwargs):
                 "disarm",
                 "takeoff",
                 Separator(),
+                "nav up"
+                "nav down"
                 "nav rotate CW",
                 "nav rotate CCW",
                 "nav left",
