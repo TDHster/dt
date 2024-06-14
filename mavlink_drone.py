@@ -46,6 +46,9 @@ class MavlinkDrone:
     def set_mode_return_to_land(self):
         self._set_mode('RTL')
 
+    def set_mode_brake(self):
+        self._set_mode('BRAKE')
+
     def _arm(self, arm: bool = True, force: bool = False):  # work
         # https://ardupilot.org/dev/docs/mavlink-arming-and-disarming.html
         # Need "arm uncheck all" in mavproxy
