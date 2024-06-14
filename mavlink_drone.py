@@ -266,8 +266,10 @@ if __name__ == '__main__':
     # drone.set_mode_return_to_land()
     drone.set_mode_guided()
     drone.arm()
+    sleep(5)
+    drone.disarm()
     # drone.takeoff(2)
-    drone._takeoff(2)
-    sleep(10)
-    drone.set_mode_land()
+    # drone._takeoff(2)
+    # sleep(10)
+    # drone.set_mode_land()
 
