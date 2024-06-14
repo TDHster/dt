@@ -91,6 +91,10 @@ if __name__ == "__main__":
             case "takeoff":
                 drone._takeoff(2)
 
+            case "nav up":
+                drone.change_position(dz=MOVE_VALUE)
+            case "nav down":
+                drone.change_position(dz=-MOVE_VALUE)
             case "nav left":
                 drone.change_position(dy=-MOVE_VALUE)
             case "nav right":
