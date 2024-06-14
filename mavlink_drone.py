@@ -4,7 +4,7 @@ from time import sleep, time
 import threading
 import queue
 from bcolors import bcolors
-from config import connection_string  # for sim in mission planner
+# from config import connection_string  # for sim in mission planner
 from math import pi
 
 
