@@ -1,7 +1,8 @@
 from questionary import Separator, prompt
 import argparse
 from mavlink_th_control import MavlinkDrone # was tested - ok
-from mavlink_pwm_control import MavlinkDrone
+# from mavlink_pwm_control import MavlinkDrone
+from mavlink_drone import MavlinkDrone as Drone
 from time import sleep
 
 
@@ -11,8 +12,8 @@ parser.add_argument(
     "-c",
     "--connectionstring",
     type=str,
-    default="tcp:192.168.0.177:5762",
-    # default="udpin:127.0.0.1:14550",
+    # default="tcp:192.168.0.177:5762",
+    default="udpin:127.0.0.1:14550",
     help="Specify path for mavlink connection",
 )
 
@@ -27,13 +28,10 @@ def ask_dictstyle(**kwargs):
             "name": "drone_command",
             "message": "What do you want to do?",
             "choices": [
-                "mode brake",
+                "emergency",
                 "mode land",
-                "mode alt_hold",
-                "mode pos_hold",
                 "mode guided",
                 "arm",
-                "arm force",
                 "disarm",
                 Separator(),
                 "nav rotate CW",
@@ -43,15 +41,6 @@ def ask_dictstyle(**kwargs):
                 "nav forward",
                 "nav backward",
                 Separator(),
-                "attitude takeoff",
-                "attitude yaw left",
-                "attitude yaw right",
-                "attitude roll left",
-                "attitude roll right",
-                "attitude pitch back",
-                "attitude pitch forward",
-                "attitude land",
-                Separator(),
                 "exit"
             ]
         }
@@ -59,15 +48,15 @@ def ask_dictstyle(**kwargs):
     return prompt(questions, **kwargs)
 
 if __name__ == "__main__":
-    EXPOSURE_TIME = 3
-    EXPOSURE_XY_VALUE = 0.4
+    MOVE_VALUE = 0.5
+    YAW_VALUE = 30
     #working config:
     # udpin:127.0.0.1:14550 =  udpin:127.0.0.1:14550
     # pi@raspberrypi:~ $ mavproxy.py --master=/dev/ttyACM0 --out=udpout:0.0.0.0:14550
     # arm uncheck all
 
     print(f'Trying to connect: {connection_string}')
-    drone = MavlinkDrone(connection_string)
+    drone = Drone(connection_string)
     print('Connected.')
 
     while True:
@@ -83,74 +72,31 @@ if __name__ == "__main__":
         #     exit(0)
         print(drone_command)
         match drone_command:
-            case "mode brake":
-                drone.mode_brake()
+            case "emergency":
+                drone.emergency_stop()
             case "mode land":
-                drone.mode_land()
-            case "mode alt_hold":
-                drone.mode_alt_hold()
-            case "mode pos_hold":
-                drone.mode_position_hold()
+                drone.set_mode_land()
             case "mode guided":
-                drone.mode_guided()
-            case "arm force":
-                drone.arm(force=True)
+                drone.set_mode_guided()
+            case "mode RTL":
+                drone.set_mode_return_to_land()
             case "arm":
                 drone.arm()
             case "disarm":
                 drone.disarm()
 
-            case "attitude takeoff":
-                drone.takeoff_manual()
-
-                # drone.thrust(0.5)
-                # sleep(EXPOSURE_TIME)
-                # drone.thrust(0.6)
-                # sleep(EXPOSURE_TIME)
-                # drone.thrust(0.5)
-
-            case "attitude yaw left":
-                drone.yaw(-0.3)
-                sleep(EXPOSURE_TIME)
-                drone.yaw(0)
-            case "attitude yaw right":
-                drone.yaw(0.3)
-                sleep(EXPOSURE_TIME)
-                drone.yaw(0)
-            case "attitude roll left":
-                drone.roll(EXPOSURE_XY_VALUE)
-                sleep(EXPOSURE_TIME)
-                drone.roll(0)
-            case "attitude roll right":
-                drone.roll(-EXPOSURE_XY_VALUE)
-                sleep(EXPOSURE_TIME)
-                drone.roll(0)
-            case "attitude pitch back":
-                drone.pitch(-EXPOSURE_XY_VALUE)
-                sleep(EXPOSURE_TIME)
-                drone.pitch(0)
-            case "attitude pitch forward":
-                drone.pitch(EXPOSURE_XY_VALUE)
-                sleep(EXPOSURE_TIME)
-                drone.pitch(0)
-
             case "nav left":
-
-                drone.move_NED(rel_y=-1)
+                drone.change_position(dy=-MOVE_VALUE)
             case "nav right":
-                drone.move_NED(rel_y=1)
+                drone.change_position(dy=MOVE_VALUE)
             case "nav forward":
-                drone.move_NED(rel_x=1)
+                drone.change_position(dx=MOVE_VALUE)
             case "nav backward":
-                drone.move_NED(rel_x=-1)
+                drone.change_position(dx=-MOVE_VALUE)
             case "nav rotate CW":
-                drone.move_NED(yaw=30)
+                drone.yaw(yaw=YAW_VALUE)
             case "nav rotate CCW":
-                drone.move_NED(yaw=-30)
-
-            case "attitude land":
-                drone.manual_land()
-
+                drone.yaw(yaw=YAW_VALUE)
 
             case "exit":
                 exit(0)
