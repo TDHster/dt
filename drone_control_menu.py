@@ -33,6 +33,7 @@ def ask_dictstyle(**kwargs):
                 "mode guided",
                 "arm",
                 "disarm",
+                "takeoff",
                 Separator(),
                 "nav rotate CW",
                 "nav rotate CCW",
@@ -84,6 +85,8 @@ if __name__ == "__main__":
                 drone.arm()
             case "disarm":
                 drone.disarm()
+            case "takeoff":
+                drone._takeoff(2)
 
             case "nav left":
                 drone.change_position(dy=-MOVE_VALUE)
