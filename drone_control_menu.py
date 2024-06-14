@@ -11,7 +11,8 @@ parser.add_argument(
     "-c",
     "--connectionstring",
     type=str,
-    default="udpin:127.0.0.1:14550",
+    default="tcp:192.168.0.177:5762",
+    # default="udpin:127.0.0.1:14550",
     help="Specify path for mavlink connection",
 )
 
@@ -32,6 +33,7 @@ def ask_dictstyle(**kwargs):
                 "mode pos_hold",
                 "mode guided",
                 "arm",
+                "arm force",
                 "disarm",
                 Separator(),
                 "nav rotate CW",
@@ -48,7 +50,9 @@ def ask_dictstyle(**kwargs):
                 "attitude roll right",
                 "attitude pitch back",
                 "attitude pitch forward",
-                "attitude land"
+                "attitude land",
+                Separator(),
+                "exit"
             ]
         }
     ]
@@ -67,12 +71,16 @@ if __name__ == "__main__":
     print('Connected.')
 
     while True:
-        try:
-            drone_command = ask_dictstyle()["drone_command"]
-        except KeyError:
-            print('Emergency off')
-            drone.emergency_stop()
-            exit(0)
+        drone_command = ask_dictstyle()["drone_command"]
+
+        # try:
+        #     drone_command = ask_dictstyle()["drone_command"]
+        # except KeyError:
+        #     # print('Emergency off')
+        #     # drone.emergency_stop()
+        #     # drone.mode_land()
+        #     break
+        #     exit(0)
         print(drone_command)
         match drone_command:
             case "mode brake":
@@ -85,6 +93,8 @@ if __name__ == "__main__":
                 drone.mode_position_hold()
             case "mode guided":
                 drone.mode_guided()
+            case "arm force":
+                drone.arm(force=True)
             case "arm":
                 drone.arm()
             case "disarm":
@@ -125,6 +135,7 @@ if __name__ == "__main__":
                 drone.pitch(0)
 
             case "nav left":
+
                 drone.move_NED(rel_y=-1)
             case "nav right":
                 drone.move_NED(rel_y=1)
@@ -139,5 +150,9 @@ if __name__ == "__main__":
 
             case "attitude land":
                 drone.manual_land()
+
+
+            case "exit":
+                exit(0)
 
 

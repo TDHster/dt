@@ -72,7 +72,7 @@ def make_movement(mav_connection, x, y, z):
             yaw, yaw_rate
         )
     )
-
+# mavutil.mavlink.
 
 # the_connection.mav.send(
 #     mavutil.mavlink.MAVLink_set_position_target_global_int_message(

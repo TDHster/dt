@@ -63,6 +63,7 @@ def takeoff(mav_connection, takeoff_altitude: float, tgt_sys_id: int = 1, tgt_co
 
     return takeoff_msg.result
 
+
 def main():
     parser = argparse.ArgumentParser(description="A simple script to command a UAV to takeoff.")
     parser.add_argument("--altitude", type=int, help="Altitude for the UAV to reach upon takeoff.", default=1)

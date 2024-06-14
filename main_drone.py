@@ -8,7 +8,8 @@ from video_send import NetworkConnection, get_key_from_byte
 # from control_drone import MavlinkJoystickControl as MavlinkControl
 # from mavlink_control import MavlinkDrone as MavlinkControl
 # from mavlink_th_control import MavlinkDrone as Drone
-from mavlink_pwm_control import MavlinkDrone as Drone
+# from mavlink_pwm_control import MavlinkDrone as Drone # was almost good
+from mavlink_drone import MavlinkDrone as Drone
 # from mavsdk_control import MavlinkDrone as Drone
 
 # from object_detector import NeuroNetObjectDetector
@@ -18,8 +19,8 @@ import argparse
 from time import sleep
 from bcolors import bcolors
 
-CONTROL_STEP = 0.05
-CONTROL_STEP_THRUST = 0.125
+YAW_STEP = 10  # degrees
+MOVEMENT_STEP = 0.5  # meters
 
 INPUT_VIDEO_WIDTH = 320
 INPUT_VIDEO_HEIGHT = 200
@@ -53,11 +54,11 @@ parser.add_argument(
 )
 # 0.1 0.3 0.4 0.6 0.7 0.8 0.9 0.7 0.6 0.5 0.7 0.9(was good)
 parser.add_argument(
-    "-pidz", type=float, default=0.8, help="PID_Z (throttle) for drone control.", metavar='VALUE'
+    "-pidz", type=float, default=0.5, help="PID_Z (throttle) for drone control.", metavar='VALUE'
 )
-# 0.45 0.48 0.5 0.55 #correction formula 0.8, 0.5, 0.4, 0.3 0,35
+# 20
 parser.add_argument(
-    "-pidyaw", type=float, default=0.325, help="PID_YAW for drone control.", metavar='VALUE'
+    "-pidyaw", type=float, default=10, help="PID_YAW for drone control.", metavar='VALUE'
 )
 parser.add_argument(
     "-dt", "--detection_threshold", type=float, default=0.45, help="detection_threshold for drone control.",
@@ -156,8 +157,7 @@ print(f'Network connection established.')
 target_object_id = None
 object_id_near_center = None
 target_object_diagonal = None
-need_reset_yaw = True
-mode_to_target = False
+need_reset_movement_if_lost = False
 
 print('Starting program main loop.')
 while True:
@@ -184,15 +184,12 @@ while True:
 
     objects = object_tracker.update(bbox)
 
-    if ((target_object_id not in objects) and
-            need_reset_yaw and
-            mode_to_target==False):
-        drone.roll = 0
-        drone.pitch = 0
-        drone.yaw = 0
-        drone.thrust = 0
-        drone.mode_position_hold()
-        need_reset_yaw = False
+    if ((target_object_id not in objects) and  # object lost
+            need_reset_movement_if_lost and
+            drone.get_to_target() == False):
+        drone.change_position(0, 0, 0)
+        drone.yaw(0)
+        need_reset_movement_if_lost = False
         print(f'{bcolors.FAIL}All sticks to zero, object lost{bcolors.ENDC}')
 
     # print(f'objects={objects}')
@@ -205,7 +202,7 @@ while True:
             rect_top_left = (int(x - w / 2), int(y - h / 2))
             rect_bottom_right = (int(x + w / 2), int(y + h / 2))
             if object_id == target_object_id:
-                need_reset_yaw = True
+                need_reset_movement_if_lost = True
 
                 cv2.line(frame, (int(INPUT_VIDEO_WIDTH / 2), int(INPUT_VIDEO_HEIGHT / 2)),
                          (x, y), (0, 0, 255), thickness=2)
@@ -222,15 +219,13 @@ while True:
                 # dx = (target_object_diagonal - target_object_current_diagonal) * PID_X
                 # dx = ((target_object_diagonal/target_object_current_diagonal) - 1) * PID_X  # target when fixed
                 dx = ((TARGET_OBJECT_DIAGONAL / target_object_current_diagonal) - 1) * PID_X
-                # drone.pitch = dx * PID_X #  controller axis switched - not normal
-                drone.roll = dx * PID_X
                 # print(f'Sending yaw: {yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW}')
-                dyaw = yaw_pixels / (INPUT_VIDEO_WIDTH / 2) * PID_YAW
-                drone.yaw = dyaw  # need correction factor  *diagonal/image_diagonal
+                dyaw = yaw_pixels / (INPUT_VIDEO_WIDTH / 2) * PID_YAW  # need correction factor  *diagonal/image_diagonal
                 dz = elevation_pixels / (INPUT_VIDEO_HEIGHT / 2) * PID_Z
                 # print(f'{bcolors.WARNING}{y=}\t{elevation_pixels=}\t{dz}{bcolors.ENDC}')
-                drone.thrust = dz
                 print(f'{dx=:.2f}\t{dz=:.2f}\t{dyaw=:.2f}')
+                drone.change_position(0, 0, dz)
+                drone.yaw(dyaw)
 
             elif object_id == object_id_near_center:
                 # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
@@ -271,42 +266,31 @@ while True:
                 print(f'Select target: {target_object_id}')
                 target_object_diagonal = None
             elif command == 'To target':
-                mode_to_target = True
                 drone.to_target()
             elif command == "Clear target":
                 target_object_id = -1
-                mode_to_target = False
+                drone.to_target(False)
             elif command == "Yaw left":
-                drone.yaw = drone.yaw - CONTROL_STEP
+                drone.yaw(-YAW_STEP)
             elif command == "Yaw right":
-                drone.yaw = drone.yaw + CONTROL_STEP
+                drone.yaw(YAW_STEP)
             elif command == "Move up":
-                drone.thrust = drone.thrust + CONTROL_STEP_THRUST
+                drone.change_position(dz=MOVEMENT_STEP)
             elif command == "Move down":
-                drone.thrust = drone.thrust - CONTROL_STEP_THRUST
+                drone.change_position(dz=-MOVEMENT_STEP)
             elif command == "Move forward":
-                drone.pitch = drone.pitch + CONTROL_STEP
+                drone.change_position(dx=MOVEMENT_STEP)
             elif command == "Move backward":
-                drone.pitch = drone.pitch - CONTROL_STEP
+                drone.change_position(dx=-MOVEMENT_STEP)
             elif command == "Move left":
-                drone.roll = drone.roll - CONTROL_STEP
+                drone.change_position(dy=-MOVEMENT_STEP)
             elif command == "Move right":
-                drone.roll = drone.roll + CONTROL_STEP
+                drone.change_position(dy=MOVEMENT_STEP)
             elif command == "Land":
-                drone.manual_land()
+                drone.set_mode_land()
+                # drone.set_mode_return_to_land()
             elif command == "Takeoff":
-                # drone.takeoff_manual()
-                # drone.mode_guided()
-                # drone.mode_auto()  # no
-                # drone.mode_position_hold()
-                # drone.mode_alt_hold()
-                # drone.arm()
-                # drone.takeoff_via_mavlink(2) # not working
-                drone.takeoff_manual()
-                # drone.move_NED(rel_z=-2)  # seems to be working
-
-                # ---mavsdk
-                # drone.takeoff_mavsdk()
+                drone.takeoff(2)
             else:
                 print(f'{command=} not known')
 

@@ -1,9 +1,11 @@
 from pymavlink import mavutil
-from pymavlink_iq_utilites import *
+# from pymavlink_iq_utilites import *
 from time import sleep
 import threading
 import queue
 from bcolors import bcolors
+from config import connection_string
+
 
 def normalize_value(value: float, min_norm=-1000, max_norm=1000):
     raise Warning('Sholud not be used in this module')
@@ -86,8 +88,8 @@ class MavlinkDrone:
         self.connection.wait_heartbeat()
         print("Heartbeat from system (system %u component %u)" %
               (self.connection.target_system, self.connection.target_component))
-        self.autopilot_info = get_autopilot_info(self.connection, self.connection.target_system)
-        print(f'Connected to {self.autopilot_info["autopilot"]} autopilot')
+        # self.autopilot_info = get_autopilot_info(self.connection, self.connection.target_system)
+        # print(f'Connected to {self.autopilot_info["autopilot"]} autopilot')
 
         # Create a shared queue to pass attitude commands
         # self.attitude_command_queue = queue.Queue()
@@ -127,18 +129,23 @@ class MavlinkDrone:
 
     def _arm(self, arm_command=1, force=False):
         self.connection.wait_heartbeat()
+        if force == True:
+            print(f'Arming force.')
+            force = 21196  # float; 0: arm - disarm; unless; prevented; by; safety; checks, 21196: force; arming or disarming
+        else:
+            force = 0
         self.connection.mav.command_long_send(self.connection.target_system, self.connection.target_component,
                                               mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
                                               0,
                                               arm_command,
-                                              0, 0, 0, 0, 0, 0)
+                                              force, 0, 0, 0, 0, 0)
         arm_msg = self.connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
         print(f"Arm ACK: {arm_msg}")
         return arm_msg
 
-    def arm(self):
+    def arm(self, force=False):
         print('Arming')
-        return self._arm(1)
+        return self._arm(1, force)
 
     def disarm(self):
         print('Disarming')
@@ -205,9 +212,9 @@ class MavlinkDrone:
         self._set_mode('AUTO')
 
     def emergency_stop(self):
+        self.mode_brake()
         self.mode_land()
         self.disarm()
-        self.mode_brake()
 
     def set_yaw_mavlink(self, yaw: float, yaw_rate: float = 15, abs_rel_flag: int = 1,):
         """Set yaw of MAVLink client.
@@ -395,20 +402,21 @@ class MavlinkDrone:
             sleep(0.2)  # for safety
             self.pitch = 0  # for safety
 
-    def move_NED(self, rel_x=0, rel_y=0, rel_z=0, yaw=0):
+    def move_NED(self, rel_x=0, rel_y=0, rel_z=0, yaw=0, yaw_rate=0):
         time_boot_ms = 10  # ms
-        type_mask = int(0b010111111000)
+        # Use; Yaw: 0b100111111111 / 0x09FF / 2559(decimal)
+        # Use Position : 0b110111111000 / 0x0DF8 / 3576 (decimal)
+        type_mask = int(0b110111111000)
         # x, y, z = 0, 0, -1
         velocity_x, velocity_y, velocity_z = 0, 0, 0
         axel_x, axel_y, axel_z = 0, 0, 0
-        yaw = 0  # radians
-        yaw_rate = 0
+        # yaw = 0  # radians
+        # yaw_rate = 0
         self.connection.mav.send(
             mavutil.mavlink.MAVLink_set_position_target_local_ned_message(
                 time_boot_ms, self.connection.target_system,
-                self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_NED, # seems to be working
                 # self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_NED, # seems to be working
-                # self.connection.target_component, mavutil.mavlink.MAV_FRAME_BODY_OFFSET_NED, # best
+                self.connection.target_component, mavutil.mavlink.MAV_FRAME_BODY_OFFSET_NED, # best
                 # self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_OFFSET_NED,
                 type_mask,
                 rel_x, rel_y, rel_z,
