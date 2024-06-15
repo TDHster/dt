@@ -252,7 +252,7 @@ while True:
 
                 print(f'{dx=:.1f}\t{dz=:.1f}\t{dyaw=:.1f}\t{elevation_angle=:.1f}')
                 # print(f'{bcolors.OKCYAN}Sending {dyaw=}{bcolors.ENDC}')
-                drone.change_position(0, 0, dz)
+                drone.change_position(dx, 0, dz)
                 drone.yaw(yaw=dyaw)
 
             elif object_id == object_id_near_center:
