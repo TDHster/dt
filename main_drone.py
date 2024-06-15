@@ -246,7 +246,7 @@ while True:
 
                 print(f'{dx=:.1f}\t{dz=:.1f}\t{dyaw=:.1f}\t{elevation_angle=:.1f}')
                 drone.change_position(0, 0, dz)
-                print(f'{bcolors.OKCYAN}Sending {dyaw=}{bcolors.ENDC}')
+                # print(f'{bcolors.OKCYAN}Sending {dyaw=}{bcolors.ENDC}')
                 drone.yaw(yaw=dyaw)
 
             elif object_id == object_id_near_center:
@@ -312,7 +312,7 @@ while True:
                 drone.set_mode_land()
                 # drone.set_mode_return_to_land()
             elif command == "Takeoff":
-                drone.takeoff(2)
+                drone.takeoff(3)
             else:
                 print(f'{command=} not known')
 
