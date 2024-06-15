@@ -2,7 +2,7 @@
 
 import cv2
 from object_tracker import CentroidTracker
-from math import pi, sqrt, cos
+from math import pi, sqrt, sin, cos, atan, tan
 import heapq
 from video_send import NetworkConnection, get_key_from_byte
 # from control_drone import MavlinkJoystickControl as MavlinkControl
@@ -22,13 +22,28 @@ from bcolors import bcolors
 YAW_STEP = 10  # degrees
 MOVEMENT_STEP = 0.5  # meters
 
+TARGET_OBJECT_HEIGHT = 2
+
+CAMERA_WIDTH = 1920
+CAMERA_HEIGHT = 1080
+CAMERA_DIAGONAL_FOV = 78  # degrees for logitech c920
+CAMERA_HORIZONTAL_FOV = 2 * atan(tan(CAMERA_DIAGONAL_FOV / 2) * (CAMERA_WIDTH / CAMERA_HEIGHT))
+CAMERA_VERTICAL_FOV = 2 * atan(tan(CAMERA_DIAGONAL_FOV / 2) * (CAMERA_HEIGHT / CAMERA_WIDTH))
+# 70.2x39.6
+camera_gimbal_pitch_angle = 0  # alight to forward
+print(f'Using setup for camera: {CAMERA_DIAGONAL_FOV=}, {CAMERA_HORIZONTAL_FOV=}, {CAMERA_VERTICAL_FOV=}')
+
 INPUT_VIDEO_WIDTH = 320
 INPUT_VIDEO_HEIGHT = 200
 # INPUT_VIDEO_WIDTH = 640
 # INPUT_VIDEO_HEIGHT = 480
 
-TARGET_OBJECT_SIZE_PERCENT_OF_IMAGE_HEIGHT = 0.7
-TARGET_OBJECT_DIAGONAL = INPUT_VIDEO_HEIGHT * TARGET_OBJECT_SIZE_PERCENT_OF_IMAGE_HEIGHT * cos(30 * (pi / 180))
+HORIZONTAL_ANGLE_PER_PIXEL = CAMERA_HORIZONTAL_FOV / INPUT_VIDEO_WIDTH
+VERTICAL_ANGLE_PER_PIXEL = CAMERA_VERTICAL_FOV / INPUT_VIDEO_HEIGHT
+
+# TARGET_OBJECT_SIZE_PERCENT_OF_IMAGE_HEIGHT = 0.7
+# TARGET_OBJECT_DIAGONAL = INPUT_VIDEO_HEIGHT * TARGET_OBJECT_SIZE_PERCENT_OF_IMAGE_HEIGHT * cos(30 * (pi / 180))
+DESIRED_OBJECT_DISTANCE = 4
 
 parser = argparse.ArgumentParser(description="Main drone script")
 
@@ -56,7 +71,7 @@ parser.add_argument(
 parser.add_argument(
     "-pidz", type=float, default=0.5, help="PID_Z (throttle) for drone control.", metavar='VALUE'
 )
-# 20
+# 0.5
 parser.add_argument(
     "-pidyaw", type=float, default=10, help="PID_YAW for drone control.", metavar='VALUE'
 )
@@ -77,6 +92,8 @@ PID_Z = args.pidz
 detection_threshold = args.detection_threshold  # 0.3, 0.45
 tracker_max_disappeared_frames = 50
 tracker_distance_threshold = 80
+
+target_object_height = 2.5
 
 print('Starting.')
 print(f"Installed OpenCV version: {cv2.__version__}")
@@ -186,7 +203,7 @@ while True:
 
     if ((target_object_id not in objects) and  # object lost
             need_reset_movement_if_lost and
-            drone.get_to_target() == False):
+            drone.to_target_status() == False):
         drone.change_position(0, 0, 0)
         drone.yaw(0)
         need_reset_movement_if_lost = False
@@ -207,24 +224,27 @@ while True:
                 cv2.line(frame, (int(INPUT_VIDEO_WIDTH / 2), int(INPUT_VIDEO_HEIGHT / 2)),
                          (x, y), (0, 0, 255), thickness=2)
                 yaw_pixels = x - INPUT_VIDEO_WIDTH / 2
+                yaw_angle = yaw_pixels * HORIZONTAL_ANGLE_PER_PIXEL
                 elevation_pixels = INPUT_VIDEO_HEIGHT / 2 - y  # center point
+                elevation_angle = elevation_pixels * VERTICAL_ANGLE_PER_PIXEL
+
                 # elevation_pixels = INPUT_VIDEO_HEIGHT/2 - y + 100 # center point shift
                 # elevation_pixels = INPUT_VIDEO_HEIGHT;2/3 - y  # add shift up
-                cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
+                # cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
+                #             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 0, 255), 2)
                 target_object_current_diagonal = sqrt(w * w + h * h)
-                if not target_object_diagonal:
-                    target_object_diagonal = target_object_current_diagonal
-                # dx = (target_object_diagonal - target_object_current_diagonal) * PID_X
-                # dx = ((target_object_diagonal/target_object_current_diagonal) - 1) * PID_X  # target when fixed
-                dx = ((TARGET_OBJECT_DIAGONAL / target_object_current_diagonal) - 1) * PID_X
-                # print(f'Sending yaw: {yaw_pixels/INPUT_VIDEO_WIDTH * PID_YAW}')
-                dyaw = yaw_pixels / (INPUT_VIDEO_WIDTH / 2) * PID_YAW  # need correction factor  *diagonal/image_diagonal
-                dz = elevation_pixels / (INPUT_VIDEO_HEIGHT / 2) * PID_Z
-                # print(f'{bcolors.WARNING}{y=}\t{elevation_pixels=}\t{dz}{bcolors.ENDC}')
-                print(f'{dx=:.2f}\t{dz=:.2f}\t{dyaw=:.2f}')
-                # drone.change_position(0, 0, dz)
+                target_object_distance_approximate = TARGET_OBJECT_HEIGHT/2 / sin(elevation_angle)  # TODO gimbal pitch angle correcteion needed
+                print(f'{bcolors.OKBLUE}Approx distance to object: {target_object_distance_approximate:.2f}{bcolors.ENDC}')
+                # dx = ((TARGET_OBJECT_DIAGONAL / target_object_current_diagonal) - 1) * PID_X
+
+                dx = (DESIRED_OBJECT_DISTANCE - target_object_distance_approximate) * PID_X
+                dyaw = yaw_angle * PID_YAW # * sin(target_object_distance_approximate)
+                # dz = sin(elevation_angle) * PID_Z * 1/sin(target_object_distance_approximate) + 0.001
+                dz = sin(elevation_angle) * PID_Z #  * 1/sin(target_object_distance_approximate) + 0.001
+
+                print(f'{dx=:.1f}\t{dz=:.1f}\t{dyaw=:.1f}')
+                drone.change_position(0, 0, 0)
                 drone.yaw(dyaw)
 
             elif object_id == object_id_near_center:

@@ -28,10 +28,11 @@ def ask_dictstyle(**kwargs):
             "name": "drone_command",
             "message": "What do you want to do?",
             "choices": [
-                "emergency",
+                # "emergency",
                 "mode brake",
                 "mode land",
                 "mode guided",
+                "mode poshold",
                 "arm",
                 "disarm",
                 "takeoff",
@@ -84,6 +85,8 @@ if __name__ == "__main__":
                 drone.set_mode_land()
             case "mode guided":
                 drone.set_mode_guided()
+            case "mode poshold":
+                drone.set_mode_poshold()
             case "mode RTL":
                 drone.set_mode_return_to_land()
             case "arm":

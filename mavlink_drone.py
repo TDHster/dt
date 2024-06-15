@@ -40,6 +40,9 @@ class MavlinkDrone:
     def set_mode_guided(self):
         self._set_mode('GUIDED')
 
+    def set_mode_poshold(self):
+        self._set_mode('POSHOLD')
+
     def set_mode_land(self):
         self._set_mode('LAND')
 
@@ -75,7 +78,7 @@ class MavlinkDrone:
             else:
                 print(f"{bcolors.FAIL}Arm ACK: {bcolors.ENDC} {arm_msg.result}")
         else:
-            print(f'{bcolors.FAIL}Arm command FAIL{bcolors.ENDC}')
+            print(f'{bcolors.FAIL}Arm command FAIL (no COMMAND_ACK){bcolors.ENDC}')
             return False
         if arm:
             print("Waiting motors arming...")
@@ -90,6 +93,7 @@ class MavlinkDrone:
 
     def emergency_stop(self):
         self._arm(arm=False, force=True)  # Immediately stop, maybe crash
+        self.set_mode_brake()
 
     def _takeoff(self, takeoff_altitude):
         self.connection.mav.command_long_send(
@@ -106,7 +110,7 @@ class MavlinkDrone:
             else:
                 print(f"{bcolors.FAIL}Takeoff command ACK not ok: {takeoff_msg.result}{bcolors.ENDC}")
         else:
-            print(f"{bcolors.FAIL}Takeoff command fail{bcolors.ENDC}")
+            print(f"{bcolors.FAIL}Takeoff command fail (no COMMAND_ACK){bcolors.ENDC}")
 
     def takeoff(self, takeoff_altitude):
         self.set_mode_guided()
@@ -170,17 +174,19 @@ class MavlinkDrone:
         # cmd_ack = connection.recv_match(type='LOCAL_POSITION_NED', blocking=True)
         # print(cmd_ack)
 
-
     def to_target(self, mode: bool = True):
         self._to_target = mode
         self.change_position()
 
-    def get_to_target(self):
-        return  self._to_target
+    def to_target_status(self):
+        return self._to_target
 
-    def yaw(self, yaw=0, yaw_rate=15, abs_rel_flag=1):
+    def yaw(self, yaw=0, yaw_rate=None, abs_rel_flag=1):
         # yaw = 30
         # yaw_rate = 30
+        if not yaw_rate:
+            yaw_rate_PID = 1/2
+            yaw_rate = yaw * yaw_rate_PID
         if yaw >= 0:
             direction = 1
         else:
