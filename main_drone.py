@@ -231,7 +231,7 @@ while True:
                 #             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 0, 255), 2)
                 target_object_current_diagonal = sqrt(w * w + h * h)
-                target_object_distance_approximate = TARGET_OBJECT_HEIGHT/2 / sin(elevation_angle)  # TODO gimbal pitch angle correcteion needed
+                target_object_distance_approximate = TARGET_OBJECT_HEIGHT/2 / sin(target_object_current_diagonal) + 0.00001  # TODO gimbal pitch angle correcteion needed
                 print(f'{bcolors.OKBLUE}Approx distance to object: {target_object_distance_approximate:.2f}{bcolors.ENDC}')
                 # dx = ((TARGET_OBJECT_DIAGONAL / target_object_current_diagonal) - 1) * PID_X
 
