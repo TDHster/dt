@@ -52,7 +52,7 @@ class MavlinkDrone:
     def set_mode_brake(self):
         self._set_mode('BRAKE')
 
-    def _arm(self, arm: bool = True, force = None):  # work
+    def _arm(self, arm: bool = True, force=0):  # work
         # force 21196, 2989
         # https://ardupilot.org/dev/docs/mavlink-arming-and-disarming.html
         # Need "arm uncheck all" in mavproxy
