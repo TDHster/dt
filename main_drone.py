@@ -242,8 +242,7 @@ while True:
                 # dx = ((TARGET_OBJECT_DIAGONAL / target_object_current_diagonal) - 1) * PID_X
 
                 # dx = (DESIRED_OBJECT_DISTANCE - target_object_distance_approximate) * PID_X
-                dx = (target_object_current_diagonal -
-                      DESIRED_OBJECT_DIAGONAL_PERCENTAGE / 100 * IMPUT_VIDEO_DIAGONAL
+                dx = (DESIRED_OBJECT_DIAGONAL_PERCENTAGE / 100 * IMPUT_VIDEO_DIAGONAL - target_object_current_diagonal
                       ) * 0.1
                 # 1, 2, 8
                 dyaw = yaw_angle * 4 # * sin(target_object_distance_approximate)
