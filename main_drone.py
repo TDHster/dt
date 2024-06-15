@@ -48,7 +48,7 @@ print(f'{HORIZONTAL_ANGLE_PER_PIXEL=:.2f}, {VERTICAL_ANGLE_PER_PIXEL=:.2f}')
 # TARGET_OBJECT_SIZE_PERCENT_OF_IMAGE_HEIGHT = 0.7
 # TARGET_OBJECT_DIAGONAL = INPUT_VIDEO_HEIGHT * TARGET_OBJECT_SIZE_PERCENT_OF_IMAGE_HEIGHT * cos(30 * (pi / 180))
 DESIRED_OBJECT_DISTANCE = 4
-DESIRED_OBJECT_DIAGONAL_PERCENTAGE = 70
+DESIRED_OBJECT_DIAGONAL_PERCENTAGE = 50
 
 parser = argparse.ArgumentParser(description="Main drone script")
 
@@ -243,7 +243,7 @@ while True:
 
                 # dx = (DESIRED_OBJECT_DISTANCE - target_object_distance_approximate) * PID_X
                 dx = (DESIRED_OBJECT_DIAGONAL_PERCENTAGE / 100 * IMPUT_VIDEO_DIAGONAL - target_object_current_diagonal
-                      ) * 0.1
+                      ) * 0.03
                 # 1, 2, 8
                 dyaw = yaw_angle * 4 # * sin(target_object_distance_approximate)
                 # dz = sin(elevation_angle) * PID_Z * 1/sin(target_object_distance_approximate) + 0.001
