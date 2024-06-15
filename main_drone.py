@@ -182,7 +182,7 @@ while True:
     if not success:  # Check success flag
         continue
     frame = cv2.resize(frame, (INPUT_VIDEO_WIDTH, INPUT_VIDEO_HEIGHT), interpolation=cv2.INTER_AREA)
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # convert to black and white
+    # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # convert to black and white
     # Resize the frame to 320x200 while maintaining aspect ratio
     # print(f'{frame.shape=}')
     # classIds, confs, bbox = net.detect(frame, confThreshold=detection_threshold)  # moved to class
