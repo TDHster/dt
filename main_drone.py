@@ -240,16 +240,16 @@ while True:
                 # dx = ((TARGET_OBJECT_DIAGONAL / target_object_current_diagonal) - 1) * PID_X
 
                 dx = (DESIRED_OBJECT_DISTANCE - target_object_distance_approximate) * PID_X
-                # 1, 2
-                dyaw = yaw_angle * 8 # * sin(target_object_distance_approximate)
+                # 1, 2, 8
+                dyaw = yaw_angle * 4 # * sin(target_object_distance_approximate)
                 # dz = sin(elevation_angle) * PID_Z * 1/sin(target_object_distance_approximate) + 0.001
                 # dz = sin(elevation_angle) * PID_Z #  * 1/sin(target_object_distance_approximate) + 0.001
                 dz = elevation_angle * 1/40
 
                 print(f'{dx=:.1f}\t{dz=:.1f}\t{dyaw=:.1f}\t{elevation_angle=:.1f}')
-                drone.change_position(0, 0, dz)
                 # print(f'{bcolors.OKCYAN}Sending {dyaw=}{bcolors.ENDC}')
                 drone.yaw(yaw=dyaw)
+                drone.change_position(0, 0, dz)
 
             elif object_id == object_id_near_center:
                 # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
