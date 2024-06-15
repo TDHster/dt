@@ -96,9 +96,9 @@ class MavlinkDrone:
 
 
     def disarm(self):
+        self._arm(arm=False, force=2989)
         self._arm(arm=False)
         self._arm(arm=False, force=21196)
-        self._arm(arm=False, force=2989)
 
 
     def emergency_stop(self):
