@@ -186,7 +186,7 @@ while True:
     # Resize the frame to 320x200 while maintaining aspect ratio
 
     classIds, confs, bbox = object_detector.detect(frame, detection_threshold=detection_threshold)
-    print(f'classIds={classIds}, bbox={bbox}')
+    # print(f'classIds={classIds}, bbox={bbox}')
 
     if classIds is None:
         # Handle the case where no target class IDs were found
