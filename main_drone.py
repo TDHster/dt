@@ -39,6 +39,7 @@ INPUT_VIDEO_WIDTH = 320
 INPUT_VIDEO_HEIGHT = 200
 # INPUT_VIDEO_WIDTH = 640
 # INPUT_VIDEO_HEIGHT = 480
+IMPUT_VIDEO_DIAGONAL = sqrt(INPUT_VIDEO_WIDTH*INPUT_VIDEO_WIDTH + INPUT_VIDEO_HEIGHT*INPUT_VIDEO_HEIGHT)
 
 HORIZONTAL_ANGLE_PER_PIXEL = CAMERA_HORIZONTAL_FOV / INPUT_VIDEO_WIDTH
 VERTICAL_ANGLE_PER_PIXEL = CAMERA_VERTICAL_FOV / INPUT_VIDEO_HEIGHT
@@ -241,8 +242,9 @@ while True:
                 # dx = ((TARGET_OBJECT_DIAGONAL / target_object_current_diagonal) - 1) * PID_X
 
                 # dx = (DESIRED_OBJECT_DISTANCE - target_object_distance_approximate) * PID_X
-                dx = (DESIRED_OBJECT_DIAGONAL_PERCENTAGE/100*target_object_current_diagonal
-                      - target_object_current_diagonal) * 0.1
+                dx = (target_object_current_diagonal -
+                      DESIRED_OBJECT_DIAGONAL_PERCENTAGE / 100 * IMPUT_VIDEO_DIAGONAL
+                      ) * 0.1
                 # 1, 2, 8
                 dyaw = yaw_angle * 4 # * sin(target_object_distance_approximate)
                 # dz = sin(elevation_angle) * PID_Z * 1/sin(target_object_distance_approximate) + 0.001
