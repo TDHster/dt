@@ -19,7 +19,7 @@ import argparse
 from time import sleep
 from bcolors import bcolors
 
-YAW_STEP = 20  # degrees
+YAW_STEP = 30  # degrees
 MOVEMENT_STEP = 0.5  # meters
 
 TARGET_OBJECT_HEIGHT = 2
@@ -242,7 +242,8 @@ while True:
 
                 print(f'{dx=:.1f}\t{dz=:.1f}\t{dyaw=:.1f}')
                 drone.change_position(0, 0, 0)
-                drone.yaw(dyaw)
+                print(f'{bcolors.OKCYAN}Sending {dyaw=}{bcolors.ENDC}')
+                drone.yaw(yaw=dyaw)
 
             elif object_id == object_id_near_center:
                 # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
@@ -288,9 +289,9 @@ while True:
                 target_object_id = -1
                 drone.to_target(False)
             elif command == "Yaw left":
-                drone.yaw(-YAW_STEP)
+                drone.yaw(yaw=-YAW_STEP)
             elif command == "Yaw right":
-                drone.yaw(YAW_STEP)
+                drone.yaw(yaw=YAW_STEP)
             elif command == "Move up":
                 drone.change_position(dz=MOVEMENT_STEP)
             elif command == "Move down":

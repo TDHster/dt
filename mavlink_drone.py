@@ -116,8 +116,10 @@ class MavlinkDrone:
         self.set_mode_guided()
         self.arm()
         self._takeoff(takeoff_altitude)
-        sleep(3)
-        self.change_position(dz=2)
+        sleep(2)
+        self.change_position(dz=1)
+        sleep(1)
+        self.change_position(dz=1)
 
     def change_position(self, dx=0, dy=0, dz=0):
         dz = -dz  # original axis down
@@ -184,10 +186,9 @@ class MavlinkDrone:
         return self._to_target
 
     def yaw(self, yaw=0, yaw_rate=None, abs_rel_flag=1):
-        # yaw = 30
-        # yaw_rate = 30
+
         if not yaw_rate:
-            yaw_rate_PID = 1/2
+            yaw_rate_PID = 0.75
             yaw_rate = yaw * yaw_rate_PID
         if yaw >= 0:
             direction = 1
@@ -195,7 +196,7 @@ class MavlinkDrone:
             direction = -1
             yaw = abs(yaw)
         # direction = -1  # -1, 1
-        # abs_rel_flag = 1  # The absolute/relative flag to set. 0 for absolute, 1 for relative.
+        # abs_rel_flag = 1  # The absolute/relative flag to set. 0 for absolute from north, 1 for relative.from heading
         self.connection.mav.command_long_send(
             self.connection.target_system,
             self.connection.target_component,
