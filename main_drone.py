@@ -2,7 +2,7 @@
 
 import cv2
 from object_tracker import CentroidTracker
-from math import pi, sqrt, sin, cos, atan, tan
+from math import pi, sqrt, sin, cos, atan, tan, degrees, radians
 import heapq
 from video_send import NetworkConnection, get_key_from_byte
 # from control_drone import MavlinkJoystickControl as MavlinkControl
@@ -27,8 +27,10 @@ TARGET_OBJECT_HEIGHT = 2
 CAMERA_WIDTH = 1920
 CAMERA_HEIGHT = 1080
 CAMERA_DIAGONAL_FOV = 78  # degrees for logitech c920
-CAMERA_HORIZONTAL_FOV = 2 * atan(tan(CAMERA_DIAGONAL_FOV / 2) * (CAMERA_WIDTH / CAMERA_HEIGHT))
-CAMERA_VERTICAL_FOV = 2 * atan(tan(CAMERA_DIAGONAL_FOV / 2) * (CAMERA_HEIGHT / CAMERA_WIDTH))
+diagonal_fov_rad = radians(CAMERA_DIAGONAL_FOV)
+CAMERA_VERTICAL_FOV = degrees(2 * atan(tan(diagonal_fov_rad / 2) / sqrt(1 + (CAMERA_WIDTH / CAMERA_HEIGHT) ** 2)))
+CAMERA_HORIZONTAL_FOV = degrees(2 * atan((CAMERA_WIDTH / CAMERA_HEIGHT) * tan(radians(CAMERA_VERTICAL_FOV) / 2)))
+
 # 70.2x39.6
 camera_gimbal_pitch_angle = 0  # alight to forward
 print(f'Using setup for camera: {CAMERA_DIAGONAL_FOV=}, {CAMERA_HORIZONTAL_FOV=}, {CAMERA_VERTICAL_FOV=}')
