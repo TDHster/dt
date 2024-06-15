@@ -33,7 +33,7 @@ CAMERA_HORIZONTAL_FOV = degrees(2 * atan((CAMERA_WIDTH / CAMERA_HEIGHT) * tan(ra
 
 # 70.2x39.6
 camera_gimbal_pitch_angle = 0  # alight to forward
-print(f'Using setup for camera: {CAMERA_DIAGONAL_FOV=}, {CAMERA_HORIZONTAL_FOV=}, {CAMERA_VERTICAL_FOV=}')
+print(f'Using setup for camera: {CAMERA_DIAGONAL_FOV=:.0f}, {CAMERA_HORIZONTAL_FOV=:.0f}, {CAMERA_VERTICAL_FOV=:.0f}')
 
 INPUT_VIDEO_WIDTH = 320
 INPUT_VIDEO_HEIGHT = 200
@@ -42,6 +42,7 @@ INPUT_VIDEO_HEIGHT = 200
 
 HORIZONTAL_ANGLE_PER_PIXEL = CAMERA_HORIZONTAL_FOV / INPUT_VIDEO_WIDTH
 VERTICAL_ANGLE_PER_PIXEL = CAMERA_VERTICAL_FOV / INPUT_VIDEO_HEIGHT
+print(f'{HORIZONTAL_ANGLE_PER_PIXEL=:.2f}, {VERTICAL_ANGLE_PER_PIXEL=:.2f}')
 
 # TARGET_OBJECT_SIZE_PERCENT_OF_IMAGE_HEIGHT = 0.7
 # TARGET_OBJECT_DIAGONAL = INPUT_VIDEO_HEIGHT * TARGET_OBJECT_SIZE_PERCENT_OF_IMAGE_HEIGHT * cos(30 * (pi / 180))
@@ -241,9 +242,9 @@ while True:
                 dyaw = yaw_angle * PID_YAW # * sin(target_object_distance_approximate)
                 # dz = sin(elevation_angle) * PID_Z * 1/sin(target_object_distance_approximate) + 0.001
                 # dz = sin(elevation_angle) * PID_Z #  * 1/sin(target_object_distance_approximate) + 0.001
-                dz = elevation_angle * 1/20
+                dz = elevation_angle * 1/40
 
-                print(f'{dx=:.1f}\t{dz=:.1f}\t{dyaw=:.1f}')
+                print(f'{dx=:.1f}\t{dz=:.1f}\t{dyaw=:.1f}\t{elevation_angle=:.1f}')
                 drone.change_position(0, 0, dz)
                 print(f'{bcolors.OKCYAN}Sending {dyaw=}{bcolors.ENDC}')
                 drone.yaw(yaw=dyaw)
