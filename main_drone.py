@@ -130,6 +130,7 @@ print(f'Video device {opencv_device} opened.')
 key_to_command = {
     't': "Takeoff",
     'g': "Land",
+    'x': "Emergency",
     'w': "Move forward",
     's': "Move backward",
     'a': "Move left",
@@ -315,6 +316,8 @@ while True:
                 # drone.set_mode_return_to_land()
             elif command == "Takeoff":
                 drone.takeoff(3)
+            elif command == "Emergency":
+                drone.disarm()
             else:
                 print(f'{command=} not known')
 
