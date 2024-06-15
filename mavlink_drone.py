@@ -207,6 +207,7 @@ class MavlinkDrone:
         else:
             direction = -1
             yaw = abs(yaw)
+        print(f'Inside conditional yaw: {yaw=:0.1f}, {yaw_rate=:0.1f}')
         # direction = -1  # -1, 1
         # abs_rel_flag = 1  # The absolute/relative flag to set. 0 for absolute from north, 1 for relative.from heading
         self.connection.mav.command_long_send(
