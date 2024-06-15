@@ -193,8 +193,8 @@ while True:
         print("No target class IDs detected")
         continue
 
-    classIds, bbox = object_detector.filter(classIds, bbox, target_class_name='person')
-    # classIds, bbox = object_detector.filter(classIds, bbox, target_class_names=('person', 'car'))
+    # classIds, bbox = object_detector.filter(classIds, bbox, target_class_name='person')
+    classIds, bbox = object_detector.filter(classIds, bbox, target_class_names=('person', 'car'))
 
     objects = object_tracker.update(bbox)
 
