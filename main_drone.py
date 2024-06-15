@@ -248,8 +248,8 @@ while True:
 
                 print(f'{dx=:.1f}\t{dz=:.1f}\t{dyaw=:.1f}\t{elevation_angle=:.1f}')
                 # print(f'{bcolors.OKCYAN}Sending {dyaw=}{bcolors.ENDC}')
-                drone.yaw(yaw=dyaw)
                 drone.change_position(0, 0, dz)
+                drone.yaw(yaw=dyaw)
 
             elif object_id == object_id_near_center:
                 # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
