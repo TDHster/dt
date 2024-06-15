@@ -52,19 +52,20 @@ class MavlinkDrone:
     def set_mode_brake(self):
         self._set_mode('BRAKE')
 
-    def _arm(self, arm: bool = True, force: bool = False):  # work
+    def _arm(self, arm: bool = True, force = None):  # work
+        # force 21196, 2989
         # https://ardupilot.org/dev/docs/mavlink-arming-and-disarming.html
         # Need "arm uncheck all" in mavproxy
         if arm == True:
             arm_command = 1
         else:
             arm_command = 0
-        if force == True:
-            # force = 21196  # from docs
-            force = 2989  # from pymavlink source
-            print(f'Using force arm. Code {force}')
-        else:
-            force = 0
+        # if force == True:
+        #     # force = 21196  # from docs
+        #     force = 2989  # from pymavlink source
+        #     print(f'Using force arm. Code {force}')
+        # else:
+        #     force = 0
         # message COMMAND_LONG 0 0 400 0 1 21196 0 0 0 0 0 force arm
         self.connection.mav.command_long_send(self.connection.target_system, self.connection.target_component,
                                               mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
@@ -86,10 +87,19 @@ class MavlinkDrone:
             print(f'{bcolors.OKGREEN}Motors start confirmed.{bcolors.ENDC}')
 
     def arm(self):
-        self._arm(arm=True, force=True)
+        self._arm(arm=True)
+        print('Usual arm')
+        self._arm(arm=True, force=2989)
+        print('Force arm, code 2989')
+        self._arm(arm=True, force=21196)
+        print('Force arm, code 21196')
+
 
     def disarm(self):
         self._arm(arm=False)
+        self._arm(arm=False, force=21196)
+        self._arm(arm=False, force=2989)
+
 
     def emergency_stop(self):
         self._arm(arm=False, force=True)  # Immediately stop, maybe crash
