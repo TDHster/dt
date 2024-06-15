@@ -240,7 +240,9 @@ while True:
                 print(f'{bcolors.OKBLUE}Approx distance to object: {target_object_distance_approximate:.2f}{bcolors.ENDC}')
                 # dx = ((TARGET_OBJECT_DIAGONAL / target_object_current_diagonal) - 1) * PID_X
 
-                dx = (DESIRED_OBJECT_DISTANCE - target_object_distance_approximate) * PID_X
+                # dx = (DESIRED_OBJECT_DISTANCE - target_object_distance_approximate) * PID_X
+                dx = (DESIRED_OBJECT_DIAGONAL_PERCENTAGE/100*target_object_current_diagonal
+                      - target_object_current_diagonal) * 0.1
                 # 1, 2, 8
                 dyaw = yaw_angle * 4 # * sin(target_object_distance_approximate)
                 # dz = sin(elevation_angle) * PID_Z * 1/sin(target_object_distance_approximate) + 0.001
