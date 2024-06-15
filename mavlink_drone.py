@@ -5,7 +5,7 @@ import threading
 import queue
 from bcolors import bcolors
 # from config import connection_string  # for sim in mission planner
-from math import pi
+from math import pi, abs
 
 
 class MavlinkDrone:
@@ -193,7 +193,7 @@ class MavlinkDrone:
             direction = 1
         else:
             direction = -1
-            yaw = -yaw
+            yaw = abs(yaw)
         # direction = -1  # -1, 1
         # abs_rel_flag = 1  # The absolute/relative flag to set. 0 for absolute, 1 for relative.
         self.connection.mav.command_long_send(

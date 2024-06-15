@@ -19,7 +19,7 @@ import argparse
 from time import sleep
 from bcolors import bcolors
 
-YAW_STEP = 10  # degrees
+YAW_STEP = 20  # degrees
 MOVEMENT_STEP = 0.5  # meters
 
 TARGET_OBJECT_HEIGHT = 2
