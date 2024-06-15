@@ -70,13 +70,13 @@ parser.add_argument(
 parser.add_argument(
     "-pidx", type=float, default=0.4, help="PID_X for drone control.", metavar='VALUE'
 )
-# 0.5
+# 0.5 0,4
 parser.add_argument(
-    "-pidz", type=float, default=0.5, help="PID_Z (throttle) for drone control.", metavar='VALUE'
+    "-pidz", type=float, default=0.35, help="PID_Z (throttle) for drone control.", metavar='VALUE'
 )
 # 1 1.5
 parser.add_argument(
-    "-pidyaw", type=float, default=1.1, help="PID_YAW for drone control.", metavar='VALUE'
+    "-pidyaw", type=float, default=1, help="PID_YAW for drone control.", metavar='VALUE'
 )
 parser.add_argument(
     "-dt", "--detection_threshold", type=float, default=0.45, help="detection_threshold for drone control.",
