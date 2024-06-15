@@ -184,20 +184,17 @@ while True:
     frame = cv2.resize(frame, (INPUT_VIDEO_WIDTH, INPUT_VIDEO_HEIGHT), interpolation=cv2.INTER_AREA)
     # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # convert to black and white  # dont work with neurodetect
     # Resize the frame to 320x200 while maintaining aspect ratio
-    # print(f'{frame.shape=}')
-    # classIds, confs, bbox = net.detect(frame, confThreshold=detection_threshold)  # moved to class
-    classIds, confs, bbox = object_detector.detect(frame, detection_threshold=detection_threshold)
 
-    # print(f'classIds={classIds}, bbox={bbox}')
+    classIds, confs, bbox = object_detector.detect(frame, detection_threshold=detection_threshold)
+    print(f'classIds={classIds}, bbox={bbox}')
+
     if classIds is None:
         # Handle the case where no target class IDs were found
         print("No target class IDs detected")
         continue
 
-    # classIds, bbox = filter_by_target_class_id(classIds, bbox,
-    #                                            names_list=object_class_names,
-    #                                            target_class_name='person')
-    classIds, bbox = object_detector.filter(classIds, bbox, target_class_names=('person', 'car'))
+    classIds, bbox = object_detector.filter(classIds, bbox, target_class_name='person')
+    # classIds, bbox = object_detector.filter(classIds, bbox, target_class_names=('person', 'car'))
 
     objects = object_tracker.update(bbox)
 

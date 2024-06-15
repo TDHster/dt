@@ -24,7 +24,7 @@ class ObjectDetector:
         return classIds, confs, bbox
 
 
-    def _filter(self, class_ids, bbox, target_class_name='person'):
+    def filter(self, class_ids, bbox, target_class_name='person'):
         if len(class_ids):
             # Efficient filtering using boolean indexing
             # keep_indices = classIds == object_class_names.index(target_class_name) + 1  # Indices where specified class ID (1 is person)
@@ -36,7 +36,7 @@ class ObjectDetector:
             return class_ids, bbox
         return (), ()
 
-    def filter(self, class_ids, bbox, target_class_names=('person', 'car')):
+    def _filter(self, class_ids, bbox, target_class_names=('person', 'car')):
         """Filters detections based on a list of target class names.
 
         Args:
@@ -53,7 +53,6 @@ class ObjectDetector:
                    - filtered_bbox (List[List[int]]): A list of bounding boxes for the
                                                       filtered detections.
         """
-
         if not len(class_ids) or not len(target_class_names):
             return (), ()  # Return empty lists if no class IDs or target classes
 
