@@ -157,6 +157,7 @@ class MavlinkDrone:
             dx = 3
         velocity_x, velocity_y, velocity_z = 0, 0, 0
         axel_x, axel_y, axel_z = 0, 0, 0
+        print(f'Inside change_position: {dx=:.1f}, {dy=:.1f}, {dz=:.1f}')
         self.connection.mav.send(
             mavutil.mavlink.MAVLink_set_position_target_local_ned_message(
                 time_boot_ms, self.connection.target_system, self.connection.target_component,
