@@ -75,7 +75,7 @@ parser.add_argument(
 )
 # 0.5
 parser.add_argument(
-    "-pidyaw", type=float, default=1, help="PID_YAW for drone control.", metavar='VALUE'
+    "-pidyaw", type=float, default=1.5, help="PID_YAW for drone control.", metavar='VALUE'
 )
 parser.add_argument(
     "-dt", "--detection_threshold", type=float, default=0.45, help="detection_threshold for drone control.",
@@ -243,7 +243,7 @@ while True:
                 dz = sin(elevation_angle) * PID_Z #  * 1/sin(target_object_distance_approximate) + 0.001
 
                 print(f'{dx=:.1f}\t{dz=:.1f}\t{dyaw=:.1f}')
-                drone.change_position(0, 0, 0)
+                drone.change_position(0, 0, dz)
                 print(f'{bcolors.OKCYAN}Sending {dyaw=}{bcolors.ENDC}')
                 drone.yaw(yaw=dyaw)
 
