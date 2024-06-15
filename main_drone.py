@@ -69,13 +69,13 @@ parser.add_argument(
 parser.add_argument(
     "-pidx", type=float, default=0.4, help="PID_X for drone control.", metavar='VALUE'
 )
-# 0.1 0.3 0.4 0.6 0.7 0.8 0.9 0.7 0.6 0.5 0.7 0.9(was good)
+# 0.5
 parser.add_argument(
     "-pidz", type=float, default=0.5, help="PID_Z (throttle) for drone control.", metavar='VALUE'
 )
-# 0.5
+# 1 1.5
 parser.add_argument(
-    "-pidyaw", type=float, default=1.5, help="PID_YAW for drone control.", metavar='VALUE'
+    "-pidyaw", type=float, default=1.1, help="PID_YAW for drone control.", metavar='VALUE'
 )
 parser.add_argument(
     "-dt", "--detection_threshold", type=float, default=0.45, help="detection_threshold for drone control.",
@@ -240,7 +240,8 @@ while True:
                 dx = (DESIRED_OBJECT_DISTANCE - target_object_distance_approximate) * PID_X
                 dyaw = yaw_angle * PID_YAW # * sin(target_object_distance_approximate)
                 # dz = sin(elevation_angle) * PID_Z * 1/sin(target_object_distance_approximate) + 0.001
-                dz = sin(elevation_angle) * PID_Z #  * 1/sin(target_object_distance_approximate) + 0.001
+                # dz = sin(elevation_angle) * PID_Z #  * 1/sin(target_object_distance_approximate) + 0.001
+                dz = elevation_angle * 1/20
 
                 print(f'{dx=:.1f}\t{dz=:.1f}\t{dyaw=:.1f}')
                 drone.change_position(0, 0, dz)
