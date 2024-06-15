@@ -240,8 +240,8 @@ while True:
                 # dx = ((TARGET_OBJECT_DIAGONAL / target_object_current_diagonal) - 1) * PID_X
 
                 dx = (DESIRED_OBJECT_DISTANCE - target_object_distance_approximate) * PID_X
-                # 1,
-                dyaw = yaw_angle * 2 # * sin(target_object_distance_approximate)
+                # 1, 2
+                dyaw = yaw_angle * 8 # * sin(target_object_distance_approximate)
                 # dz = sin(elevation_angle) * PID_Z * 1/sin(target_object_distance_approximate) + 0.001
                 # dz = sin(elevation_angle) * PID_Z #  * 1/sin(target_object_distance_approximate) + 0.001
                 dz = elevation_angle * 1/40
