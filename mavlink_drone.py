@@ -199,7 +199,7 @@ class MavlinkDrone:
 
         if not yaw_rate:
             yaw_rate_PID = 0.75
-            yaw_rate = yaw * yaw_rate_PID
+            yaw_rate = abs(yaw) * yaw_rate_PID
         if yaw >= 0:
             direction = 1
         else:
