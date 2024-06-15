@@ -116,6 +116,8 @@ class MavlinkDrone:
         self.set_mode_guided()
         self.arm()
         self._takeoff(takeoff_altitude)
+        sleep(3)
+        self.change_position(dz=2)
 
     def change_position(self, dx=0, dy=0, dz=0):
         dz = -dz  # original axis down
