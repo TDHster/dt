@@ -242,10 +242,11 @@ while True:
                 dx = (desired_object_size_in_pixels - target_object_current_diagonal) * 0.03
                 # drone.pitch = dx * 0.1
 
-                target_object_distance_approx = TARGET_OBJECT_HEIGHT/2 / sin(h/2 * HORIZONTAL_ANGLE_PER_PIXEL)  # TODO gimbal angle correction
+                target_object_distance_approx = (TARGET_OBJECT_HEIGHT/2 /
+                                                 sin((h/2 * HORIZONTAL_ANGLE_PER_PIXEL) * pi/180))  # TODO gimbal angle correction
 
                 print(f'{drone.pitch=:.1f}\t{drone.thrust=:.1f}\t{drone.yaw=:.1f}\t{elevation_angle=:.1f}\t {bcolors.BOLD}'
-                      f'Approx distance: {target_object_distance_approx:.1f}{bcolors.ENDC}')
+                      f' distance: {target_object_distance_approx:.1f}{bcolors.ENDC}')
 
             elif object_id == object_id_near_center:
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, COLOR_YELLOW, 2)
