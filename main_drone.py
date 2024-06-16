@@ -231,11 +231,11 @@ while True:
                          (x, y), (0, 0, 255), thickness=2)
                 yaw_pixels = x - INPUT_VIDEO_WIDTH / 2
                 yaw_angle = yaw_pixels * HORIZONTAL_ANGLE_PER_PIXEL
-                drone.yaw = yaw_angle * 0.04
+                drone.yaw = yaw_angle * 0.02
 
                 elevation_pixels = INPUT_VIDEO_HEIGHT / 2 - y  # center point
                 elevation_angle = elevation_pixels * VERTICAL_ANGLE_PER_PIXEL
-                drone.thrust = elevation_angle * 0.03
+                drone.thrust = elevation_angle * 0.015
 
                 target_object_current_diagonal = sqrt(w * w + h * h)
                 # desired_object_size_in_pixels = DESIRED_OBJECT_DIAGONAL_PERCENTAGE / 100 * IMPUT_VIDEO_DIAGONAL
