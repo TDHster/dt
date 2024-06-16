@@ -40,6 +40,7 @@ def ask_dictstyle(**kwargs):
                 "disarm_2989",
                 "disarm_21196",
                 "takeoff",
+                "takeoff manual",
                 Separator(),
                 "hover",
                 "up",
@@ -87,16 +88,12 @@ if __name__ == "__main__":
         match drone_command:
             case "emergency":
                 drone.emergency_stop()
-            case "mode brake":
-                drone.mode_brake()
             case "mode land":
                 drone.mode_land()
             case "mode guided":
                 drone.mode_guided()
             case "mode poshold":
                 drone.mode_position_hold()
-            case "mode RTL":
-                drone.mode_return_to_land()
             case "arm":
                 drone.arm()
             case "arm_2989":
@@ -111,7 +108,9 @@ if __name__ == "__main__":
                 drone.disarm_21196()
             case "takeoff":
                 drone.takeoff(12)
-
+            case "takeoff manual":
+                # drone.takeoff(12)
+                drone._takeoff_manual()
             case "hover":
                 drone.do_hover()
             case "up":

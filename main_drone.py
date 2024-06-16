@@ -289,16 +289,22 @@ while True:
                 drone.yaw += MANUAL_CONTROL_STEP
             elif command == "Move up":
                 drone.thrust += MANUAL_CONTROL_STEP
+                print(f'{drone.thrust=}')
             elif command == "Move down":
                 drone.thrust -= MANUAL_CONTROL_STEP
+                print(f'{drone.thrust=}')
             elif command == "Move forward":
                 drone.pitch += MANUAL_CONTROL_STEP
+                print(f'{drone.pitch=}')
             elif command == "Move backward":
                 drone.pitch -= MANUAL_CONTROL_STEP
+                print(f'{drone.pitch=}')
             elif command == "Move left":
                 drone.roll -= MANUAL_CONTROL_STEP
+                print(f'{drone.roll=}')
             elif command == "Move right":
                 drone.roll += MANUAL_CONTROL_STEP
+                print(f'{drone.roll=}')
             elif command == "Land":
                 drone.mode_land()
                 # drone.set_mode_return_to_land()
