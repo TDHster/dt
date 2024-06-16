@@ -311,6 +311,7 @@ while True:
             elif command == "Takeoff":
                 # drone.takeoff(12)
                 drone._takeoff_manual()
+
             elif command == "Emergency":
                 drone.emergency_stop()
             else:
