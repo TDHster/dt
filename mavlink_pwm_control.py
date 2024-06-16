@@ -249,8 +249,8 @@ class MavlinkDrone:
         print('Force disarm, code 21196')
 
     def emergency_stop(self):
-        self.disarm_2989()
         self.disarm_21196()
+        self.disarm_2989()
         self.mode_brake()
         self.mode_land()
         # self.disarm()
