@@ -50,7 +50,7 @@ DESIRED_OBJECT_DIAGONAL_PERCENTAGE = 30  # of full frame
 COLOR_YELLOW = (0, 255, 255)
 COLOR_GREEN = (0, 255, 0)
 COLOR_RED = (0, 0, 255)
-MANUAL_CONTROL_STEP = 0.2
+MANUAL_CONTROL_STEP = 0.1
 
 parser = argparse.ArgumentParser(description="Main drone script")
 
