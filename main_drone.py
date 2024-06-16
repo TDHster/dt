@@ -248,7 +248,7 @@ while True:
                 # 0.2 0.4
                 drone.pitch = dx * 0.1
 
-                print(f'Pitch: {drone.pitch:.1f}\tThrust: {drone.thrust:.1f}\tYaw {drone.yaw:.1f}\t{drone.pitch:.1f}\t'
+                print(f'Pitch: {drone.pitch:.1f}\tThrust: {drone.thrust:.1f}\tYaw {drone.yaw:.1f}\t'
                       f'{elevation_angle=:.1f}\t {bcolors.BOLD}'
                       f' distance: {target_object_distance_approx:.1f}{bcolors.ENDC}')
 
