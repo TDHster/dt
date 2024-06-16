@@ -197,7 +197,7 @@ class MavlinkDrone:
 
     def _arm(self, arm: bool = True, force=0):
         self.connection.wait_heartbeat()
-        if arm == True:
+        if arm:
             arm_command = 1
         else:
             arm_command = 0
