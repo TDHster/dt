@@ -52,7 +52,7 @@ class MavlinkDrone:
     def set_mode_brake(self):
         self._set_mode('BRAKE')
 
-    def _arm(self, arm: bool = True, force=0):  # work
+    def _arm(self, arm: bool = True, force=0):
         # force 21196, 2989
         # https://ardupilot.org/dev/docs/mavlink-arming-and-disarming.html
         # Need "arm uncheck all" in mavproxy
@@ -89,20 +89,27 @@ class MavlinkDrone:
     def arm(self):
         self._arm(arm=True)
         print('Usual arm')
+
+    def arm_2989(self):
         self._arm(arm=True, force=2989)
         print('Force arm, code 2989')
-        self._arm(arm=True, force=21196)
-        print('Force arm, code 21196')
 
+    def arm_21196(self):
+        self._arm(arm=True, force=21196)
 
     def disarm(self):
-        self._arm(arm=False, force=21196)
         self._arm(arm=False)
-        self._arm(arm=False, force=2989)
 
+    def disarm_2989(self):
+        self._arm(arm=False, force=2989)
+        print('Force disarm, code 2989')
+
+    def disarm_21196(self):
+        self._arm(arm=False, force=21196)
+        print('Force disarm, code 21196')
 
     def emergency_stop(self):
-        self._arm(arm=False, force=True)  # Immediately stop, maybe crash
+        self._arm(arm=False, force=21196)  # Immediately stop, maybe crash
         self.set_mode_brake()
 
     def _takeoff(self, takeoff_altitude):
@@ -126,10 +133,10 @@ class MavlinkDrone:
         self.set_mode_guided()
         self.arm()
         self._takeoff(takeoff_altitude)
-        sleep(2)
-        self.change_position(dz=1)
-        sleep(1)
-        self.change_position(dz=1)
+        # sleep(2)
+        # self.change_position(dz=1)
+        # sleep(1)
+        # self.change_position(dz=1)
 
     def change_position(self, dx=0, dy=0, dz=0):
         dz = -dz  # original axis down

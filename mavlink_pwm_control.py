@@ -5,8 +5,7 @@ import threading
 import queue
 from bcolors import bcolors
 from config import connection_string
-
-
+from math import pi
 def normalize_value(value: float, min_norm=-1000, max_norm=1000):
     raise Warning('Sholud not be used in this module')
     """
@@ -56,6 +55,7 @@ def normalize_PWM_range(value: float):
 
     return int(servo_value)
 
+
 class MavlinkDrone:
     _pitch, _roll, _yaw, _thrust = 0, 0, 0, 0
     _mode = ''
@@ -63,6 +63,7 @@ class MavlinkDrone:
     CHANNEL_ROLL = 2
     CHANNEL_THROTTLE = 3
     CHANNEL_YAW = 4
+
     def __init__(self, connection_string='udpin:localhost:14550'):
         '''
           Args:
@@ -104,52 +105,10 @@ class MavlinkDrone:
         self.attitude_control_thread.start()
         print('Attitude command thread started.')
 
+        self._moving_to_target = False
+
     def wait_heartbeat(self):
         self.connection.wait_heartbeat()
-
-    def set_rc_channel_pwm(self, channel_id, pwm=1500):
-        """ Set RC channel pwm value
-        Args:
-            channel_id (TYPE): Channel ID
-            pwm (int, optional): Channel pwm value 1100-1900, 1500 neutral
-        """
-        if channel_id < 1 or channel_id > 18:
-            print("Channel does not exist.")
-            return
-
-        # Mavlink 2 supports up to 18 channels:
-        # https://mavlink.io/en/messages/common.html#RC_CHANNELS_OVERRIDE
-        rc_channel_values = [65535 for _ in range(18)]
-        rc_channel_values[channel_id - 1] = pwm
-        self.connection.mav.rc_channels_override_send(
-            self.connection.target_system,
-            self.connection.target_component,
-            *rc_channel_values)
-        # print(f'{bcolors.WARNING}\tSended PWM:\t{channel_id=}\t{pwm=} {bcolors.ENDC}')
-
-    def _arm(self, arm_command=1, force=False):
-        self.connection.wait_heartbeat()
-        if force == True:
-            print(f'Arming force.')
-            force = 21196  # float; 0: arm - disarm; unless; prevented; by; safety; checks, 21196: force; arming or disarming
-        else:
-            force = 0
-        self.connection.mav.command_long_send(self.connection.target_system, self.connection.target_component,
-                                              mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-                                              0,
-                                              arm_command,
-                                              force, 0, 0, 0, 0, 0)
-        arm_msg = self.connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
-        print(f"Arm ACK: {arm_msg}")
-        return arm_msg
-
-    def arm(self, force=False):
-        print('Arming')
-        return self._arm(1, force)
-
-    def disarm(self):
-        print('Disarming')
-        return self._arm(0)
 
     def _set_mode(self, mode='LAND'):
         '''
@@ -161,7 +120,13 @@ class MavlinkDrone:
         self._mode = mode
         self.connection.set_mode(mode)
         ack_msg = self.connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
-        print(f"Change Mode to {mode} ACK:  {ack_msg}")
+        if ack_msg:
+            if ack_msg.result == 0:
+                print(f"{bcolors.OKCYAN}{mode} mode{bcolors.ENDC} set OK")
+            else:
+                print(f"Change Mode to {bcolors.FAIL}{mode}{bcolors.ENDC} FAIL: {ack_msg.result}")
+        else:
+            print(f'{bcolors.FAIL}Set mode command{bcolors.ENDC} return None.')
 
     def mode_land(self):
         """
@@ -171,7 +136,7 @@ class MavlinkDrone:
 
     def mode_return_to_land(self):
         """
-        Returns above takeoff location, may also include landing
+        Returns above takeoff location, landing
         """
         # self._set_mode('RTL')
         self._set_mode('SMART_RTL')
@@ -186,7 +151,6 @@ class MavlinkDrone:
     def mode_guided(self):
         """
         Navigates to single points commanded by GCS
-        in test: only rotation via RC
         """
         self._set_mode('GUIDED')
 
@@ -211,12 +175,87 @@ class MavlinkDrone:
     def mode_auto(self):
         self._set_mode('AUTO')
 
+    def set_rc_channel_pwm(self, channel_id, pwm=1500):
+        """ Set RC channel pwm value
+        Args:
+            channel_id (TYPE): Channel ID
+            pwm (int, optional): Channel pwm value 1100-1900, 1500 neutral
+        """
+        if channel_id < 1 or channel_id > 18:
+            print("Channel does not exist.")
+            return
+
+        # Mavlink 2 supports up to 18 channels:
+        # https://mavlink.io/en/messages/common.html#RC_CHANNELS_OVERRIDE
+        rc_channel_values = [65535 for _ in range(18)]
+        rc_channel_values[channel_id - 1] = pwm
+        self.connection.mav.rc_channels_override_send(
+            self.connection.target_system,
+            self.connection.target_component,
+            *rc_channel_values)
+        # print(f'{bcolors.WARNING}\tSended PWM:\t{channel_id=}\t{pwm=} {bcolors.ENDC}')
+
+    def _arm(self, arm: bool = True, force=0):
+        self.connection.wait_heartbeat()
+        if arm == True:
+            arm_command = 1
+        else:
+            arm_command = 0
+        # if force == True:
+        #     print(f'Arming force.')
+        #     force = 21196  # float; 0: arm - disarm; unless; prevented; by; safety; checks, 21196: force; arming or disarming
+        # else:
+        #     force = 0
+        self.connection.mav.command_long_send(self.connection.target_system, self.connection.target_component,
+                                              mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+                                              0,
+                                              arm_command,
+                                              force, 0, 0, 0, 0, 0)
+        arm_msg = self.connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
+        if arm_msg:
+            if arm_msg.result == 0:
+                print(f"{bcolors.OKGREEN}Arm command ok.{bcolors.ENDC} {force=}")
+                if arm:
+                    print("Waiting motors arming...")
+                    self.connection.motors_armed_wait()
+                    print(f'{bcolors.OKGREEN}Motors start confirmed.{bcolors.ENDC}')
+                    return True
+            else:
+                print(f"{bcolors.FAIL}Arm ACK: {bcolors.ENDC} {arm_msg.result}")
+        else:
+            print(f'{bcolors.FAIL}Arm command FAIL (no COMMAND_ACK){bcolors.ENDC}')
+        return False
+
+    def arm(self):
+        self._arm(arm=True)
+        print('Usual arm')
+
+    def arm_2989(self):
+        self._arm(arm=True, force=2989)
+        print('Force arm, code 2989')
+
+    def arm_21196(self):
+        self._arm(arm=True, force=21196)
+
+    def disarm(self):
+        self._arm(arm=False)
+
+    def disarm_2989(self):
+        self._arm(arm=False, force=2989)
+        print('Force disarm, code 2989')
+
+    def disarm_21196(self):
+        self._arm(arm=False, force=21196)
+        print('Force disarm, code 21196')
+
     def emergency_stop(self):
+        self.disarm_2989()
+        self.disarm_21196()
         self.mode_brake()
         self.mode_land()
-        self.disarm()
+        # self.disarm()
 
-    def set_yaw_mavlink(self, yaw: float, yaw_rate: float = 15, abs_rel_flag: int = 1,):
+    def set_yaw_cmd_cond_yaw(self, yaw: float, yaw_rate: float = 15, abs_rel_flag: int = 1,):
         """Set yaw of MAVLink client.
 
         Args:
@@ -244,49 +283,61 @@ class MavlinkDrone:
         print(f"Set Yaw ACK:  {set_yaw_ack}")
         # return set_yaw_ack.result
 
-    def make_movement_mavlink(self, rel_x=0, rel_y=0, rel_z=0):
-
-        # from mavlink_iq
-        # self.connection.mav.send(
-        #     mavutil.mavlink.MAVLink_set_position_target_local_ned_message(
-        #         10, self.connection.target_system,
-        #         self.connection.target_component,
-        #         mavutil.mavlink.MAV_FRAME_LOCAL_NED,
-        #         int(0b010111111000), 40, 0, -10, 0, 0, 0, 0,
-        #         0, 0, 1.57, 0.5))
-
-        type_mask = int(0b010111111000)
-        # x, y, z = 0, 0, -1
-        time_boot_ms = 10  # just for definition
+    def make_set_position(self, dx=0, dy=0, dz=0):
+        dz = -dz  # original axis down
+        yaw = 0
+        yaw_rate = 0
+        # yaw = 30 / (180 * pi)
+        # yaw_rate = 15 / (180 * pi)
+        yaw = yaw / (180 * pi)
+        yaw_rate = yaw_rate / (180 * pi)
+        time_boot_ms = 10  # ms
+        """
+        Use Yaw :          0b100111111111 / 0x09FF / 2559 (decimal)
+        Use Yaw Rate :     0b010111111111 / 0x05FF / 1535 (decimal)
+        Use Acceleration : 0b110000111111 / 0x0C3F / 3135 (decimal)
+        Use Velocity :     0b110111000111 / 0x0DC7 / 3527 (decimal)
+        Use Position :     0b110111111000 / 0x0DF8 / 3576 (decimal)
+        Use Pos+Vel :      0b110111000000 / 0x0DC0 / 3520 (decimal)
+        Use Pos+Vel+Accel: 0b110000000000 / 0x0C00 / 3072 (decimal)
+        """
+        type_mask_position = int(0b110111111000)  # Use Position : 0b110111111000 / 0x0DF8 / 3576 (decimal)
+        # type_mask_yaw = int(0b100111111111)  # # Use Yaw: 0b100111111111 / 0x09FF / 2559(decimal)
+        # type_mask = type_mask_position
+        type_mask = int(0b100111111000)  # works yaw and deltas x,y,z
         velocity_x, velocity_y, velocity_z = 0, 0, 0
         axel_x, axel_y, axel_z = 0, 0, 0
-        yaw = 0  # radians
-        yaw_rate = 0
-
-        # from mavlink_iq
+        print(f'Inside change_position: {dx=:.1f}, {dy=:.1f}, {dz=:.1f}')
         self.connection.mav.send(
             mavutil.mavlink.MAVLink_set_position_target_local_ned_message(
-                time_boot_ms, self.connection.target_system,
-                self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_NED, # seems to be working
-                # self.connection.target_component, mavutil.mavlink.MAV_FRAME_BODY_OFFSET_NED, # best
-                # self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_OFFSET_NED,
+                time_boot_ms, self.connection.target_system, self.connection.target_component,
+                # In frames,
+                # _OFFSET_ means “relative to vehicle position” while
+                # _LOCAL_ is “relative to home position”
+                # (these have no impact on velocity directions).
+                # _BODY_ means that velocity components are relative to the
+                #  heading of the vehicle rather than the NED frame.
+                # mavutil.mavlink.MAV_FRAME_BODY_OFFSET_NED,
+                mavutil.mavlink.MAV_FRAME_BODY_NED,
                 type_mask,
-                rel_x, rel_y, rel_z,
+                dx, dy, dz,
                 velocity_x, velocity_y, velocity_z,
                 axel_x, axel_y, axel_z,
                 yaw, yaw_rate
             )
         )
+        # cmd_ack = connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
 
-    # self.connection.mav.send(
-        #     mavutil.mavlink.MAVLink_set_position_target_global_int_message(
-        #         10, self.connection.target_system,
-        #         self.connection.target_component,
-        #         mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
-        #         int(0b110111111000),
-        #         int(-35.3629849 * 10 ** 7),
-        #         int(149.1649185 * 10 ** 7), 10, 0, 0, 0, 0,
-        #         0, 0, 1.57, 0.5))
+        # if cmd_ack:
+        #     if cmd_ack.result == 0:
+        #         print(f"{bcolors.OKGREEN}set_position_target OK{bcolors.ENDC}")
+        #     else:
+        #         print(f"{bcolors.FAIL}set_position_target ACK:  {cmd_ack.result}{bcolors.ENDC}")
+        # else:
+        #     print(f"{bcolors.FAIL}set_position_target fail{bcolors.ENDC}")
+
+        # cmd_ack = connection.recv_match(type='LOCAL_POSITION_NED', blocking=True)
+        # print(cmd_ack)
 
     @property
     def pitch(self):
@@ -298,7 +349,6 @@ class MavlinkDrone:
         normalized_pitch = normalize_PWM_range(pitch)
         # self.set_rc_channel_pwm(self.CHANNEL_PITCH, normalized_pitch)
         self.attitude_command_queue.put({'pitch': normalized_pitch})
-
 
     @property
     def roll(self):
@@ -343,6 +393,16 @@ class MavlinkDrone:
         # self.set_rc_channel_pwm(self.CHANNEL_THROTTLE, thrust_normalized)
         self.attitude_command_queue.put({'thrust': thrust_normalized})
 
+    @property
+    def moving_to_target(self):
+        return self._moving_to_target
+
+    def do_hover(self):
+        self._thrust = 0
+        self._yaw = 0
+        self._roll = 0
+        self._pitch = 0
+
     def _manual_thrust_series(self, thrust_pairs):
         """
 
@@ -357,19 +417,35 @@ class MavlinkDrone:
             self.thrust = thrust
             sleep(duration)
 
-    def takeoff_manual(self, thrust_pairs=((0.7, 3.5), (0.1, 0.1))):
+    def _takeoff_cmd_nav_takeoff(self, takeoff_altitude):
+        self.connection.mav.command_long_send(
+            self.connection.target_system,  # target_system
+            self.connection.target_component,
+            mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0,
+            0, 0, 0, 0,
+            0, 0, takeoff_altitude)
+
+        takeoff_msg = self.connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
+        if takeoff_msg:
+            if takeoff_msg.result == 0:
+                print(f"{bcolors.OKGREEN}Takeoff command OK.{bcolors.ENDC}")
+            else:
+                print(f"{bcolors.FAIL}Takeoff command ACK not ok: {takeoff_msg.result}{bcolors.ENDC}")
+        else:
+            print(f"{bcolors.FAIL}Takeoff command fail (no COMMAND_ACK){bcolors.ENDC}")
+
+    def _takeoff_manual(self, thrust_pairs=((0.7, 3.5), (0.1, 0.1))):
         # self.mode_guided()
         # self.mode_position_hold() # working, go to near ground.
         self.mode_alt_hold()
         # self.mode_stabilize()
-
         sleep(0.2)
         self.arm()
         sleep(2)
         self._manual_thrust_series(thrust_pairs)
         self.mode_position_hold()
 
-    def takeoff_via_mavlink(self, takeoff_altitude):
+    def takeoff(self, takeoff_altitude):
         # self.mode_alt_hold()
         # self._set_mode('GUIDED_NOGPS')
         # self._set_mode('AUTO')
@@ -377,54 +453,29 @@ class MavlinkDrone:
         # self.mode_position_hold()
         # self.arm()
         # Command Takeoff
-        takeoff_params = [0, 0, 0, 0, 0, 0, takeoff_altitude]
+        self.mode_guided()
+        if not self.arm():
+            if not self.arm_2989():
+                self.arm_21196()
+        self._takeoff_cmd_nav_takeoff(takeoff_altitude)
+        sleep(3)
+        self.mode_position_hold()
 
-        self.connection.mav.command_long_send(
-            self.connection.target_system,  # target_system
-            self.connection.target_component,
-            mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0,
-            takeoff_params[0], takeoff_params[1], takeoff_params[2], takeoff_params[3],
-            takeoff_params[4], takeoff_params[5], takeoff_params[6])
-
-        takeoff_msg = self.connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
-        print(f"Takeoff ACK:  {takeoff_msg}")
-
-    def manual_land(self, thrust_pairs=((-0.1, 1), (-0.2, 0.5), (-1, 0))):
+    def land(self, ):
         self.mode_land()
-        # self._manual_thrust_series(thrust_pairs)
+        # self.mode_return_to_land()
+
+        # self._manual_thrust_series(thrust_pairs=((-0.1, 1), (-0.2, 0.5), (-1, 0)))
         # self.disarm()
 
     def to_target(self, safety=True):
+        self._to_target_mode = True
         self.pitch = 1
-        if safety==True:
-            sleep(0.5)  # for safety
+        if safety:
+            sleep(1)  # for safety
             self.pitch = -1  # for safety
-            sleep(0.2)  # for safety
+            sleep(1)  # for safety
             self.pitch = 0  # for safety
-
-    def move_NED(self, rel_x=0, rel_y=0, rel_z=0, yaw=0, yaw_rate=0):
-        time_boot_ms = 10  # ms
-        # Use; Yaw: 0b100111111111 / 0x09FF / 2559(decimal)
-        # Use Position : 0b110111111000 / 0x0DF8 / 3576 (decimal)
-        type_mask = int(0b110111111000)
-        # x, y, z = 0, 0, -1
-        velocity_x, velocity_y, velocity_z = 0, 0, 0
-        axel_x, axel_y, axel_z = 0, 0, 0
-        # yaw = 0  # radians
-        # yaw_rate = 0
-        self.connection.mav.send(
-            mavutil.mavlink.MAVLink_set_position_target_local_ned_message(
-                time_boot_ms, self.connection.target_system,
-                # self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_NED, # seems to be working
-                self.connection.target_component, mavutil.mavlink.MAV_FRAME_BODY_OFFSET_NED, # best
-                # self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_OFFSET_NED,
-                type_mask,
-                rel_x, rel_y, rel_z,
-                velocity_x, velocity_y, velocity_z,
-                axel_x, axel_y, axel_z,
-                yaw, yaw_rate
-            )
-        )
 
 
 class AttitudePWMControlThread(threading.Thread):
@@ -461,10 +512,11 @@ class AttitudePWMControlThread(threading.Thread):
 
             # Send the current attitude command to the drone
             rc_channel_values = [65535 for _ in range(18)]
+            rc_channel_values[self.CHANNEL_THROTTLE - 1] = self.thrust
             rc_channel_values[self.CHANNEL_PITCH - 1] = self.pitch
             rc_channel_values[self.CHANNEL_ROLL - 1] = self.roll
-            rc_channel_values[self.CHANNEL_THROTTLE - 1] = self.thrust
             rc_channel_values[self.CHANNEL_YAW - 1] = self.yaw
+
             self.connection.mav.rc_channels_override_send(
                 self.connection.target_system, self.connection.target_component,
                 *rc_channel_values)
@@ -473,27 +525,13 @@ class AttitudePWMControlThread(threading.Thread):
 
     def stop(self):
         self.queue.put({'thrust': 0})  # 500 neutral
-        # self.queue.put({'pitch': 0})
-        # self.queue.put({'roll': 0})
-        # self.queue.put({'yaw': 0})
+        self.queue.put({'pitch': 0})
+        self.queue.put({'roll': 0})
+        self.queue.put({'yaw': 0})
         # Wait for the thread to finish (if needed)
         self.join(timeout=3)
 
 
 if __name__ == "__main__":
-    # # Replace with your actual connection method
-    # connection = mavutil.mavlink.MAVLinkConnection('udp://:14550')
-    #
-    # # Create a shared queue to pass attitude commands
-    # attitude_command_queue = queue.Queue()
-    #
-    # # Create and start the attitude control thread
-    # attitude_control_thread = AttitudeControlThread(attitude_command_queue, connection)
-    # attitude_control_thread.start()
-    #
-    # # Example usage: Send some attitude commands to the queue
-    # attitude_command_queue.put({'thrust': 0.5})  # Set thrust to 50%
-    # attitude_command_queue.put({'pitch': -0.1})  # Tilt nose down slightly
-    # attitude_command_queue.put({'yaw': 0.1})  # Yaw right slightly
     pass
 

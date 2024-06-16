@@ -34,7 +34,11 @@ def ask_dictstyle(**kwargs):
                 "mode guided",
                 "mode poshold",
                 "arm",
+                "arm_2989",
+                "arm_21196",
                 "disarm",
+                "disarm_2989",
+                "disarm_21196",
                 "takeoff",
                 Separator(),
                 "nav up",
@@ -91,8 +95,16 @@ if __name__ == "__main__":
                 drone.set_mode_return_to_land()
             case "arm":
                 drone.arm()
+            case "arm_2989":
+                drone.arm_21196()
+            case "arm_21196":
+                drone.arm_21196()
             case "disarm":
                 drone.disarm()
+            case "disarm_2989":
+                drone.disarm_2989()
+            case "disarm_21196":
+                drone.disarm_21196()
             case "takeoff":
                 drone._takeoff(2)
 

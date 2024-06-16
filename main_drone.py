@@ -8,8 +8,8 @@ from video_send import NetworkConnection, get_key_from_byte
 # from control_drone import MavlinkJoystickControl as MavlinkControl
 # from mavlink_control import MavlinkDrone as MavlinkControl
 # from mavlink_th_control import MavlinkDrone as Drone
-# from mavlink_pwm_control import MavlinkDrone as Drone # was almost good
-from mavlink_drone import MavlinkDrone as Drone
+from mavlink_pwm_control import MavlinkDrone as Drone # was almost good
+# from mavlink_drone import MavlinkDrone as Drone
 # from mavsdk_control import MavlinkDrone as Drone
 
 # from object_detector import NeuroNetObjectDetector
@@ -19,8 +19,6 @@ import argparse
 from time import sleep
 from bcolors import bcolors
 
-YAW_STEP = 30  # degrees
-MOVEMENT_STEP = 0.5  # meters
 
 TARGET_OBJECT_HEIGHT = 2
 
@@ -30,7 +28,6 @@ CAMERA_DIAGONAL_FOV = 78  # degrees for logitech c920
 diagonal_fov_rad = radians(CAMERA_DIAGONAL_FOV)
 CAMERA_VERTICAL_FOV = degrees(2 * atan(tan(diagonal_fov_rad / 2) / sqrt(1 + (CAMERA_WIDTH / CAMERA_HEIGHT) ** 2)))
 CAMERA_HORIZONTAL_FOV = degrees(2 * atan((CAMERA_WIDTH / CAMERA_HEIGHT) * tan(radians(CAMERA_VERTICAL_FOV) / 2)))
-
 # 70.2x39.6
 camera_gimbal_pitch_angle = 0  # alight to forward
 print(f'Using setup for camera: {CAMERA_DIAGONAL_FOV=:.0f}, {CAMERA_HORIZONTAL_FOV=:.0f}, {CAMERA_VERTICAL_FOV=:.0f}')
@@ -47,8 +44,13 @@ print(f'{HORIZONTAL_ANGLE_PER_PIXEL=:.2f}, {VERTICAL_ANGLE_PER_PIXEL=:.2f}')
 
 # TARGET_OBJECT_SIZE_PERCENT_OF_IMAGE_HEIGHT = 0.7
 # TARGET_OBJECT_DIAGONAL = INPUT_VIDEO_HEIGHT * TARGET_OBJECT_SIZE_PERCENT_OF_IMAGE_HEIGHT * cos(30 * (pi / 180))
-DESIRED_OBJECT_DISTANCE = 4
-DESIRED_OBJECT_DIAGONAL_PERCENTAGE = 30
+DESIRED_OBJECT_DISTANCE = 4  # meters
+DESIRED_OBJECT_DIAGONAL_PERCENTAGE = 30  # of full frame
+
+COLOR_YELLOW = (0, 255, 255)
+COLOR_GREEN = (0, 255, 0)
+COLOR_RED = (0, 0, 255)
+MANUAL_CONTROL_STEP = 0.1
 
 parser = argparse.ArgumentParser(description="Main drone script")
 
@@ -95,10 +97,9 @@ PID_X = args.pidx
 PID_YAW = args.pidyaw
 PID_Z = args.pidz
 detection_threshold = args.detection_threshold  # 0.3, 0.45
-tracker_max_disappeared_frames = 50
-tracker_distance_threshold = 80
 
-target_object_height = 2.5
+tracker_max_disappeared_frames = 50
+tracker_distance_threshold = 120
 
 print('Starting.')
 print(f"Installed OpenCV version: {cv2.__version__}")
@@ -132,6 +133,7 @@ key_to_command = {
     't': "Takeoff",
     'g': "Land",
     'x': "Emergency",
+    'h': "Hover",
     'w': "Move forward",
     's': "Move backward",
     'a': "Move left",
@@ -206,11 +208,10 @@ while True:
 
     if ((target_object_id not in objects) and  # object lost
             need_reset_movement_if_lost and
-            drone.to_target_status() == False):
-        drone.change_position(0, 0, 0)
-        drone.yaw(0)
+            not drone.moving_to_target):
+        drone.do_hover()
         need_reset_movement_if_lost = False
-        print(f'{bcolors.FAIL}All sticks to zero, object lost{bcolors.ENDC}')
+        print(f'{bcolors.OKCYAN}Hovering, object lost{bcolors.ENDC}')
 
     # print(f'objects={objects}')
     if objects:
@@ -224,45 +225,38 @@ while True:
             if object_id == target_object_id:
                 need_reset_movement_if_lost = True
 
+                # cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
+                #             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
+                cv2.rectangle(frame, rect_top_left, rect_bottom_right, COLOR_RED, 2)
+
                 cv2.line(frame, (int(INPUT_VIDEO_WIDTH / 2), int(INPUT_VIDEO_HEIGHT / 2)),
                          (x, y), (0, 0, 255), thickness=2)
                 yaw_pixels = x - INPUT_VIDEO_WIDTH / 2
                 yaw_angle = yaw_pixels * HORIZONTAL_ANGLE_PER_PIXEL
+                drone.yaw = yaw_angle * 0.1
+
                 elevation_pixels = INPUT_VIDEO_HEIGHT / 2 - y  # center point
                 elevation_angle = elevation_pixels * VERTICAL_ANGLE_PER_PIXEL
+                drone.thrust = elevation_angle * 0.1
 
-                # elevation_pixels = INPUT_VIDEO_HEIGHT/2 - y + 100 # center point shift
-                # elevation_pixels = INPUT_VIDEO_HEIGHT;2/3 - y  # add shift up
-                # cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
-                #             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
-                cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 0, 255), 2)
                 target_object_current_diagonal = sqrt(w * w + h * h)
-                target_object_distance_approximate = TARGET_OBJECT_HEIGHT/2 / sin(target_object_current_diagonal) + 0.00001  # TODO gimbal pitch angle correcteion needed
-                print(f'{bcolors.OKBLUE}Approx distance to object: {target_object_distance_approximate:.2f}{bcolors.ENDC}')
-                # dx = ((TARGET_OBJECT_DIAGONAL / target_object_current_diagonal) - 1) * PID_X
-
-                # dx = (DESIRED_OBJECT_DISTANCE - target_object_distance_approximate) * PID_X
                 desired_object_size_in_pixels = DESIRED_OBJECT_DIAGONAL_PERCENTAGE / 100 * IMPUT_VIDEO_DIAGONAL
                 dx = (desired_object_size_in_pixels - target_object_current_diagonal) * 0.03
-                # 1, 2, 8
-                dyaw = yaw_angle * 1 # * sin(target_object_distance_approximate)
-                # dz = sin(elevation_angle) * PID_Z * 1/sin(target_object_distance_approximate) + 0.001
-                # dz = sin(elevation_angle) * PID_Z #  * 1/sin(target_object_distance_approximate) + 0.001
-                dz = elevation_angle * 1/40
 
-                print(f'{dx=:.1f}\t{dz=:.1f}\t{dyaw=:.1f}\t{elevation_angle=:.1f}')
-                # print(f'{bcolors.OKCYAN}Sending {dyaw=}{bcolors.ENDC}')
-                drone.change_position(dx, 0, dz)
-                drone.yaw(yaw=dyaw)
+                target_object_distance_approximate = TARGET_OBJECT_HEIGHT/2 / sin(target_object_current_diagonal) + 0.00001  # TODO gimbal pitch angle correcteion needed
+
+                print(f'{drone.pitch=:.1f}\t{drone.thrust=:.1f}\t{drone.yaw=:.1f}\t{elevation_angle=:.1f}\t {bcolors.BOLD}'
+                      f'Approx distance: {target_object_distance_approximate:.1f}{bcolors.ENDC}')
+
 
             elif object_id == object_id_near_center:
                 # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
                 #             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
-                cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 255, 255), 2)
+                cv2.rectangle(frame, rect_top_left, rect_bottom_right, COLOR_YELLOW, 2)
             else:
                 # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
                 #             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
-                cv2.rectangle(frame, rect_top_left, rect_bottom_right, (0, 255, 0), 1)
+                cv2.rectangle(frame, rect_top_left, rect_bottom_right, COLOR_GREEN, 1)
 
             # cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), -1)
 
@@ -291,36 +285,39 @@ while True:
             print(f"Received from Queue: {key=}, '{command}', {key_encoded=}")
             if command == 'Select target':
                 target_object_id = object_id_near_center
-                print(f'Select target: {target_object_id}')
+                print(f'{bcolors.OKCYAN}Target locked: {target_object_id}{bcolors.ENDC}')
                 target_object_diagonal = None
             elif command == 'To target':
                 drone.to_target()
             elif command == "Clear target":
-                target_object_id = -1
+                target_object_id = None
+                print(f'{bcolors.OKCYAN}Target lock reset{bcolors.ENDC}')
                 drone.to_target(False)
+            elif command == "Hover":
+                drone.do_hover()
             elif command == "Yaw left":
-                drone.yaw(yaw=-YAW_STEP)
+                drone.yaw -= MANUAL_CONTROL_STEP
             elif command == "Yaw right":
-                drone.yaw(yaw=YAW_STEP)
+                drone.yaw += MANUAL_CONTROL_STEP
             elif command == "Move up":
-                drone.change_position(dz=MOVEMENT_STEP)
+                drone.thrust += MANUAL_CONTROL_STEP
             elif command == "Move down":
-                drone.change_position(dz=-MOVEMENT_STEP)
+                drone.thrust -= MANUAL_CONTROL_STEP
             elif command == "Move forward":
-                drone.change_position(dx=MOVEMENT_STEP)
+                drone.pitch += MANUAL_CONTROL_STEP
             elif command == "Move backward":
-                drone.change_position(dx=-MOVEMENT_STEP)
+                drone.pitch -= MANUAL_CONTROL_STEP
             elif command == "Move left":
-                drone.change_position(dy=-MOVEMENT_STEP)
+                drone.roll -= MANUAL_CONTROL_STEP
             elif command == "Move right":
-                drone.change_position(dy=MOVEMENT_STEP)
+                drone.roll += MANUAL_CONTROL_STEP
             elif command == "Land":
-                drone.set_mode_land()
+                drone.mode_land()
                 # drone.set_mode_return_to_land()
             elif command == "Takeoff":
-                drone.takeoff(3)
+                drone.takeoff(5)
             elif command == "Emergency":
-                drone.disarm()
+                drone.emergency_stop()
             else:
                 print(f'{command=} not known')
 
