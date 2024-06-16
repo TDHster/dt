@@ -232,7 +232,7 @@ while True:
                 yaw_pixels = x - INPUT_VIDEO_WIDTH / 2
                 yaw_angle = yaw_pixels * HORIZONTAL_ANGLE_PER_PIXEL
                 # 0.02 0.04 0.03 0.015 0.01 0.02
-                drone.yaw = yaw_angle * 0.015
+                drone.yaw = yaw_angle * 0.007
 
                 elevation_pixels = INPUT_VIDEO_HEIGHT / 2 - y  # center point
                 elevation_angle = elevation_pixels * VERTICAL_ANGLE_PER_PIXEL
