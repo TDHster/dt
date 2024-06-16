@@ -99,7 +99,7 @@ PID_Z = args.pidz
 detection_threshold = args.detection_threshold  # 0.3, 0.45
 
 tracker_max_disappeared_frames = 50
-tracker_distance_threshold = 120
+tracker_distance_threshold = 100
 
 print('Starting.')
 print(f"Installed OpenCV version: {cv2.__version__}")
