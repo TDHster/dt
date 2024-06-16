@@ -191,14 +191,12 @@ while True:
         continue
     frame = cv2.resize(frame, (INPUT_VIDEO_WIDTH, INPUT_VIDEO_HEIGHT), interpolation=cv2.INTER_AREA)
     # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # convert to black and white  # dont work with neurodetect
-    # Resize the frame to 320x200 while maintaining aspect ratio
 
     classIds, confs, bbox = object_detector.detect(frame, detection_threshold=detection_threshold)
     # print(f'classIds={classIds}, bbox={bbox}')
 
     if classIds is None:
-        # Handle the case where no target class IDs were found
-        print("No target class IDs detected")
+        print("No target class IDs detected")  # Handle the case where no target class IDs were found
         continue
 
     # classIds, bbox = object_detector.filter(classIds, bbox, target_class_name='person')
@@ -237,44 +235,28 @@ while True:
 
                 elevation_pixels = INPUT_VIDEO_HEIGHT / 2 - y  # center point
                 elevation_angle = elevation_pixels * VERTICAL_ANGLE_PER_PIXEL
-                drone.thrust = elevation_angle * 0.1
+                # drone.thrust = elevation_angle * 0.1
 
                 target_object_current_diagonal = sqrt(w * w + h * h)
                 desired_object_size_in_pixels = DESIRED_OBJECT_DIAGONAL_PERCENTAGE / 100 * IMPUT_VIDEO_DIAGONAL
                 dx = (desired_object_size_in_pixels - target_object_current_diagonal) * 0.03
+                # drone.pitch = dx * 0.1
 
-                target_object_distance_approximate = TARGET_OBJECT_HEIGHT/2 / sin(target_object_current_diagonal) + 0.00001  # TODO gimbal pitch angle correcteion needed
+                target_object_distance_approx = TARGET_OBJECT_HEIGHT/2 / sin(h/2 * HORIZONTAL_ANGLE_PER_PIXEL)  # TODO gimbal angle correction
 
                 print(f'{drone.pitch=:.1f}\t{drone.thrust=:.1f}\t{drone.yaw=:.1f}\t{elevation_angle=:.1f}\t {bcolors.BOLD}'
-                      f'Approx distance: {target_object_distance_approximate:.1f}{bcolors.ENDC}')
-
+                      f'Approx distance: {target_object_distance_approx:.1f}{bcolors.ENDC}')
 
             elif object_id == object_id_near_center:
-                # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
-                #             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1)
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, COLOR_YELLOW, 2)
             else:
-                # cv2.putText(frame, f'{object_id}', (x - 10, y - 10),
-                #             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, COLOR_GREEN, 1)
 
-            # cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), -1)
-
-    # cv2.imshow("Output", frame)
     try:
         netconnection.send_frame(frame)
     except BrokenPipeError as e:
         print(f'Error sending frame to ground station {e} (receiver program running?)')
-    # video_stream_sender.make_time_delay(0.05)  # Adjust as needed
-    # try:
-    #     received_key = netconnection.key_queue.get(timeout=0.1)
-    #     command = key_to_command.get(received_key, "Unknown command")
-    #     print(f"Received from Queue: {received_key}, '{command}'")
-    # except netconnection.key_queue.Empty:
-    #     pass  # No data in queue, continue the loop
 
-    # target_object_id = object_id_near_center #  for debug - autotarget nearest
-    # Check for received keys from the queue
     if not netconnection.key_queue.empty():
         try:
             received_byte = netconnection.key_queue.get(timeout=0.1)
@@ -323,15 +305,14 @@ while True:
 
         except netconnection.key_queue.Empty:
             pass  # No data in queue, continue the loop
-    # print(f'{drone.thrust=:0.1f}\t{drone.pitch=:0.1f}\t{drone.roll=:0.1f}\t{drone.yaw=:0.1f}')
+
     if cv2.waitKey(1) == 27:  # Esc key
         print('Exit main program loop.')
         break
 
-# drone.manual_land()
 drone.mode_land()
-drone.disarm()
-drone.emergency_stop()
+# drone.disarm()
+# drone.emergency_stop()
 cap.release()
 netconnection.close()
 # drone.manual_land()

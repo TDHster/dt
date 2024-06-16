@@ -477,6 +477,10 @@ class MavlinkDrone:
             sleep(1)  # for safety
             self.pitch = 0  # for safety
 
+    def send_empty(self):
+        self.attitude_command_queue.put({'send empty': 1})
+
+
 
 class AttitudePWMControlThread(threading.Thread):
     CHANNEL_PITCH = 1
@@ -495,6 +499,7 @@ class AttitudePWMControlThread(threading.Thread):
         self.roll = normalize_PWM_range(0)
         self.thrust = normalize_PWM_range(0)
         self.yaw = normalize_PWM_range(0)
+        self.send_empty = 0
 
     def run(self):
         while True:
@@ -508,14 +513,16 @@ class AttitudePWMControlThread(threading.Thread):
                 self.pitch = command.get('pitch', self.pitch)
                 self.roll = command.get('roll', self.roll)
                 self.yaw = command.get('yaw', self.yaw)
+                self.send_empty = command.get('send empty', self.yaw)
                 # print(f'{bcolors.OKBLUE}Thread:{bcolors.ENDC} {self.thrust=}\t{self.pitch=}\t{self.roll=}\t{self.yaw=}')
 
-            # Send the current attitude command to the drone
             rc_channel_values = [65535 for _ in range(18)]
-            rc_channel_values[self.CHANNEL_THROTTLE - 1] = self.thrust
-            rc_channel_values[self.CHANNEL_PITCH - 1] = self.pitch
-            rc_channel_values[self.CHANNEL_ROLL - 1] = self.roll
-            rc_channel_values[self.CHANNEL_YAW - 1] = self.yaw
+            if self.send_empty == 0:
+                # Send the current attitude command to the drone
+                rc_channel_values[self.CHANNEL_THROTTLE - 1] = self.thrust
+                rc_channel_values[self.CHANNEL_PITCH - 1] = self.pitch
+                rc_channel_values[self.CHANNEL_ROLL - 1] = self.roll
+                rc_channel_values[self.CHANNEL_YAW - 1] = self.yaw
 
             self.connection.mav.rc_channels_override_send(
                 self.connection.target_system, self.connection.target_component,
