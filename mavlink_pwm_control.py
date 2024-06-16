@@ -510,8 +510,10 @@ class AttitudePWMControlThread(threading.Thread):
 
                 # Update attitude values from the command
                 self.thrust = command.get('thrust', self.thrust)
-                self.pitch = command.get('pitch', self.pitch)
-                self.roll = command.get('roll', self.roll)
+                # self.pitch = command.get('pitch', self.pitch)  # right drone config
+                # self.roll = command.get('roll', self.roll)  # right drone config
+                self.pitch = command.get('roll', self.pitch)
+                self.roll = command.get('pitch', self.roll)
                 self.yaw = command.get('yaw', self.yaw)
                 self.send_empty = command.get('send empty', self.yaw)
                 # print(f'{bcolors.OKBLUE}Thread:{bcolors.ENDC} {self.thrust=}\t{self.pitch=}\t{self.roll=}\t{self.yaw=}')
