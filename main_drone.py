@@ -44,7 +44,7 @@ print(f'{HORIZONTAL_ANGLE_PER_PIXEL=:.2f}, {VERTICAL_ANGLE_PER_PIXEL=:.2f}')
 
 # TARGET_OBJECT_SIZE_PERCENT_OF_IMAGE_HEIGHT = 0.7
 # TARGET_OBJECT_DIAGONAL = INPUT_VIDEO_HEIGHT * TARGET_OBJECT_SIZE_PERCENT_OF_IMAGE_HEIGHT * cos(30 * (pi / 180))
-DESIRED_OBJECT_DISTANCE = 4  # meters
+DESIRED_OBJECT_DISTANCE = 5  # meters
 DESIRED_OBJECT_DIAGONAL_PERCENTAGE = 30  # of full frame
 
 COLOR_YELLOW = (0, 255, 255)
@@ -231,21 +231,22 @@ while True:
                          (x, y), (0, 0, 255), thickness=2)
                 yaw_pixels = x - INPUT_VIDEO_WIDTH / 2
                 yaw_angle = yaw_pixels * HORIZONTAL_ANGLE_PER_PIXEL
-                drone.yaw = yaw_angle * 0.1
+                drone.yaw = yaw_angle * 0.04
 
                 elevation_pixels = INPUT_VIDEO_HEIGHT / 2 - y  # center point
                 elevation_angle = elevation_pixels * VERTICAL_ANGLE_PER_PIXEL
                 drone.thrust = elevation_angle * 0.05
 
                 target_object_current_diagonal = sqrt(w * w + h * h)
-                desired_object_size_in_pixels = DESIRED_OBJECT_DIAGONAL_PERCENTAGE / 100 * IMPUT_VIDEO_DIAGONAL
-                dx = (desired_object_size_in_pixels - target_object_current_diagonal) * 0.03
+                # desired_object_size_in_pixels = DESIRED_OBJECT_DIAGONAL_PERCENTAGE / 100 * IMPUT_VIDEO_DIAGONAL
+                # dx = (desired_object_size_in_pixels - target_object_current_diagonal) * 0.03
                 target_object_distance_approx = (TARGET_OBJECT_HEIGHT/2 /
                                                  sin((h/2 * HORIZONTAL_ANGLE_PER_PIXEL) * pi/180))  # TODO gimbal angle correction
-                # dx = (DESIRED_OBJECT_DISTANCE - target_object_distance_approx) * 0.03
+                dx = (DESIRED_OBJECT_DISTANCE - target_object_distance_approx) * 0.03
                 drone.pitch = dx * 0.1
 
-                print(f'{drone.pitch=:.1f}\t{drone.thrust=:.1f}\t{drone.yaw=:.1f}\t{elevation_angle=:.1f}\t {bcolors.BOLD}'
+                print(f'Pitch: {drone.pitch:.1f}\tThrust: {drone.thrust:.1f}\tYaw {drone.yaw:.1f}\t{drone.pitch:.1f}\t'
+                      f'{elevation_angle=:.1f}\t {bcolors.BOLD}'
                       f' distance: {target_object_distance_approx:.1f}{bcolors.ENDC}')
 
             elif object_id == object_id_near_center:
