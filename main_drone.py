@@ -250,7 +250,8 @@ while True:
 
                 print(f'Pitch: {drone.pitch:.1f}\tThrust: {drone.thrust:.1f}\tYaw {drone.yaw:.1f}\t'
                       f'{elevation_angle=:.1f}\t {bcolors.BOLD}'
-                      f' distance: {target_object_distance_approx:.1f}{bcolors.ENDC}')
+                      # f' distance: {target_object_distance_approx:.1f}{bcolors.ENDC}')
+                      f'{bcolors.ENDC}')
 
             elif object_id == object_id_near_center:
                 cv2.rectangle(frame, rect_top_left, rect_bottom_right, COLOR_YELLOW, 2)
