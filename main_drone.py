@@ -244,9 +244,9 @@ while True:
                 # dx = (desired_object_size_in_pixels - target_object_current_diagonal) * 0.03
                 target_object_distance_approx = (TARGET_OBJECT_HEIGHT/2 /
                                                  sin((h/2 * HORIZONTAL_ANGLE_PER_PIXEL) * pi/180))  # TODO gimbal angle correction
-                dx = (DESIRED_OBJECT_DISTANCE - target_object_distance_approx)
-                # 0.2 0.4 0.1
-                drone.pitch = dx * 0.4
+                dx = (target_object_distance_approx - DESIRED_OBJECT_DISTANCE)
+                # 0.2 0.4 0.1 0.4
+                drone.pitch = dx * 0.6
 
                 print(f'Pitch: {drone.pitch:.1f}\tThrust: {drone.thrust:.1f}\tYaw {drone.yaw:.1f}\t'
                       f'{elevation_angle=:.1f}\t {bcolors.BOLD}'
