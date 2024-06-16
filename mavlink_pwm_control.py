@@ -517,7 +517,7 @@ class AttitudePWMControlThread(threading.Thread):
                 # print(f'{bcolors.OKBLUE}Thread:{bcolors.ENDC} {self.thrust=}\t{self.pitch=}\t{self.roll=}\t{self.yaw=}')
 
             rc_channel_values = [65535 for _ in range(18)]
-            # if self.send_empty == 0:
+            # if self.send_empty == 0: #not worked when enable
             # Send the current attitude command to the drone
             rc_channel_values[self.CHANNEL_THROTTLE - 1] = self.thrust
             rc_channel_values[self.CHANNEL_PITCH - 1] = self.pitch
