@@ -235,7 +235,7 @@ while True:
 
                 elevation_pixels = INPUT_VIDEO_HEIGHT / 2 - y  # center point
                 elevation_angle = elevation_pixels * VERTICAL_ANGLE_PER_PIXEL
-                drone.thrust = elevation_angle * 0.05
+                drone.thrust = elevation_angle * 0.03
 
                 target_object_current_diagonal = sqrt(w * w + h * h)
                 # desired_object_size_in_pixels = DESIRED_OBJECT_DIAGONAL_PERCENTAGE / 100 * IMPUT_VIDEO_DIAGONAL
