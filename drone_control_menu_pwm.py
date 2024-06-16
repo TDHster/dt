@@ -59,7 +59,7 @@ def ask_dictstyle(**kwargs):
     return prompt(questions, **kwargs)
 
 if __name__ == "__main__":
-    CONTROL_STEP = 0.1
+    CONTROL_STEP = 0.3
 
     # MOVE_VALUE = 0.5
     # YAW_VALUE = 30
@@ -110,7 +110,7 @@ if __name__ == "__main__":
             case "disarm_21196":
                 drone.disarm_21196()
             case "takeoff":
-                drone.takeoff(2)
+                drone.takeoff(12)
 
             case "hover":
                 drone.do_hover()
