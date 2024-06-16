@@ -4,7 +4,7 @@ from time import sleep
 import threading
 import queue
 from bcolors import bcolors
-from config import connection_string
+# from config import connection_string
 from math import pi
 def normalize_value(value: float, min_norm=-1000, max_norm=1000):
     raise Warning('Sholud not be used in this module')
