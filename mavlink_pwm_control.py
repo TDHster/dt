@@ -195,7 +195,7 @@ class MavlinkDrone:
             *rc_channel_values)
         # print(f'{bcolors.WARNING}\tSended PWM:\t{channel_id=}\t{pwm=} {bcolors.ENDC}')
 
-    def _arm(self, arm: bool = True, force=0):
+    def _arm(self, arm: bool = True, force_code=0):
         self.connection.wait_heartbeat()
         if arm:
             arm_command = 1
@@ -210,11 +210,12 @@ class MavlinkDrone:
                                               mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
                                               0,
                                               arm_command,
-                                              force, 0, 0, 0, 0, 0)
+                                              force_code, 0, 0, 0, 0, 0
+                                              )
         arm_msg = self.connection.recv_match(type='COMMAND_ACK', blocking=True, timeout=3)
         if arm_msg:
             if arm_msg.result == 0:
-                print(f"{bcolors.OKGREEN}Arm command ok.{bcolors.ENDC} {force=}")
+                print(f"{bcolors.OKGREEN}Arm command ok.{bcolors.ENDC} {force_code=}")
                 if arm:
                     print("Waiting motors arming...")
                     self.connection.motors_armed_wait()
@@ -231,21 +232,22 @@ class MavlinkDrone:
         print('Usual arm')
 
     def arm_2989(self):
-        self._arm(arm=True, force=2989)
+        self._arm(arm=True, force_code=2989)
         print('Force arm, code 2989')
 
     def arm_21196(self):
-        self._arm(arm=True, force=21196)
+        self._arm(arm=True, force_code=21196)
+        print('Force arm, code 21196')
 
     def disarm(self):
         self._arm(arm=False)
 
     def disarm_2989(self):
-        self._arm(arm=False, force=2989)
+        self._arm(arm=False, force_code=2989)
         print('Force disarm, code 2989')
 
     def disarm_21196(self):
-        self._arm(arm=False, force=21196)
+        self._arm(arm=False, force_code=21196)
         print('Force disarm, code 21196')
 
     def emergency_stop(self):

@@ -8,9 +8,10 @@ from video_send import NetworkConnection, get_key_from_byte
 # from control_drone import MavlinkJoystickControl as MavlinkControl
 # from mavlink_control import MavlinkDrone as MavlinkControl
 # from mavlink_th_control import MavlinkDrone as Drone
-from mavlink_pwm_control import MavlinkDrone as Drone # was almost good
+# from mavlink_pwm_control import MavlinkDrone as Drone # cannot hold position
 # from mavlink_drone import MavlinkDrone as Drone
 # from mavsdk_control import MavlinkDrone as Drone
+from mavlink_pos_control import MavlinkDrone as Drone
 
 # from object_detector import NeuroNetObjectDetector
 # from object_detector import filter_by_target_class_id
@@ -231,24 +232,24 @@ while True:
                          (x, y), (0, 0, 255), thickness=2)
                 yaw_pixels = x - INPUT_VIDEO_WIDTH / 2
                 yaw_angle = yaw_pixels * HORIZONTAL_ANGLE_PER_PIXEL
-                # 0.02 0.04 0.03 0.015 0.01 0.02
-                drone.yaw = yaw_angle * 0.007
 
                 elevation_pixels = INPUT_VIDEO_HEIGHT / 2 - y  # center point
                 elevation_angle = elevation_pixels * VERTICAL_ANGLE_PER_PIXEL
-                # 0.03
-                drone.thrust = elevation_angle * 0.03
+                dz = elevation_angle * 0.03
 
                 target_object_current_diagonal = sqrt(w * w + h * h)
                 desired_object_size_in_pixels = DESIRED_OBJECT_DIAGONAL_PERCENTAGE / 100 * IMPUT_VIDEO_DIAGONAL
-                dx = (desired_object_size_in_pixels - target_object_current_diagonal) * 0.03
+                dx = (desired_object_size_in_pixels - target_object_current_diagonal) * 0.01
                 # target_object_distance_approx = (TARGET_OBJECT_HEIGHT/2 /
                 #                                  sin((h/2 * HORIZONTAL_ANGLE_PER_PIXEL) * pi/180))  # TODO gimbal angle correction
                 # dx = (target_object_distance_approx - DESIRED_OBJECT_DISTANCE)
-                # 0.2 0.4 0.1 0.4 0.6 # for distance
-                # drone.pitch = dx * 0.1
+                drone.move(velocity_x=0, velocity_y=0, velocity_z=0)
 
-                print(f'Pitch: {drone.pitch:.1f}\tThrust: {drone.thrust:.1f}\tYaw {drone.yaw:.1f}\t'
+                # 0.02 0.04 0.03 0.015 0.01 0.02
+                dyaw = yaw_angle * 0.007
+                drone.yaw(dyaw)
+
+                print(f'x: {dx:.1f}\tz: {dz:.1f}\tYaw {dyaw:.1f}\t'
                       f'{elevation_angle=:.1f}\t {bcolors.BOLD}'
                       # f' distance: {target_object_distance_approx:.1f}{bcolors.ENDC}')
                       f'{bcolors.ENDC}')
