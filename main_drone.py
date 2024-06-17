@@ -208,23 +208,22 @@ while True:
     objects = object_tracker.update(bbox)
 
     if ((target_object_id not in objects) and  # object lost
-            need_reset_movement_if_lost and
+            # need_reset_movement_if_lost and
             not drone.moving_to_target):
+        # need_reset_movement_if_lost = False
+        print(f'{bcolors.WARNING}Object lost{bcolors.ENDC}')
         drone.hover()
-        need_reset_movement_if_lost = False
-        print(f'{bcolors.OKCYAN}Hovering, object lost{bcolors.ENDC}')
 
     # print(f'objects={objects}')
     if objects:
         object_id_near_center = find_nearest_object_id(objects)
-        target_found = False
 
         for object_id, (x, y, w, h) in objects.items():
             # print(f'{object_id, (x, y, w, h)}')
             rect_top_left = (int(x - w / 2), int(y - h / 2))
             rect_bottom_right = (int(x + w / 2), int(y + h / 2))
             if object_id == target_object_id:
-                need_reset_movement_if_lost = True
+                # need_reset_movement_if_lost = True
 
                 # cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
                 #             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
@@ -274,7 +273,7 @@ while True:
             received_byte = netconnection.key_queue.get(timeout=0.1)
             key = chr(received_byte)
             key_encoded = key.encode()
-            print(f'{key=}\t{key_encoded=}')
+            # print(f'{key=}\t{key_encoded=}')
             command = key_to_command.get(key, "Unknown command")
             print(f"Received from Queue: {key=}, '{command}', {key_encoded=}")
             if command == 'Select target':
@@ -285,6 +284,7 @@ while True:
                 drone.to_target()
             elif command == "Clear target":
                 target_object_id = None
+                # need_reset_movement_if_lost = True
                 print(f'{bcolors.OKCYAN}Target lock reset{bcolors.ENDC}')
                 drone.moving_to_target = False
             elif command == "Hover":

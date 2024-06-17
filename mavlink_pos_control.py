@@ -341,6 +341,7 @@ class MavlinkDrone:
     def hover(self):
         self.move(velocity_x=0, velocity_y=0, velocity_z=0)
         self.set_yaw(0)
+        print(f'{bcolors.OKBLUE}Hovering.{bcolors.ENDC}')
 
 
     @property
