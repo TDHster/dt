@@ -2,7 +2,8 @@ from questionary import Separator, prompt
 import argparse
 from mavlink_th_control import MavlinkDrone # was tested - ok
 # from mavlink_pwm_control import MavlinkDrone
-from mavlink_drone import MavlinkDrone as Drone
+# from mavlink_drone import MavlinkDrone as Drone
+from mavlink_pos_control import MavlinkDrone as Drone
 from time import sleep
 
 
@@ -57,7 +58,7 @@ def ask_dictstyle(**kwargs):
     return prompt(questions, **kwargs)
 
 if __name__ == "__main__":
-    MOVE_VALUE = 0.5
+    VELOCITY_VALUE = 0.5
     YAW_VALUE = 30
     #working config:
     # udpin:127.0.0.1:14550 =  udpin:127.0.0.1:14550
@@ -83,16 +84,14 @@ if __name__ == "__main__":
         match drone_command:
             case "emergency":
                 drone.emergency_stop()
-            case "mode brake":
-                drone.set_mode_brake()
             case "mode land":
-                drone.set_mode_land()
+                drone.mode_land()
             case "mode guided":
-                drone.set_mode_guided()
+                drone.mode_guided()
             case "mode poshold":
-                drone.set_mode_poshold()
+                drone.mode_position_hold()
             case "mode RTL":
-                drone.set_mode_return_to_land()
+                drone.mode_rtl()
             case "arm":
                 drone.arm()
             case "arm_2989":
@@ -106,24 +105,24 @@ if __name__ == "__main__":
             case "disarm_21196":
                 drone.disarm_21196()
             case "takeoff":
-                drone._takeoff(2)
+                drone.takeoff(2)
 
             case "nav up":
-                drone.change_position(dz=MOVE_VALUE)
+                drone.move(velocity_z=VELOCITY_VALUE)
             case "nav down":
-                drone.change_position(dz=-MOVE_VALUE)
+                drone.move(velocity_z=-VELOCITY_VALUE)
             case "nav left":
-                drone.change_position(dy=-MOVE_VALUE)
+                drone.move(velocity_y=-VELOCITY_VALUE)
             case "nav right":
-                drone.change_position(dy=MOVE_VALUE)
+                drone.move(velocity_y=VELOCITY_VALUE)
             case "nav forward":
-                drone.change_position(dx=MOVE_VALUE)
+                drone.move(velocity_x=VELOCITY_VALUE)
             case "nav backward":
-                drone.change_position(dx=-MOVE_VALUE)
+                drone.move(velocity_x=-VELOCITY_VALUE)
             case "nav rotate CW":
-                drone.yaw(yaw=YAW_VALUE)
+                drone.yaw(yaw_angle=YAW_VALUE)
             case "nav rotate CCW":
-                drone.yaw(yaw=-YAW_VALUE)
+                drone.yaw(yaw_angle=-YAW_VALUE)
 
             case "exit":
                 exit(0)

@@ -51,7 +51,9 @@ DESIRED_OBJECT_DIAGONAL_PERCENTAGE = 30  # of full frame
 COLOR_YELLOW = (0, 255, 255)
 COLOR_GREEN = (0, 255, 0)
 COLOR_RED = (0, 0, 255)
-MANUAL_CONTROL_STEP = 0.1
+
+CONTROL_STEP = 0.25 # meters
+CONTROL_YAW_STEP = 30 # degrees
 
 parser = argparse.ArgumentParser(description="Main drone script")
 
@@ -208,7 +210,7 @@ while True:
     if ((target_object_id not in objects) and  # object lost
             need_reset_movement_if_lost and
             not drone.moving_to_target):
-        drone.do_hover()
+        drone.hover()
         need_reset_movement_if_lost = False
         print(f'{bcolors.OKCYAN}Hovering, object lost{bcolors.ENDC}')
 
@@ -235,19 +237,22 @@ while True:
 
                 elevation_pixels = INPUT_VIDEO_HEIGHT / 2 - y  # center point
                 elevation_angle = elevation_pixels * VERTICAL_ANGLE_PER_PIXEL
+                # 0.03
                 dz = elevation_angle * 0.03
 
                 target_object_current_diagonal = sqrt(w * w + h * h)
                 desired_object_size_in_pixels = DESIRED_OBJECT_DIAGONAL_PERCENTAGE / 100 * IMPUT_VIDEO_DIAGONAL
+                # 0.01
                 dx = (desired_object_size_in_pixels - target_object_current_diagonal) * 0.01
                 # target_object_distance_approx = (TARGET_OBJECT_HEIGHT/2 /
                 #                                  sin((h/2 * HORIZONTAL_ANGLE_PER_PIXEL) * pi/180))  # TODO gimbal angle correction
                 # dx = (target_object_distance_approx - DESIRED_OBJECT_DISTANCE)
+
                 drone.move(velocity_x=0, velocity_y=0, velocity_z=0)
 
-                # 0.02 0.04 0.03 0.015 0.01 0.02
-                dyaw = yaw_angle * 0.007
-                drone.yaw(dyaw)
+                # 1
+                dyaw = yaw_angle * 1
+                drone.yaw = dyaw
 
                 print(f'x: {dx:.1f}\tz: {dz:.1f}\tYaw {dyaw:.1f}\t'
                       f'{elevation_angle=:.1f}\t {bcolors.BOLD}'
@@ -281,42 +286,37 @@ while True:
             elif command == "Clear target":
                 target_object_id = None
                 print(f'{bcolors.OKCYAN}Target lock reset{bcolors.ENDC}')
-                drone.to_target(False)
+                drone.moving_to_target = False
             elif command == "Hover":
-                drone.do_hover()
+                drone.hover()
             elif command == "Yaw left":
-                drone.yaw -= MANUAL_CONTROL_STEP
+                drone.yaw = -CONTROL_YAW_STEP
             elif command == "Yaw right":
-                drone.yaw += MANUAL_CONTROL_STEP
+                drone.yaw = CONTROL_YAW_STEP
             elif command == "Move up":
-                drone.thrust += MANUAL_CONTROL_STEP
-                print(f'{drone.thrust=}')
+                drone.vz += CONTROL_STEP
+                # drone.move(velocity_z=CONTROL_STEP)
             elif command == "Move down":
-                drone.thrust -= MANUAL_CONTROL_STEP
-                print(f'{drone.thrust=}')
+                drone.vz -= CONTROL_STEP
             elif command == "Move forward":
-                drone.pitch += MANUAL_CONTROL_STEP
-                print(f'{drone.pitch=}')
+                drone.vx += CONTROL_STEP
             elif command == "Move backward":
-                drone.pitch -= MANUAL_CONTROL_STEP
-                print(f'{drone.pitch=}')
+                drone.vx -= CONTROL_STEP
             elif command == "Move left":
-                drone.roll -= MANUAL_CONTROL_STEP
-                print(f'{drone.roll=}')
+                drone.vx -= CONTROL_STEP
             elif command == "Move right":
-                drone.roll += MANUAL_CONTROL_STEP
-                print(f'{drone.roll=}')
+                drone.vx += CONTROL_STEP
             elif command == "Land":
                 drone.mode_land()
                 # drone.set_mode_return_to_land()
             elif command == "Takeoff":
                 # drone.takeoff(12)
-                drone._takeoff_manual()
+                drone.takeoff(2)
 
             elif command == "Emergency":
                 drone.emergency_stop()
             else:
-                print(f'{command=} not known')
+                print(f'{bcolors.FAIL}{command=} not known{bcolors.ENDC}')
 
         except netconnection.key_queue.Empty:
             pass  # No data in queue, continue the loop

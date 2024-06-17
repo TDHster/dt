@@ -20,6 +20,9 @@ print(f"Using mavlink connection string: {connection_string}")
 
 
 class MavlinkDrone:
+    _vx, _vy, _vz, _yaw = 0, 0, 0, 0
+    TO_TARGET_VELOCITY = 2  # m/s
+
     def __init__(self, connection_string='udpin:localhost:14550'):
         '''
           Args:
@@ -42,8 +45,8 @@ class MavlinkDrone:
         '''
         self.connection = mavutil.mavlink_connection(connection_string)
         self.connection.wait_heartbeat()
-        print("Heartbeat from system (system %u component %u)" %
-              (self.connection.target_system, self.connection.target_component))
+        # print("Heartbeat from system (system %u component %u)" %
+        #       (self.connection.target_system, self.connection.target_component))
         self.autopilot_info = self._get_autopilot_info()
         print(f'Connected to {self.autopilot_info["autopilot"]} autopilot')
 
@@ -77,31 +80,32 @@ class MavlinkDrone:
 
 
     def arm(self):
-        self._arm(arm=True)
         print('Usual arm')
+        self._arm(arm=True)
 
     def arm_2989(self):
-        self._arm(arm=True, force_code=2989)
         print('Force arm, code 2989')
+        self._arm(arm=True, force_code=2989)
 
     def arm_21196(self):
-        self._arm(arm=True, force_code=21196)
         print('Force arm, code 21196')
+        self._arm(arm=True, force_code=21196)
 
     def disarm(self):
         self._arm(arm=False)
 
     def disarm_2989(self):
-        self._arm(arm=False, force_code=2989)
         print('Force disarm, code 2989')
+        self._arm(arm=False, force_code=2989)
 
     def disarm_21196(self):
-        self._arm(arm=False, force_code=21196)
         print('Force disarm, code 21196')
+        self._arm(arm=False, force_code=21196)
 
     def emergency_stop(self):
         self.disarm_21196()
         self.disarm_2989()
+        self.disarm()
         # self.mode_brake()
         self.mode_land()
         # self.disarm()
@@ -131,6 +135,8 @@ class MavlinkDrone:
         return None
 
     def takeoff(self, takeoff_altitude=1):
+        # self.mode_guided()
+        # self.arm_2989()
         self._takeoff_cmd_nav_takeoff(takeoff_altitude)
 
     def _takeoff_cmd_nav_takeoff(self, takeoff_altitude=1):
@@ -204,8 +210,17 @@ class MavlinkDrone:
     def mode_alt_hold(self):
         self._set_mode('ALT_HOLD')
 
+    def mode_position_hold(self):
+        self._set_mode('POSHOLD')
+
     def mode_stabilize(self):
         self._set_mode('STABILIZE')
+
+    def mode_brake(self):
+        self._set_mode('BRAKE')
+
+    def mode_rtl(self):
+        self._set_mode('RTL')
 
     def _set_mode(self, mode='LAND'):
         '''
@@ -224,8 +239,7 @@ class MavlinkDrone:
         else:
             print(f'{bcolors.FAIL}Set mode command{bcolors.ENDC} return None.')
 
-
-    def yaw(self, yaw_angle=0, yaw_rate=0):
+    def set_yaw(self, yaw_angle=0, yaw_rate=0):
         """Set yaw of MAVLink client.
 
          Args:
@@ -235,6 +249,8 @@ class MavlinkDrone:
              direction: The direction to set. -1 for left, 1 for right.
              abs_rel_flag: The absolute/relative flag to set. 0 for absolute, 1 for relative.
          """
+        self._yaw = yaw_angle
+
         if yaw_angle < 0:
             direction = -1  # CCW
         else:
@@ -291,7 +307,7 @@ class MavlinkDrone:
 
         time_boot_ms = 10  # ms - just for some value
 
-        #yaw bit set to use with 0 value
+        # yaw bit set to use with 0 value
         if type == 'Use Position':
             type_mask = int(0b100111111000)
         elif type == 'Use Velocity':
@@ -305,6 +321,10 @@ class MavlinkDrone:
         yaw = 0  # radians
         yaw_rate = 0
         x, y, z = relative_x, relative_y, relative_z
+        self._vx, self._vy, self._vz = velocity_x, velocity_y, velocity_z
+        if self._moving_to_target:
+            velocity_x = self.TO_TARGET_VELOCITY
+
         self.connection.mav.send(
             mavutil.mavlink.MAVLink_set_position_target_local_ned_message(
                 time_boot_ms, self.connection.target_system,
@@ -318,11 +338,65 @@ class MavlinkDrone:
             )
         )
 
-    def to_target(self):
-        pass
-        # self.move(2,0,0)
-        self.move(velocity_x=1, type_mask='Use Velocity')
-        self.move(velocity_x=0, type_mask='Use Velocity')
+    def hover(self):
+        self.move(velocity_x=0, velocity_y=0, velocity_z=0)
+        self.set_yaw(0)
+
+
+    @property
+    def yaw(self):
+        return self._yaw
+
+    @yaw.setter
+    def yaw(self, value):
+        self._yaw = value
+        self.set_yaw(self._yaw)
+
+
+    @property
+    def vx(self):
+        return self._vx
+
+    @vx.setter
+    def vx(self, value):
+        self._vx = value
+        self.move(velocity_x=self._vx, velocity_y=self._vy, velocity_z=self._vz)
+
+    @property
+    def vy(self):
+        return self._vy
+
+    @vy.setter
+    def vy(self, value):
+        self._vy = value
+        self.move(velocity_x=self._vx, velocity_y=self._vy, velocity_z=self._vz)
+
+    @property
+    def vz(self):
+        return self._vz
+
+    @vz.setter
+    def vz(self, value):
+        self._vz = value
+        self.move(velocity_x=self._vx, velocity_y=self._vy, velocity_z=self._vz)
+
+    def to_target(self, safety=True):
+        self._moving_to_target = True
+        self.move(velocity_x=self.TO_TARGET_VELOCITY, type_mask='Use Velocity')
+        if safety:
+            sleep(0.5)
+            self.hover()
+            # self.move(velocity_x=0, type_mask='Use Velocity')
+            self._moving_to_target = False
+
+    @property
+    def moving_to_target(self):
+        return self._moving_to_target
+
+    @moving_to_target.setter
+    def moving_to_target(self, value):
+        self._moving_to_target = value
+        self.to_target()
 
     def _get_message(self, type='LOCAL_POSITION_NED', blocking=True):
         msg = self.connection.recv_match(type=type, blocking=blocking)
@@ -335,6 +409,7 @@ class MavlinkDrone:
     def get_message_attitude(self):
         return self._get_message(type='ATTITUDE')
 
+    # pymvalink_iq utility functions
     def _wait_until_position_aiding(self, timeout=120):
         """
         Wait until the MAVLink connection has EKF position aiding.
