@@ -250,7 +250,7 @@ while True:
                 drone.move(velocity_x=0, velocity_y=0, velocity_z=0)
 
                 # 1
-                dyaw = yaw_angle * 1
+                dyaw = yaw_angle * 0.5
                 drone.yaw = dyaw
 
                 print(f'{dx=:.1f}\t{dz=:.1f}\t{dyaw=:.1f}\t'
