@@ -282,7 +282,8 @@ while True:
                 print(f'{bcolors.OKCYAN}Target locked: {target_object_id}{bcolors.ENDC}')
                 target_object_diagonal = None
             elif command == 'To target':
-                drone.to_target(safety=True)
+                # drone.to_target(safety=True)
+                drone.to_target()
             elif command == "Clear target":
                 target_object_id = None
                 need_reset_movement_if_lost = False

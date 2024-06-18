@@ -415,7 +415,7 @@ class MavlinkDrone:
         self._moving_to_target = True
         self.move(velocity_x=self.TO_TARGET_VELOCITY, type_mask='Use Velocity')
         if safety:
-            sleep(0.5)
+            sleep(1)
             self.hover()
             # self.move(velocity_x=0, type_mask='Use Velocity')
             self._moving_to_target = False
