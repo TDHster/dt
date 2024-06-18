@@ -353,6 +353,8 @@ class MavlinkDrone:
         if self._moving_to_target:
             velocity_x = self.TO_TARGET_VELOCITY
 
+        velocity_z = -velocity_z  # because Z axis is down
+
         self.connection.mav.send(
             mavutil.mavlink.MAVLink_set_position_target_local_ned_message(
                 time_boot_ms,
