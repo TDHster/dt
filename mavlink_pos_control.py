@@ -308,12 +308,12 @@ class MavlinkDrone:
         time_boot_ms = 10  # ms - just for some value
 
         # yaw bit set to use with 0 value
-        if type == 'Use Position':
-            type_mask = int(0b100111111000)
-        elif type == 'Use Velocity':
-            type_mask = int(0b100111000111)
-        elif type == 'Use Acceleration':
-            type_mask = int(0b100000111111)
+        if type_mask == 'Use Position':
+            type_bitmask = int(0b100111111000)
+        elif type_mask == 'Use Velocity':
+            type_bitmask = int(0b100111000111)
+        elif type_mask == 'Use Acceleration':
+            type_bitmask = int(0b100000111111)
 
         # x, y, z = 0, 0, -1
         # velocity_x, velocity_y, velocity_z = 0, 0, 0
@@ -330,7 +330,7 @@ class MavlinkDrone:
                 time_boot_ms,
                 self.connection.target_system, self.connection.target_component,
                 mavutil.mavlink.MAV_FRAME_BODY_OFFSET_NED,
-                type,
+                type_bitmask,
                 x, y, z,
                 velocity_x, velocity_y, velocity_z,
                 axel_x, axel_y, axel_z,
