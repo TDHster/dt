@@ -241,6 +241,27 @@ class MavlinkDrone:
     def set_yaw(self, yaw_angle=0, yaw_rate=0):
         """Set yaw of MAVLink client.
 
+        Args:
+            connection: A pymavlink MAVLink connection object.
+            yaw: The yaw angle to set.
+            yaw_rate: The yaw rate to set.
+            direction: The direction to set. -1 for left, 1 for right.
+            abs_rel_flag: The absolute/relative flag to set. 0 for absolute, 1 for relative.
+        """
+        self._yaw = yaw_angle
+
+        if yaw_angle < 0:
+            direction = -1  # CCW
+        else:
+            direction = 1  # CW
+        abs_rel_flag = 1
+        self.connection.mav.command_long_send(
+            self.connection.target_system,
+            self.connection.target_component,
+            mavutil.mavlink.MAV_CMD_CONDITION_YAW, 0, yaw_angle, yaw_rate, direction, abs_rel_flag, 0, 0, 0)
+        return True
+        """Set yaw of MAVLink client.
+
          Args:
              connection: A pymavlink MAVLink connection object.
              yaw_angle: The yaw angle to set.

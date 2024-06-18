@@ -311,7 +311,7 @@ while True:
                 # drone.set_mode_return_to_land()
             elif command == "Takeoff":
                 # drone.takeoff(12)
-                drone.takeoff(3)
+                drone.takeoff(4)
 
             elif command == "Emergency":
                 drone.emergency_stop()
