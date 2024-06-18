@@ -257,7 +257,7 @@ class MavlinkDrone:
             direction = 1  # CW
         abs_rel_flag = 1
 
-        print(f'Debug YAW: {yaw_angle=}\t{yaw_rate=}\t{direction=}\t{abs_rel_flag=}')
+        # print(f'Debug YAW: {yaw_angle=}\t{yaw_rate=}\t{direction=}\t{abs_rel_flag=}')
 
         self.connection.mav.command_long_send(
             self.connection.target_system,
@@ -470,7 +470,7 @@ class MavlinkDrone:
                 break
             print(f"Waiting for position aiding: {time() - time_start} seconds elapsed")
 
-        print(f'Debug pring: {time(),time_start,timeout}')
+        # print(f'Debug print: {time(),time_start,timeout}')
         if time() - time_start > timeout:
             raise TimeoutError(f"Position aiding did not become available within {timeout} seconds")
 
