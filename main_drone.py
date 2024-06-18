@@ -237,7 +237,7 @@ while True:
                 elevation_pixels = INPUT_VIDEO_HEIGHT / 2 - y  # center point
                 elevation_angle = elevation_pixels * VERTICAL_ANGLE_PER_PIXEL
                 # 0.03
-                dz = elevation_angle * 0.03
+                dz = elevation_angle * 0.06
 
                 target_object_current_diagonal = sqrt(w * w + h * h)
                 desired_object_size_in_pixels = DESIRED_OBJECT_DIAGONAL_PERCENTAGE / 100 * IMPUT_VIDEO_DIAGONAL
@@ -253,8 +253,10 @@ while True:
                 dyaw = yaw_angle * 1
                 drone.yaw = dyaw
 
-                print(f'x: {dx:.1f}\tz: {dz:.1f}\tYaw {dyaw:.1f}\t'
-                      f'{elevation_angle=:.1f}\t {bcolors.BOLD}'
+                print(f'{dx=:.1f}\t{dz=:.1f}\t{dyaw=:.1f}\t'
+                      f'{elevation_angle=:.1f}\t '
+                      f'{yaw_pixels=}{HORIZONTAL_ANGLE_PER_PIXEL=}'
+                      f'{bcolors.BOLD}'
                       # f' distance: {target_object_distance_approx:.1f}{bcolors.ENDC}')
                       f'{bcolors.ENDC}')
 
