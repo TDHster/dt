@@ -3,6 +3,7 @@ from pymavlink import mavutil
 from time import sleep, time
 import argparse
 from bcolors import bcolors
+from math import pi
 
 parser = argparse.ArgumentParser(description="Mavlink сontrol")
 
@@ -253,7 +254,7 @@ class MavlinkDrone:
         else:
             direction = 1  # CW
 
-        yaw_angle = abs(yaw_angle)
+        yaw_angle = abs(yaw_angle) * pi / 180
 
         YAW_CHANGE_RELATIVE = 0
         # YAW_CHANGE_ABSOLUTE = 1
