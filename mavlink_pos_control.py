@@ -256,10 +256,10 @@ class MavlinkDrone:
 
         yaw_angle = abs(yaw_angle) * pi / 180
 
-        # YAW_CHANGE_RELATIVE = 0
+        YAW_CHANGE_RELATIVE = 0
         YAW_CHANGE_ABSOLUTE = 1
 
-        abs_rel_flag = YAW_CHANGE_RELATIVE  # 0 - relative, 1 - abs(0 - is North)
+        abs_rel_flag = YAW_CHANGE_ABSOLUTE  # 0 - relative, 1 - abs(0 - is North)
         print(f'Debug: {yaw_angle=}\t{yaw_rate=}')
         self.connection.mav.command_long_send(
             self.connection.target_system,
