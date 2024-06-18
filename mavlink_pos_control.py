@@ -328,8 +328,8 @@ class MavlinkDrone:
         self.connection.mav.send(
             mavutil.mavlink.MAVLink_set_position_target_local_ned_message(
                 time_boot_ms, self.connection.target_system,
-                # self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_NED,
-                self.connection.target_component, mavutil.mavlink.MAV_FRAME_BODY_OFFSET_NED,
+                self.connection.target_component, mavutil.mavlink.MAV_FRAME_LOCAL_NED,
+                # self.connection.target_component, mavutil.mavlink.MAV_FRAME_BODY_OFFSET_NED,
                 type_mask,
                 x, y, z,
                 velocity_x, velocity_y, velocity_z,
