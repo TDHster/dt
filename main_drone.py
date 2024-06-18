@@ -247,10 +247,10 @@ while True:
                                                  sin((h/2 * HORIZONTAL_ANGLE_PER_PIXEL) * pi/180))  # TODO gimbal angle correction
                 # dx = (target_object_distance_approx - DESIRED_OBJECT_DISTANCE)
 
-                drone.move(velocity_x=0, velocity_y=0, velocity_z=0)
+                drone.move(velocity_x=0, velocity_y=0, velocity_z=dz)
 
-                # 1 0.5
-                dyaw = yaw_angle * 0.25
+                # 1 0.5 0.25
+                dyaw = yaw_angle * 0.3
                 drone.yaw = dyaw
 
                 print(f'{dx=:.1f}\t{dz=:.1f}\t{dyaw=:.1f}\t'
