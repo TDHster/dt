@@ -292,7 +292,7 @@ while True:
             elif command == "Hover":
                 drone.hover()
             elif command == "Yaw left":
-                drone.yaw = (drone.yaw -CONTROL_YAW_STEP)
+                drone.yaw = (drone.yaw - CONTROL_YAW_STEP)
             elif command == "Yaw right":
                 drone.yaw = (drone.yaw + CONTROL_YAW_STEP)
             elif command == "Move up":
@@ -327,9 +327,9 @@ while True:
         print('Exit main program loop.')
         break
 
-drone.mode_land()
+# drone.mode_land()
 # drone.disarm()
-# drone.emergency_stop()
+drone.emergency_stop()
 cap.release()
 netconnection.close()
 # drone.manual_land()
