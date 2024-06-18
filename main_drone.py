@@ -251,7 +251,7 @@ while True:
 
                 # 1
                 dyaw = yaw_angle * 1
-                drone.yaw = dyaw
+                # drone.yaw = dyaw
 
                 print(f'{dx=:.1f}\t{dz=:.1f}\t{dyaw=:.1f}\t'
                       f'{elevation_angle=:.1f}\t '
