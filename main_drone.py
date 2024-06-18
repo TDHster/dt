@@ -281,7 +281,7 @@ while True:
                 print(f'{bcolors.OKCYAN}Target locked: {target_object_id}{bcolors.ENDC}')
                 target_object_diagonal = None
             elif command == 'To target':
-                drone.to_target()
+                drone.to_target(safety=True)
             elif command == "Clear target":
                 target_object_id = None
                 # need_reset_movement_if_lost = True
@@ -310,7 +310,7 @@ while True:
                 # drone.set_mode_return_to_land()
             elif command == "Takeoff":
                 # drone.takeoff(12)
-                drone.takeoff(2)
+                drone.takeoff(1)
 
             elif command == "Emergency":
                 drone.emergency_stop()
