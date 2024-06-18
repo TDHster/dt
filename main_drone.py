@@ -146,7 +146,7 @@ key_to_command = {
     'p': "Move up",
     'l': "Move down",
     ' ': "Select target",
-    'с': "Clear target",
+    'c': "Clear target",
     '\r': "To target"  # Use '\r' for the enter key
 }
 
@@ -208,9 +208,9 @@ while True:
     objects = object_tracker.update(bbox)
 
     if ((target_object_id not in objects) and  # object lost
-            # need_reset_movement_if_lost and
+            need_reset_movement_if_lost and
             not drone.moving_to_target):
-        # need_reset_movement_if_lost = False
+        need_reset_movement_if_lost = False
         print(f'{bcolors.WARNING}Object lost{bcolors.ENDC}')
         drone.hover()
 
@@ -223,7 +223,7 @@ while True:
             rect_top_left = (int(x - w / 2), int(y - h / 2))
             rect_bottom_right = (int(x + w / 2), int(y + h / 2))
             if object_id == target_object_id:
-                # need_reset_movement_if_lost = True
+                need_reset_movement_if_lost = True
 
                 # cv2.putText(frame, f'Yaw: {yaw_pixels} elev: {elevation_pixels}', (10, 10),
                 #             cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 200), 2)
@@ -286,7 +286,7 @@ while True:
                 drone.to_target(safety=True)
             elif command == "Clear target":
                 target_object_id = None
-                # need_reset_movement_if_lost = True
+                need_reset_movement_if_lost = True
                 print(f'{bcolors.OKCYAN}Target lock reset{bcolors.ENDC}')
                 drone.moving_to_target = False
             elif command == "Hover":
