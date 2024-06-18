@@ -22,7 +22,7 @@ print(f"Using mavlink connection string: {connection_string}")
 
 class MavlinkDrone:
     _vx, _vy, _vz, _yaw = 0, 0, 0, 0
-    TO_TARGET_VELOCITY = 10  # m/s
+    TO_TARGET_VELOCITY = 100  # m/s
 
     def __init__(self, connection_string='udpin:localhost:14550'):
         '''
