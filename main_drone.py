@@ -295,7 +295,6 @@ while True:
                 drone.yaw = CONTROL_YAW_STEP
             elif command == "Move up":
                 drone.vz += CONTROL_STEP
-                # drone.move(velocity_z=CONTROL_STEP)
             elif command == "Move down":
                 drone.vz -= CONTROL_STEP
             elif command == "Move forward":
