@@ -261,6 +261,8 @@ class MavlinkDrone:
             self.connection.target_system,
             self.connection.target_component,
             mavutil.mavlink.MAV_CMD_CONDITION_YAW, 0, yaw_angle, yaw_rate, direction, abs_rel_flag, 0, 0, 0)
+        self._yaw = 0
+
         return True
         """Set yaw of MAVLink client.
 
