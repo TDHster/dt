@@ -139,6 +139,7 @@ class MavlinkDrone:
         # self.mode_guided()
         # self.arm_2989()
         self._takeoff_cmd_nav_takeoff(takeoff_altitude)
+        self.mode_guided()
 
     def _takeoff_cmd_nav_takeoff(self, takeoff_altitude=1):
 
