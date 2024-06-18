@@ -318,8 +318,8 @@ while True:
             else:
                 print(f'{bcolors.FAIL}{command=} not known{bcolors.ENDC}')
 
-        except netconnection.key_queue.Empty():
-        # except Exception as e:
+        # except netconnection.key_queue.Empty():
+        except Exception as e:
             pass  # No data in queue, continue the loop
 
     if cv2.waitKey(1) == 27:  # Esc key
