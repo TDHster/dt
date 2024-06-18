@@ -325,20 +325,12 @@ class MavlinkDrone:
         if self._moving_to_target:
             velocity_x = self.TO_TARGET_VELOCITY
 
-        print(time_boot_ms,
-                self.connection.target_system, self.connection.target_component,
-                mavutil.mavlink.MAV_FRAME_BODY_OFFSET_NED,
-                type_mask,
-                x, y, z,
-                velocity_x, velocity_y, velocity_z,
-                axel_x, axel_y, axel_z,
-                yaw, yaw_rate)
         self.connection.mav.send(
             mavutil.mavlink.MAVLink_set_position_target_local_ned_message(
                 time_boot_ms,
                 self.connection.target_system, self.connection.target_component,
                 mavutil.mavlink.MAV_FRAME_BODY_OFFSET_NED,
-                type_mask,
+                type,
                 x, y, z,
                 velocity_x, velocity_y, velocity_z,
                 axel_x, axel_y, axel_z,
