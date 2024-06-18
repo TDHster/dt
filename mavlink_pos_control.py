@@ -252,9 +252,11 @@ class MavlinkDrone:
 
         if yaw_angle < 0:
             direction = -1  # CCW
+            yaw_angle = -yaw_angle
         else:
             direction = 1  # CW
         abs_rel_flag = 1
+
         print(f'Debug YAW: {yaw_angle=}\t{yaw_rate=}\t{direction=}\t{abs_rel_flag=}')
 
         self.connection.mav.command_long_send(
