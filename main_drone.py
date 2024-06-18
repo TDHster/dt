@@ -291,9 +291,9 @@ while True:
             elif command == "Hover":
                 drone.hover()
             elif command == "Yaw left":
-                drone.yaw = -CONTROL_YAW_STEP
+                drone.yaw(-CONTROL_YAW_STEP)
             elif command == "Yaw right":
-                drone.yaw = CONTROL_YAW_STEP
+                drone.set_yaw(CONTROL_YAW_STEP)
             elif command == "Move up":
                 drone.vz += CONTROL_STEP
             elif command == "Move down":
@@ -311,7 +311,7 @@ while True:
                 # drone.set_mode_return_to_land()
             elif command == "Takeoff":
                 # drone.takeoff(12)
-                drone.takeoff(5)
+                drone.takeoff(3)
 
             elif command == "Emergency":
                 drone.emergency_stop()
