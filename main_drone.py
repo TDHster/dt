@@ -52,8 +52,8 @@ COLOR_YELLOW = (0, 255, 255)
 COLOR_GREEN = (0, 255, 0)
 COLOR_RED = (0, 0, 255)
 
-CONTROL_STEP = 0.25 # meters
-CONTROL_YAW_STEP = 10 # degrees
+CONTROL_STEP = 0.25  # meters
+CONTROL_YAW_STEP = 15  # degrees
 
 parser = argparse.ArgumentParser(description="Main drone script")
 
