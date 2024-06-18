@@ -241,8 +241,8 @@ while True:
 
                 target_object_current_diagonal = sqrt(w * w + h * h)
                 desired_object_size_in_pixels = DESIRED_OBJECT_DIAGONAL_PERCENTAGE / 100 * IMPUT_VIDEO_DIAGONAL
-                # 0.01
-                dx = (desired_object_size_in_pixels - target_object_current_diagonal) * 0.01
+                # 0.01 0.02
+                dx = (desired_object_size_in_pixels - target_object_current_diagonal) * 0.02
                 target_object_distance_approx = (TARGET_OBJECT_HEIGHT/2 /
                                                  sin((h/2 * HORIZONTAL_ANGLE_PER_PIXEL) * pi/180))  # TODO gimbal angle correction
                 # dx = (target_object_distance_approx - DESIRED_OBJECT_DISTANCE)
@@ -256,7 +256,7 @@ while True:
                 print(f'{dx=:.1f}\t{dz=:.1f}\t{dyaw=:.1f}\t'
                       f'{elevation_angle=:.1f}\t '
                       f'{bcolors.BOLD}'
-                      f' distance: {target_object_distance_approx:.1f}{bcolors.ENDC}'
+                      f' distance approx: {target_object_distance_approx:.1f}{bcolors.ENDC}'
                       f'{bcolors.ENDC}')
 
             elif object_id == object_id_near_center:
