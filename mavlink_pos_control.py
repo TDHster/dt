@@ -254,17 +254,18 @@ class MavlinkDrone:
         else:
             direction = 1  # CW
 
-        yaw_angle = abs(yaw_angle) * pi / 180
+        yaw_angle = abs(yaw_angle) # * pi / 180 not radians by docs
 
         YAW_CHANGE_RELATIVE = 0
         YAW_CHANGE_ABSOLUTE = 1
 
-        abs_rel_flag = YAW_CHANGE_ABSOLUTE  # 0 - relative, 1 - abs(0 - is North)
+        abs_rel_flag = YAW_CHANGE_RELATIVE  # 0 - relative, 1 - abs(0 - is North)
         print(f'Debug: {yaw_angle=}\t{yaw_rate=}')
         self.connection.mav.command_long_send(
             self.connection.target_system,
             self.connection.target_component,
-            mavutil.mavlink.MAV_CMD_CONDITION_YAW, 0, yaw_angle, yaw_rate, direction, abs_rel_flag, 0, 0, 0)
+            mavutil.mavlink.MAV_CMD_CONDITION_YAW, 0,
+            yaw_angle, yaw_rate, direction, abs_rel_flag, 0, 0, 0)
 
     def move(self, relative_x=0, relative_y=0, relative_z=0,
              velocity_x=0, velocity_y=0, velocity_z=0,
