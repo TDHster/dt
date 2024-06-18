@@ -254,7 +254,6 @@ class MavlinkDrone:
             direction = -1  # CCW
         else:
             direction = 1  # CW
-        direction =0
         abs_rel_flag = 1
         print(f'Debug YAW: {yaw_angle=}\t{yaw_rate=}\t{direction=}\t{abs_rel_flag=}')
 
