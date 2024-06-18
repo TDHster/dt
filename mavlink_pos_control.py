@@ -143,10 +143,7 @@ class MavlinkDrone:
 
         self._wait_heartbeat()
 
-        self._wait_until_position_aiding(self.connection)
-
-        # autopilot_info = get_autopilot_info(self.connection, tgt_sys_id)
-        # autopilot_info = get_autopilot_info(self.connection, self.connection.target_system)
+        # self._wait_until_position_aiding(self.connection)
 
         if self.autopilot_info["autopilot"] == "ardupilotmega":
             print("Connected to ArduPilot autopilot")
