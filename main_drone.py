@@ -286,7 +286,7 @@ while True:
                 drone.to_target(safety=True)
             elif command == "Clear target":
                 target_object_id = None
-                need_reset_movement_if_lost = True
+                need_reset_movement_if_lost = False
                 print(f'{bcolors.OKCYAN}Target lock reset{bcolors.ENDC}')
                 drone.moving_to_target = False
             elif command == "Hover":
