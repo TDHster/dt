@@ -440,6 +440,7 @@ class MavlinkDrone:
                 break
             print(f"Waiting for position aiding: {time() - time_start} seconds elapsed")
 
+        print(f'Debug pring: {time(),time_start,timeout}')
         if time() - time_start > timeout:
             raise TimeoutError(f"Position aiding did not become available within {timeout} seconds")
 
