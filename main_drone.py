@@ -33,10 +33,10 @@ CAMERA_HORIZONTAL_FOV = degrees(2 * atan((CAMERA_WIDTH / CAMERA_HEIGHT) * tan(ra
 camera_gimbal_pitch_angle = 0  # alight to forward
 print(f'Using setup for camera: {CAMERA_DIAGONAL_FOV=:.0f}, {CAMERA_HORIZONTAL_FOV=:.0f}, {CAMERA_VERTICAL_FOV=:.0f}')
 
-INPUT_VIDEO_WIDTH = 320
-INPUT_VIDEO_HEIGHT = 200
-# INPUT_VIDEO_WIDTH = 640
-# INPUT_VIDEO_HEIGHT = 480
+# INPUT_VIDEO_WIDTH = 320
+# INPUT_VIDEO_HEIGHT = 200
+INPUT_VIDEO_WIDTH = 640
+INPUT_VIDEO_HEIGHT = 480
 IMPUT_VIDEO_DIAGONAL = sqrt(INPUT_VIDEO_WIDTH*INPUT_VIDEO_WIDTH + INPUT_VIDEO_HEIGHT*INPUT_VIDEO_HEIGHT)
 
 HORIZONTAL_ANGLE_PER_PIXEL = CAMERA_HORIZONTAL_FOV / INPUT_VIDEO_WIDTH
@@ -62,7 +62,7 @@ parser.add_argument(
     help="Specify path for camera connection ex: 0 for opencv device, for RTSP: rtsp://localhost:8554/cam",
 )
 parser.add_argument(
-    "-fps", type=int, default=5,
+    "-fps", type=int, default=10,
     help="FPS for drone camera."
 )
 parser.add_argument(
@@ -193,7 +193,7 @@ while True:
     if not success:  # Check success flag
         continue
     frame = cv2.resize(frame, (INPUT_VIDEO_WIDTH, INPUT_VIDEO_HEIGHT), interpolation=cv2.INTER_AREA)
-    # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # convert to black and white  # dont work with neurodetect
+    # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # convert to black and white  # don't work with neurodetect
 
     classIds, confs, bbox = object_detector.detect(frame, detection_threshold=detection_threshold)
     # print(f'classIds={classIds}, bbox={bbox}')
