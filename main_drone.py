@@ -17,7 +17,7 @@ from mavlink_pos_control import MavlinkDrone as Drone
 # from object_detector import filter_by_target_class_id
 from object_detector import ObjectDetector
 import argparse
-from time import sleep
+from time import sleep, time
 from bcolors import bcolors
 
 
@@ -189,6 +189,7 @@ need_reset_movement_if_lost = False
 
 print('Starting program main loop.')
 while True:
+    iteration_start_time = time()
     success, frame = cap.read()
     if not success:  # Check success flag
         continue
@@ -326,6 +327,10 @@ while True:
     if cv2.waitKey(1) == 27:  # Esc key
         print('Exit main program loop.')
         break
+    iteration_end_time = time()
+    iteration_time = iteration_start_time - iteration_end_time
+    iteration_per_second = 1 / iteration_time
+    print(f'Iteration time: {iteration_time*1000}ms\tFPS={iteration_per_second}')
 
 # drone.mode_land()
 # drone.disarm()
