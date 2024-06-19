@@ -33,10 +33,10 @@ CAMERA_HORIZONTAL_FOV = degrees(2 * atan((CAMERA_WIDTH / CAMERA_HEIGHT) * tan(ra
 camera_gimbal_pitch_angle = 0  # alight to forward
 print(f'Using setup for camera: {CAMERA_DIAGONAL_FOV=:.0f}, {CAMERA_HORIZONTAL_FOV=:.0f}, {CAMERA_VERTICAL_FOV=:.0f}')
 
-# INPUT_VIDEO_WIDTH = 320
-# INPUT_VIDEO_HEIGHT = 200
-INPUT_VIDEO_WIDTH = 640
-INPUT_VIDEO_HEIGHT = 480
+INPUT_VIDEO_WIDTH = 320
+INPUT_VIDEO_HEIGHT = 200
+# INPUT_VIDEO_WIDTH = 640
+# INPUT_VIDEO_HEIGHT = 480
 IMPUT_VIDEO_DIAGONAL = sqrt(INPUT_VIDEO_WIDTH*INPUT_VIDEO_WIDTH + INPUT_VIDEO_HEIGHT*INPUT_VIDEO_HEIGHT)
 
 HORIZONTAL_ANGLE_PER_PIXEL = CAMERA_HORIZONTAL_FOV / INPUT_VIDEO_WIDTH
@@ -328,7 +328,7 @@ while True:
         print('Exit main program loop.')
         break
     iteration_end_time = time()
-    iteration_time = iteration_start_time - iteration_end_time
+    iteration_time = iteration_end_time - iteration_start_time
     iteration_per_second = 1 / iteration_time
     print(f'Iteration time: {iteration_time*1000}ms\tFPS={iteration_per_second}')
 
