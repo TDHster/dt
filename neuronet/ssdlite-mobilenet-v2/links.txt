@@ -1,0 +1,4 @@
+https://github.com/floydhub/object-detection-template/tree/master/models/ssdlite_mobilenet_v2_coco_2018_05_09
+
+for convert:
+https://stackoverflow.com/questions/56551383/how-to-generate-pbtxt-file-from-a-pb-file-for-dnn-module-in-opencv
