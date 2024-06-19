@@ -193,7 +193,7 @@ while True:
     success, frame = cap.read()
     if not success:  # Check success flag
         continue
-    frame = cv2.resize(frame, (INPUT_VIDEO_WIDTH, INPUT_VIDEO_HEIGHT), interpolation=cv2.INTER_AREA)
+    # frame = cv2.resize(frame, (INPUT_VIDEO_WIDTH, INPUT_VIDEO_HEIGHT), interpolation=cv2.INTER_AREA)
     # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # convert to black and white  # don't work with neurodetect
 
     classIds, confs, bbox = object_detector.detect(frame, detection_threshold=detection_threshold)
