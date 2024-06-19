@@ -330,7 +330,7 @@ while True:
     iteration_end_time = time()
     iteration_time = iteration_end_time - iteration_start_time
     iteration_per_second = 1 / iteration_time
-    print(f'Iteration time: {iteration_time*1000}ms\tFPS={iteration_per_second}')
+    print(f'Iteration time: {iteration_time*1000:.0f}ms\tFPS={int(iteration_per_second)}')
 
 # drone.mode_land()
 # drone.disarm()
