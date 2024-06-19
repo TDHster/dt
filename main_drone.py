@@ -73,17 +73,17 @@ parser.add_argument(
     "-g", "--groundstation_connection_string", type=str, default="192.168.0.169:5000",
     help="Specify path for mavlink/mavproxy connection.",
 )
-# 0.3 0.1 0.05 new formula 0.2 0.6 0.4 0.5
+# 0.01 0.02 0.03
 parser.add_argument(
-    "-pidx", type=float, default=0.4, help="PID_X for drone control.", metavar='VALUE'
+    "-pidx", type=float, default=0.03, help="PID_X for drone control.", metavar='VALUE'
 )
-# 0.5 0,4
+# 0.03 0.04
 parser.add_argument(
-    "-pidz", type=float, default=0.35, help="PID_Z (throttle) for drone control.", metavar='VALUE'
+    "-pidz", type=float, default=0.04, help="PID_Z (throttle) for drone control.", metavar='VALUE'
 )
-# 1 1.5
+# 1 0.5 0.25 0.3 0.35 0.31 0.3 0.25 0.27 0.27 0.25  #need pid correction in controller, cause scilations
 parser.add_argument(
-    "-pidyaw", type=float, default=1, help="PID_YAW for drone control.", metavar='VALUE'
+    "-pidyaw", type=float, default=0.25, help="PID_YAW for drone control.", metavar='VALUE'
 )
 parser.add_argument(
     "-dt", "--detection_threshold", type=float, default=0.45, help="detection_threshold for drone control.",
@@ -237,21 +237,20 @@ while True:
 
                 elevation_pixels = INPUT_VIDEO_HEIGHT / 2 - y  # center point
                 elevation_angle = elevation_pixels * VERTICAL_ANGLE_PER_PIXEL
-                # 0.03 0.04
-                dz = elevation_angle * 0.04
+
+                dz = elevation_angle * PID_Z
 
                 target_object_current_diagonal = sqrt(w * w + h * h)
                 desired_object_size_in_pixels = DESIRED_OBJECT_DIAGONAL_PERCENTAGE / 100 * IMPUT_VIDEO_DIAGONAL
-                # 0.01 0.02 0.03
-                dx = (desired_object_size_in_pixels - target_object_current_diagonal) * 0.03
+
+                dx = (desired_object_size_in_pixels - target_object_current_diagonal) * PID_X
                 target_object_distance_approx = (TARGET_OBJECT_HEIGHT/2 /
                                                  sin((h/2 * HORIZONTAL_ANGLE_PER_PIXEL) * pi/180))  # TODO gimbal angle correction
                 # dx = (target_object_distance_approx - DESIRED_OBJECT_DISTANCE)
 
                 drone.move(velocity_x=dx, velocity_y=0, velocity_z=dz)
 
-                # 1 0.5 0.25 0.3 0.35 0.31 0.3 0.25 0.27 0.27 0.25
-                dyaw = yaw_angle * 0.25
+                dyaw = yaw_angle * PID_YAW
                 drone.yaw = dyaw
 
                 print(f'{dx=:.1f}\t{dz=:.1f}\t{dyaw=:.1f}\t'
