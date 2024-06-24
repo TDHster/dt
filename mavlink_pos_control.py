@@ -5,19 +5,18 @@ import argparse
 from bcolors import bcolors
 from math import pi
 
-parser = argparse.ArgumentParser(description="Mavlink сontrol")
-
-parser.add_argument(
-    "-c",
-    "--connectionstring",
-    type=str,
-    default="udpin:127.0.0.1:14550",
-    help="Specify path for mavlink connection",
-)
-
-args = parser.parse_args()
-connection_string = args.connectionstring
-print(f"Using mavlink connection string: {connection_string}")
+# parser = argparse.ArgumentParser(description="Mavlink сontrol")
+#
+# parser.add_argument(
+#     "-c",
+#     "--connectionstring",
+#     type=str,
+#     default="udpin:127.0.0.1:14550",
+#     help="Specify path for mavlink connection",
+# )
+#
+# args = parser.parse_args()
+# connection_string = args.connectionstring
 
 
 class MavlinkDrone:
@@ -44,6 +43,8 @@ class MavlinkDrone:
             port: IP port (only if address is an IP address)
 
         '''
+        print(f"Using mavlink connection string: {connection_string}")
+
         self.connection = mavutil.mavlink_connection(connection_string)
         self.connection.wait_heartbeat()
         # print("Heartbeat from system (system %u component %u)" %
@@ -582,61 +583,62 @@ if __name__ == '__main__':
     # udpin:127.0.0.1:14550 =  udpin:127.0.0.1:14550
     # pi@raspberrypi:~ $ mavproxy.py --master=/dev/ttyACM0 --out=udpout:0.0.0.0:14550
     # arm uncheck all
-    print(f'Trying to connect: {connection_string}')
-    drone = MavlinkDrone(connection_string)
-    # drone = MavlinkDrone('udpout:localhost:14550')
-    print('Arming')
-    drone.arm()
-    print('Taking off')
-    sleep(wait_time)
-    exit(0)
+    # print(f'Trying to connect: {connection_string}')
+    # drone = MavlinkDrone(connection_string)
+    # # drone = MavlinkDrone('udpout:localhost:14550')
+    # print('Arming')
+    # drone.arm()
+    # print('Taking off')
+    # sleep(wait_time)
+    # exit(0)
+    # # print(drone.get_message_local_position_ned())
+    # print('yaw left')
+    # drone.yaw(-30)
     # print(drone.get_message_local_position_ned())
-    print('yaw left')
-    drone.yaw(-30)
-    print(drone.get_message_local_position_ned())
-    sleep(wait_time)
-
-    drone.yaw(60)
-    print('yaw right')
-    print(drone.get_message_local_position_ned())
-    sleep(wait_time)
-
-
-
-    print(f'Forward')
-    drone.move_test(box_size, 0, -altitude)
-    print(drone.get_message_local_position_ned())
-    sleep(wait_time)
-
-    print('Landing command')
-    drone.land_now()
-    drone.disarm()
-    exit(0)
-
-
+    # sleep(wait_time)
+    #
+    # drone.yaw(60)
+    # print('yaw right')
     # print(drone.get_message_local_position_ned())
-    print(f'Right')
-    drone.move_test(0, box_size, -altitude)
+    # sleep(wait_time)
+    pass
+
+
+
+    # print(f'Forward')
+    # drone.move_test(box_size, 0, -altitude)
     # print(drone.get_message_local_position_ned())
-    sleep(wait_time)
+    # sleep(wait_time)
+    #
+    # print('Landing command')
+    # drone.land_now()
+    # drone.disarm()
+    # exit(0)
 
+    #
+    # # print(drone.get_message_local_position_ned())
+    # print(f'Right')
+    # drone.move_test(0, box_size, -altitude)
+    # # print(drone.get_message_local_position_ned())
+    # sleep(wait_time)
+    #
+    # # print(drone.get_message_local_position_ned())
+    # print(f'Back')
+    # drone.move_test(-box_size, 0, -altitude)
+    # sleep(wait_time)
+    #
+    # # print(drone.get_message_local_position_ned())
+    # print(f'Left')
+    # drone.move_test(0, -box_size, -altitude)
+    # sleep(wait_time)
+    #
     # print(drone.get_message_local_position_ned())
-    print(f'Back')
-    drone.move_test(-box_size, 0, -altitude)
-    sleep(wait_time)
-
+    # sleep(wait_time)
+    #
     # print(drone.get_message_local_position_ned())
-    print(f'Left')
-    drone.move_test(0, -box_size, -altitude)
-    sleep(wait_time)
-
-    print(drone.get_message_local_position_ned())
-    sleep(wait_time)
-
-    print(drone.get_message_local_position_ned())
-    print('Landing command')
-    drone.land_now()
-    exit(0)
+    # print('Landing command')
+    # drone.land_now()
+    # exit(0)
 
     # drone.move(box_size, 0, -1)
     # print(drone.get_message_local_position_ned())
@@ -651,6 +653,6 @@ if __name__ == '__main__':
     # print(drone.get_message_local_position_ned())
     # sleep(wait_time)
     # print(drone.get_message_local_position_ned())
-    drone.land_now()
-    while True:
-        print(drone.get_message_local_position_ned())
+    # drone.land_now()
+    # while True:
+    #     print(drone.get_message_local_position_ned())
